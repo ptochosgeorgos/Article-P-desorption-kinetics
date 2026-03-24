@@ -3,17 +3,17 @@ project:
   output-dir: docs
   execute-dir: project
 
-# --- Website Navigation ---
+# --- Website Navigation (Keeps your online dashboard intact) ---
 website:
-  title: "P-Kinetics"
+  title: "STYCS P-Kinetics Manuscript"
   navbar:
     left:
       - href: index.html
-        text: "Thesis"
+        text: "Manuscript"
       - href: presentation/index.html
         text: "Presentation"
   sidebar:
-    - title: "Notebooks"
+    - title: "Data & Models"
       style: "docked"
       background: light
       contents:
@@ -33,8 +33,6 @@ format:
     toc: true
     toc-depth: 3
     number-sections: true
-    lof: true
-    lot: true
     html-math-method: mathjax
     grid:
       sidebar-width: 300px
@@ -42,11 +40,8 @@ format:
       margin-width: 250px
 
   docx:
-    toc: true
-    toc-depth: 4
+    toc: false # Journals usually don't want TOCs in the Word manuscript
     number-sections: true
-    lof: true
-    lot: true
 
   pdf:
     documentclass: article
@@ -56,76 +51,10 @@ format:
     mainfont: "Latin Modern Roman"
     sansfont: "Latin Modern Sans"
     monofont: "Latin Modern Mono"
-    notebook-links: false
-    lof: false
-    lot: false
-    
-    include-in-header:
-      - text: |
-          \usepackage{graphicx}
-          \graphicspath{{./}}
-          \usepackage{pdfpages}
-          \usepackage[a4paper, top=3cm, bottom=3cm, left=3.5cm, right=3.5cm]{geometry}
-          \usepackage{fancyhdr}
-
-          % --- Custom Title Page Definition (Robust Version) ---
-          \makeatletter
-          \renewcommand{\maketitle}{%
-            \begin{titlepage}
-              \thispagestyle{empty}
-              \centering
-              
-              \vspace*{1cm}
-              \includegraphics[width=6cm]{images/eth_logo.png}
-              
-              \vspace{2cm}
-              {\Large Eidgenössische Technische Hochschule Zürich \par}
-              {\Large Swiss Federal Institute of Technology Zurich \par}
-              
-              \vspace{2.5cm}
-              {\Large Master's thesis\par}
-              \vspace{0.5cm}
-              {\large Master's degree programme in Agricultural Sciences\par}
-              
-              \vfill
-              {\huge \bfseries \@title \par}
-              
-              \vfill
-              {\Large \@author \par}
-              {\large Student No. 13-938-311 \par}
-              
-              \vspace{2cm}
-              \begin{tabular}{ll}
-                \bfseries Supervisor: & Prof. Dr. Emmanuel Frossard \\
-                & Institute of Agricultural Sciences, ETH Zurich \\
-                \\
-                \bfseries Advisor: & Dr. Frank Liebisch \\
-                & Water Protection and Substance Flows, Agroscope Reckenholz \\
-              \end{tabular}
-              
-              \vfill
-              {\large \@date \par}
-            \end{titlepage}
-          }
-          \makeatother
-          % --- End of Custom Title Page Definition ---
-
-          % --- Header Style Definition for Main Document ---
-          \fancypagestyle{fancy}{
-            \fancyhf{}
-            \fancyhead[L]{\nouppercase{\leftmark}}
-            \fancyhead[R]{\thepage}
-            \renewcommand{\headrulewidth}{0.4pt}
-          }
-
-    include-before-body:
-      - text: |
-          \cleardoublepage
-          \tableofcontents
-          \cleardoublepage 
-          \pagestyle{fancy}
-          \pagenumbering{arabic}
-
-    include-after-body:
-      - text: |
-          \includepdf[pages=-]{declaration.pdf}
+    colorlinks: true
+    geometry:
+      - top=25mm
+      - left=25mm
+      - right=25mm
+      - bottom=25mm
+    # Clean, standard academic headers instead of the thesis title page
