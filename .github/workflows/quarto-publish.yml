@@ -25,7 +25,7 @@ jobs:
 
       - name: Install R Dependencies
         run: |
-          Rscript -e 'install.packages(c("rmarkdown", "knitr", "nlme", "dplyr", "ggplot2", "tidyr","mulcomp","car","lme4","ggplot2","ggtext","ggpmisc","latex2exp","kableExtra","broom","MuMIn","mlr3tuning","mlr3verse","lgr","readr"))'
+          Rscript -e 'install.packages(c("rmarkdown", "knitr", "nlme", "dplyr", "ggplot2", "tidyr","multcomp","car","lme4","ggplot2","ggtext","ggpmisc","latex2exp","kableExtra","broom","MuMIn","mlr3tuning","mlr3verse","lgr","readr"))'
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
