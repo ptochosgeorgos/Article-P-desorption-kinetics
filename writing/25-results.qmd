@@ -23,7 +23,7 @@ options(warn = -1)
 #RES <- readRDS("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/RES.rds")
 #D <- RES$D
 #d <- RES$data
-load("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/results_coefficient_analysis")
+load("data/results_coefficient_analysis")
 ```
 
 ```{r}

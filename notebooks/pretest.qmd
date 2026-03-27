@@ -331,11 +331,11 @@ tmp <- tmp[match(D$uuid, tmp$uuid),]
 # check: cbind(tmp$uid, D$uid)
 D$Ymain_norm <- tmp$Ymain_norm
 
-oxides <- read.csv(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/oxides.csv", na.strings = c("", "n.a."))
+oxides <- read.csv(file = "data/oxides.csv", na.strings = c("", "n.a."))
 
 D <- left_join(D,oxides,by="ui")
 
-IEK <- read.csv(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/IEK.csv", na.strings = c("", "n.a."))
+IEK <- read.csv(file = "data/IEK.csv", na.strings = c("", "n.a."))
 
 IEK_wide <- IEK %>%
   pivot_wider(
@@ -405,11 +405,11 @@ tmp <- tmp[match(D2$uuid, tmp$uuid),]
 # check: cbind(tmp$uid, D2$uid)
 D2$Ymain_norm <- tmp$Ymain_norm
 
-oxides <- read.csv(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/oxides.csv", na.strings = c("", "n.a."))
+oxides <- read.csv(file = "data/oxides.csv", na.strings = c("", "n.a."))
 
 D2 <- left_join(D2,oxides,by="ui")
 
-IEK <- read.csv(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/IEK.csv", na.strings = c("", "n.a."))
+IEK <- read.csv(file = "data/IEK.csv", na.strings = c("", "n.a."))
 
 IEK_wide <- IEK %>%
   pivot_wider(
@@ -440,9 +440,6 @@ RES$D <- D
 RES$D2 <- D2
 RES$nlme.coef.avg <- nlme.coef.avg
 RES$data <- d
-saveRDS(RES, file = "./data/RES.rds")
+saveRDS(RES, file = "data/RES.rds")
 ```
 
-```{r}
-
-```

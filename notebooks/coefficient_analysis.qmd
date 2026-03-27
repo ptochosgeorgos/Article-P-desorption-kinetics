@@ -278,7 +278,7 @@ fit.grud.Pexport |> r.squaredGLMM()
 fit.grud.Yrel |> r.squaredGLMM()
 
 
-save.image(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/results_coefficient_analysis")
+save.image(file = "data/results_coefficient_analysis")
 
 ```
 
@@ -488,7 +488,7 @@ print(spearman_kinetic)
 
 
 D$Site |> unique()
-save.image(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/results_coefficient_analysis")
+save.image(file = "data/results_coefficient_analysis")
 
 
 ```
