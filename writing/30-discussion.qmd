@@ -1,4 +1,4 @@
-```{r setup}
+```{r setup-discussion}
 #| include: false
 library(ggplot2)
 library(dplyr)
