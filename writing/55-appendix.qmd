@@ -1,15 +1,66 @@
-# Appendix
+# Appendix: Thermodynamic Correction of $P_{CO_2}$ Extractions
 
-## Supplementary Materials and Reproducibility
+## A.1. Intrinsic Ionic Strength of the $P_{CO_2}$ Extractant
+
+Standard static soil test methods rely on the operational extraction of phosphorus. Strong extractants (e.g., Olsen P, P-AAE10) possess inherently high ionic strengths that dominate the soil matrix, rendering absolute thermodynamic comparisons invalid without complex modeling. In contrast, the $P_{CO_2}$ method utilizes a very weak extractant: water saturated with carbon dioxide at atmospheric pressure (1 atm) and 25 °C. 
+
+To demonstrate that the $P_{CO_2}$ extractant adopts the native ionic strength of the soil, we calculate the intrinsic ionic strength ($I$) of the pure extractant. 
+
+According to Henry's Law, the concentration of dissolved $CO_2$ (denoted as $H_2CO_3^*$) is:
+$$[H_2CO_3^*] = K_H \times P_{CO_2}$$
+Given Henry's constant ($K_H \approx 0.034 \text{ M atm}^{-1}$) and $P_{CO_2} = 1 \text{ atm}$, the molarity of dissolved $CO_2$ is approximately $0.034 \text{ M}$.
+
+The primary ionic species generated arise from the first dissociation of carbonic acid:
+$$H_2CO_3^* \rightleftharpoons H^+ + HCO_3^-$$
+Using the acid dissociation constant ($K_{a1} = 4.46 \times 10^{-7}$ at 25 °C):
+$$K_{a1} = \frac{[H^+][HCO_3^-]}{[H_2CO_3^*]}$$
+Because $[H^+] \approx [HCO_3^-]$, we can solve for the bicarbonate concentration:
+$$[HCO_3^-] = \sqrt{4.46 \times 10^{-7} \times 0.034} \approx 1.23 \times 10^{-4} \text{ M}$$
+
+The intrinsic ionic strength ($I$) of the extractant is defined as:
+$$I = \frac{1}{2} \sum (C_i z_i^2)$$
+$$I = \frac{1}{2} \left( (1.23 \times 10^{-4} \times (+1)^2) + (1.23 \times 10^{-4} \times (-1)^2) \right) \approx 0.00012 \text{ M}$$
+
+This intrinsic ionic strength ($\approx 0.12 \text{ mM}$) is infinitesimally small compared to native agricultural soil solutions (which typically range from $10$ to $50 \text{ mM}$). Therefore, the final ionic strength of the $P_{CO_2}$ extract is overwhelmingly dictated by the dissolved soluble salts of the specific soil being analyzed.
+
+## A.2. Justification for the Davies Equation
+
+Because the $P_{CO_2}$ extract adopts the native ionic composition of the soil, reading the orthophosphate concentrations against an $I=0$ (distilled water) calibration curve introduces systematic error. The true thermodynamic driving force for P-availability is the chemical **activity**, not the stoichiometric concentration. 
+
+To correct for this, an activity coefficient ($\gamma$) must be applied. While the Pitzer equations are the gold standard for high-ionic-strength solutions ($I > 0.5 \text{ M}$, such as the P-AAE10 extractant), the ionic strength of native agricultural soil solutions is typically much lower ($I < 0.1 \text{ M}$). 
+
+In this low-to-moderate ionic strength regime, the **Davies equation** (an empirical extension of the Debye-Hückel theory) is highly accurate and does not require complex, ion-specific interaction parameters. 
+
+The Davies equation calculates the activity coefficient ($\gamma$) as follows:
+$$\log_{10}(\gamma) = -A z^2 \left( \frac{\sqrt{I}}{1 + \sqrt{I}} - 0.3 I \right)$$
+Where:
+* **$A$** is a temperature-dependent constant ($\approx 0.509 \text{ L}^{0.5} \text{mol}^{-0.5}$ for water at 25 °C).
+* **$z$** is the charge of the ion in question (for orthophosphate, $z$ depends on pH, predominantly $-1$ for $H_2PO_4^-$ and $-2$ for $HPO_4^{2-}$).
+* **$I$** is the total ionic strength of the extracted solution, calculated from the measured concentrations of major cations ($Ca^{2+}, Mg^{2+}, K^+$).
+
+## A.3. Implementation of Thermodynamic Correction
+
+To assess the theoretical P-Intensity ($I$) and formulate the Phosphorus Buffering Capacity (PBC), the operationally defined $P_{CO_2}$ concentrations are converted to thermodynamic activities using the following sequential steps:
+
+1.  **Determine Total Ionic Strength ($I$):** Using the measured cation concentrations from the extracts.
+    $$I = \frac{1}{2} \left( [K^+] + 4[Ca^{2+}] + 4[Mg^{2+}] + \dots \right)$$
+2.  **Calculate the Activity Coefficient ($\gamma$):** Applying the Davies equation based on the sample's specific $I$.
+3.  **Compute Chemical Activity:**
+    $$\text{Activity} (P) = [P_{CO_2}] \times \gamma$$
+
+By standardizing the measurements to their true thermodynamic activity, we remove the analytical bias introduced by varying soil salinity and pedoclimatic history, allowing for an absolute comparison of P-Intensity across all STYCS experimental sites.
+## A.4 Supplementary Materials and Reproducibility
 
 This Master's thesis was produced using a fully reproducible workflow with the **Quarto** publishing system. All data, R scripts, and analytical notebooks used to generate the figures, tables, and results presented in this work are openly available.
 
 The complete project can be cloned from the author's GitHub repository, which contains the raw data, the R code for the kinetic and statistical models, and the Quarto source files.
 
-**GitHub Repository URL:** [**\[https://github.com/Andrapodon/Master-Thesis-P-kinetics\]**](https://github.com/Andrapodon/Master-Thesis-P-kinetics)
+**GitHub Repository URL:** [**\[https://github.com/ptochosgeorgos/Article-P-desorption-kinetics\]**](https://github.com/ptochosgeorgos/Article-P-desorption-kinetics)
 
 A rendered version of the full project, including the analytical notebooks that document the development process, is also available as a GitHub Pages website at the following URL:
 
-**GitHub Pages Site URL:** [**\[https://andrapodon.github.io/Master-Thesis-P-kinetics/\]**](https://andrapodon.github.io/Master-Thesis-P-kinetics/)
+**GitHub Pages Site URL:** [**\[https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/\]**](https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/)
+
+
 
 This approach ensures full transparency and allows for the complete replication of the findings presented in this thesis.
