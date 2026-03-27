@@ -3,25 +3,18 @@ project:
   output-dir: docs
   execute-dir: project
   render:
-    - "**/*.qmd"      # Render all qmd files in all folders...
-    - "!presentation/" # ... EXCEPT the presentation folder
-    
-# --- Website Navigation (Keeps your online dashboard intact) ---
+    - "**/*.qmd"
+    - "!presentation/"
+    - "!notebooks/"       # This tells Quarto to ignore the notebooks!
+
+# --- Website Navigation ---
 website:
   title: "STYCS P-Kinetics Manuscript"
   navbar:
     left:
       - href: index.html
         text: "Manuscript"
-  sidebar:
-    - title: "Data & Models"
-      style: "docked"
-      background: light
-      contents:
-        - notebooks/pretest.qmd
-        - notebooks/coefficient_analysis.qmd
-        - notebooks/mlr3.qmd
-        - notebooks/results.qmd
+  
         
         
 # --- Top-level settings ---
