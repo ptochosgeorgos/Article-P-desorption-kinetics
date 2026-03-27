@@ -32,7 +32,7 @@ suppressPackageStartupMessages({
 })
 
 options(warn = -1)
-RES <- readRDS("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/RES.rds")
+RES <- readRDS("data/RES.rds")
 D <- RES$D2
 d <- RES$data
 ```

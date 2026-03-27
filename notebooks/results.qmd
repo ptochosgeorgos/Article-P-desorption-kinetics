@@ -35,7 +35,7 @@ library(lme4) # fitting models
 library(report)
 library(performance)
 
-load("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/results_coefficient_analysis")
+load("data/results_coefficient_analysis")
 ```
 
 <!-- ## Struktur -->

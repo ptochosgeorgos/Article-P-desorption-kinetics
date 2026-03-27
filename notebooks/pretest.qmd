@@ -69,11 +69,11 @@ library(dplyr)
 library(readr)
 
 
-try(setwd("~/Documents/Master Thesis/Master-Thesis-P-kinetics/"), silent=TRUE)
+
 
 options(warn = -1)
 # Dataset preparation
-d <- tryCatch(read.csv(file = "./data/release-Data.csv", na.strings = c("", "n.a.")))
+d <- tryCatch(read.csv(file = "data/release-Data.csv", na.strings = c("", "n.a.")))
 if (inherits(d, "try-error")){
   d <- read.csv(file = "~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/release-Data.csv", na.strings = c("", "n.a."))
 }
