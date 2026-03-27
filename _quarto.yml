@@ -3,8 +3,9 @@ project:
   output-dir: docs
   execute-dir: project
   render:
-    - "!presentation/"  # This tells Quarto to completely ignore the presentation folder
-
+    - "**/*.qmd"      # Render all qmd files in all folders...
+    - "!presentation/" # ... EXCEPT the presentation folder
+    
 # --- Website Navigation (Keeps your online dashboard intact) ---
 website:
   title: "STYCS P-Kinetics Manuscript"
