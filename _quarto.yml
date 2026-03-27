@@ -2,6 +2,8 @@ project:
   type: website
   output-dir: docs
   execute-dir: project
+  render:
+    - "!presentation/"  # This tells Quarto to completely ignore the presentation folder
 
 # --- Website Navigation (Keeps your online dashboard intact) ---
 website:
@@ -10,8 +12,6 @@ website:
     left:
       - href: index.html
         text: "Manuscript"
-      - href: presentation/index.html
-        text: "Presentation"
   sidebar:
     - title: "Data & Models"
       style: "docked"
@@ -21,7 +21,8 @@ website:
         - notebooks/coefficient_analysis.qmd
         - notebooks/mlr3.qmd
         - notebooks/results.qmd
-
+        
+        
 # --- Top-level settings ---
 bibliography: references.bib
 csl: apa.csl
