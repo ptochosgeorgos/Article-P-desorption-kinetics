@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>methods – STYCS P-Kinetics Manuscript</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-f33fce411228158d07e3e7295642fce5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STYCS P-Kinetics Manuscript</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Manuscript</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-materials-and-methods" id="toc-sec-materials-and-methods" class="nav-link active" data-scroll-target="#sec-materials-and-methods"><span class="header-section-number">1</span> Materials and Methods</a>
+  <ul class="collapse">
+  <li><a href="#sec-the-long-term-phosphorus-fertilization-experiment" id="toc-sec-the-long-term-phosphorus-fertilization-experiment" class="nav-link" data-scroll-target="#sec-the-long-term-phosphorus-fertilization-experiment"><span class="header-section-number">1.1</span> The Long-Term Phosphorus Fertilization Experiment</a></li>
+  <li><a href="#sec-experimental-sites" id="toc-sec-experimental-sites" class="nav-link" data-scroll-target="#sec-experimental-sites"><span class="header-section-number">1.2</span> Experimental Sites</a></li>
+  <li><a href="#sec-phosphorus-desorption-kinetics" id="toc-sec-phosphorus-desorption-kinetics" class="nav-link" data-scroll-target="#sec-phosphorus-desorption-kinetics"><span class="header-section-number">1.3</span> Phosphorus Desorption Kinetics</a>
+  <ul class="collapse">
+  <li><a href="#original-method-of-flossmann-and-richter" id="toc-original-method-of-flossmann-and-richter" class="nav-link" data-scroll-target="#original-method-of-flossmann-and-richter"><span class="header-section-number">1.3.1</span> Original Method of Flossmann and Richter</a></li>
+  <li><a href="#sec-adapted-kinetic-protocol-for-this-study" id="toc-sec-adapted-kinetic-protocol-for-this-study" class="nav-link" data-scroll-target="#sec-adapted-kinetic-protocol-for-this-study"><span class="header-section-number">1.3.2</span> Adapted Kinetic Protocol for This Study</a></li>
+  </ul></li>
+  <li><a href="#sec-statistical-analysis" id="toc-sec-statistical-analysis" class="nav-link" data-scroll-target="#sec-statistical-analysis"><span class="header-section-number">1.4</span> Statistical Analysis</a>
+  <ul class="collapse">
+  <li><a href="#software-and-statistical-environment" id="toc-software-and-statistical-environment" class="nav-link" data-scroll-target="#software-and-statistical-environment"><span class="header-section-number">1.4.1</span> Software and Statistical Environment</a></li>
+  <li><a href="#sec-modeling-of-desorption-kinetics" id="toc-sec-modeling-of-desorption-kinetics" class="nav-link" data-scroll-target="#sec-modeling-of-desorption-kinetics"><span class="header-section-number">1.4.2</span> Modeling of Desorption Kinetics</a></li>
+  <li><a href="#comparative-modeling-of-soil-and-agronomic-parameters" id="toc-comparative-modeling-of-soil-and-agronomic-parameters" class="nav-link" data-scroll-target="#comparative-modeling-of-soil-and-agronomic-parameters"><span class="header-section-number">1.4.3</span> Comparative Modeling of Soil and Agronomic Parameters</a></li>
+  <li><a href="#model-assumptions-and-diagnostics" id="toc-model-assumptions-and-diagnostics" class="nav-link" data-scroll-target="#model-assumptions-and-diagnostics"><span class="header-section-number">1.4.4</span> Model Assumptions and Diagnostics</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="20-methods.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="20-methods.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="sec-materials-and-methods" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Materials and Methods</h1>
+<section id="sec-the-long-term-phosphorus-fertilization-experiment" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sec-the-long-term-phosphorus-fertilization-experiment"><span class="header-section-number">1.1</span> The Long-Term Phosphorus Fertilization Experiment</h2>
+<p>The soil samples for this thesis originate from a set of six long-term field trials in Switzerland, established by Agroscope between 1989 and 1992. The primary objective of these experiments was to validate and re-evaluate Swiss phosphorus (P) fertilization guidelines by assessing long-term crop yield responses to varying P inputs across different pedoclimatic conditions. A detailed description of the experimental design and site characteristics can be found in <span class="citation" data-cites="hirteYieldResponseSoil2021">Hirte et al. (<a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">2021</a>)</span>.</p>
+<p>The experiment was set up as a <strong>completely randomized block design</strong> with four field replications at each site. The core of the experiment consists of six fixed-plot treatments representing different P fertilization levels, which were applied annually as superphosphate before tillage and sowing. These levels were based on percentages of the officially recommended P inputs: 0% (Zero), 33% (Deficit), 67% (Reduced), 100% (Norm), 133% (Elevated), and 167% (Surplus).</p>
+</section>
+<section id="sec-experimental-sites" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="sec-experimental-sites"><span class="header-section-number">1.2</span> Experimental Sites</h2>
+<p>The six experimental sites are located in the main crop-growing regions of Switzerland: <strong>Rümlang-Altwi (ALT)</strong>, <strong>Cadenazzo (CAD)</strong>, <strong>Ellighausen (ELL)</strong>, <strong>Grabs (GRA)</strong>, <strong>Oensingen (OEN)</strong>, and <strong>Zurich-Reckenholz (REC)</strong>. The key soil properties are summarized below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sites_df_corrected <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Site =</span> <span class="fu">c</span>(<span class="st">"ALT"</span>, <span class="st">"CAD"</span>, <span class="st">"ELL"</span>, <span class="st">"GRA"</span>, <span class="st">"OEN"</span>, <span class="st">"REC"</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Soil Type (WRB)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Calcaric Cambisol"</span>, <span class="st">"Eutric Fluvisol"</span>, <span class="st">"Eutric Cambisol"</span>, <span class="st">"Calcaric Fluvisol"</span>, <span class="st">"Gleyic-calc. Cambisol"</span>, <span class="st">"Eutric Gleysol"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Clay (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">8</span>, <span class="dv">33</span>, <span class="dv">17</span>, <span class="dv">37</span>, <span class="dv">39</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Sand (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">48</span>, <span class="dv">40</span>, <span class="dv">31</span>, <span class="dv">34</span>, <span class="dv">32</span>, <span class="dv">25</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Organic C (g/kg)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">14</span>, <span class="dv">23</span>, <span class="dv">16</span>, <span class="dv">24</span>, <span class="dv">27</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">pH (H2O)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">7.9</span>, <span class="fl">6.3</span>, <span class="fl">6.6</span>, <span class="fl">8.3</span>, <span class="fl">7.1</span>, <span class="fl">7.4</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sites_df_corrected)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-sites-corrected" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al.&nbsp;(2021).
+</figcaption>
+<div aria-describedby="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 30%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 23%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Site</th>
+<th style="text-align: left;">Soil Type (WRB)</th>
+<th style="text-align: right;">Clay (%)</th>
+<th style="text-align: right;">Sand (%)</th>
+<th style="text-align: right;">Organic C (g/kg)</th>
+<th style="text-align: right;">pH (H2O)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ALT</td>
+<td style="text-align: left;">Calcaric Cambisol</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">7.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CAD</td>
+<td style="text-align: left;">Eutric Fluvisol</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">6.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ELL</td>
+<td style="text-align: left;">Eutric Cambisol</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">6.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GRA</td>
+<td style="text-align: left;">Calcaric Fluvisol</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">8.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OEN</td>
+<td style="text-align: left;">Gleyic-calc. Cambisol</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">7.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REC</td>
+<td style="text-align: left;">Eutric Gleysol</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">7.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>Soil samples for this thesis were collected in the year 2022 from the topsoil layer (0-20 cm).</p>
+</section>
+<section id="sec-phosphorus-desorption-kinetics" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="sec-phosphorus-desorption-kinetics"><span class="header-section-number">1.3</span> Phosphorus Desorption Kinetics</h2>
+<p>The analysis of phosphorus (P) desorption kinetics was based on the principles of sequential extraction established by <span class="citation" data-cites="flossmannExtractionMethodCharacterizing1982">Flossmann &amp; Richter (<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">1982</a>)</span>. The original method is described below, followed by the specific protocol adapted for this study.</p>
+<section id="original-method-of-flossmann-and-richter" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="original-method-of-flossmann-and-richter"><span class="header-section-number">1.3.1</span> Original Method of Flossmann and Richter</h3>
+<p>The foundational method aims to characterize the P replenishment capacity of the soil. The procedure is as follows:</p>
+<ol type="1">
+<li><strong>Removal of Soluble P</strong>: 17.5 g of air-dried soil is shaken with 350 ml of deionized water for one hour at 120 Hz in a horizontal soil-shaker. The suspension is centrifuged at 4000 rpm for 15 minutes and the supernatant is decanted to remove the readily soluble P fraction.</li>
+<li><strong>Kinetic Extraction</strong>: The remaining soil pellet is resuspended with another 350 ml of deionized water. Subsamples of the suspension are taken at specific time intervals (e.g., 10, 30, and 120 minutes).</li>
+<li><strong>Analysis</strong>: The P concentration in the subsamples is determined colorimetrically.</li>
+</ol>
+</section>
+<section id="sec-adapted-kinetic-protocol-for-this-study" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="sec-adapted-kinetic-protocol-for-this-study"><span class="header-section-number">1.3.2</span> Adapted Kinetic Protocol for This Study</h3>
+<p>For this thesis, the original method was modified to capture the desorption process with a higher temporal resolution.</p>
+<ol type="1">
+<li><p><strong>Pre-washing to Remove Soluble P</strong>: A pre-washing step was performed to remove the readily soluble P fraction. 10 g of air-dried soil was suspended in 200 ml of deionized water and shaken for 60 minutes at 120 Hz. The suspension was then centrifuged for 15 minutes at 4000 rpm, and the supernatant containing the soluble P was discarded.</p></li>
+<li><p><strong>Kinetic Extraction</strong>: The remaining soil pellet was resuspended in 200 ml of fresh deionized water. The suspension was shaken continuously, and subsamples were taken at eight time points to generate a detailed kinetic curve: <strong>2, 4, 10, 15, 20, 30, 45, and 60 minutes</strong>.</p></li>
+<li><p><strong>Analysis</strong>: Each subsample was immediately filtered. The concentration of orthophosphate in the filtered extracts was determined colorimetrically using the <strong>malachite green method</strong> <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref">Van Veldhoven &amp; Mannaerts, 1987</a>)</span>.</p></li>
+</ol>
+</section>
+</section>
+<section id="sec-statistical-analysis" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="sec-statistical-analysis"><span class="header-section-number">1.4</span> Statistical Analysis</h2>
+<section id="software-and-statistical-environment" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="software-and-statistical-environment"><span class="header-section-number">1.4.1</span> Software and Statistical Environment</h3>
+<p>All data processing, statistical modeling, and visualization were conducted using the R programming language (v. 4.2.2) <span class="citation" data-cites="R-base">(<a href="#ref-R-base" role="doc-biblioref">R Core Team, 2022</a>)</span>. The primary packages used for the analysis were: - <code>nlme</code> <span class="citation" data-cites="R-nlme">(<a href="#ref-R-nlme" role="doc-biblioref">Pinheiro et al., 2022</a>)</span> for fitting the non-linear mixed-effects models to the kinetic data. - <code>lme4</code> <span class="citation" data-cites="R-lme4">(<a href="#ref-R-lme4" role="doc-biblioref">Bates et al., 2015</a>)</span> and <code>lmerTest</code> <span class="citation" data-cites="R-lmerTest">(<a href="#ref-R-lmerTest" role="doc-biblioref">Kuznetsova et al., 2017</a>)</span> for fitting and testing the linear mixed-effects models for agronomic and soil property analyses. - <code>mlr3</code> <span class="citation" data-cites="R-mlr3">(<a href="#ref-R-mlr3" role="doc-biblioref">Lang et al., 2019</a>)</span> for the systematic feature selection and model validation workflow.</p>
+</section>
+<section id="sec-modeling-of-desorption-kinetics" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="sec-modeling-of-desorption-kinetics"><span class="header-section-number">1.4.2</span> Modeling of Desorption Kinetics</h3>
+<p>To derive the kinetic parameters, a non-linear mixed-effects model was implemented using the <code>nlme</code> package. This approach was chosen to simultaneously estimate the rate constant (<em>k</em>) and the maximum desorbable P (<span class="math inline">\(P_{desorb}\)</span>) for each soil sample. The model was fitted to the exact solution of the first-order rate equation:</p>
+<p><span class="math display">\[P(t) = P_{desorb} \times (1 - e^{-k \times t'})\]</span></p>
+<p>Where <span class="math inline">\(P(t)\)</span> is the P concentration at time <span class="math inline">\(t\)</span>, and <span class="math inline">\(t'\)</span> is an adjusted time (<span class="math inline">\(t_{min}\)</span> + 3 min) to account for the rapid initial dissolution of P that occurs before the first measurement. In this mixed-effects framework, the overall mean values for <span class="math inline">\(P_{desorb}\)</span> and <em>k</em> were modeled as <strong>fixed effects</strong>, while sample-specific deviations from these fixed effects were modeled as <strong>random effects</strong> to capture the unique desorption characteristics of each individual soil sample.</p>
+</section>
+<section id="comparative-modeling-of-soil-and-agronomic-parameters" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="comparative-modeling-of-soil-and-agronomic-parameters"><span class="header-section-number">1.4.3</span> Comparative Modeling of Soil and Agronomic Parameters</h3>
+<p>To test the hypotheses of this thesis, two distinct sets of linear mixed-effects models were constructed.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>variables_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Abbreviation =</span> <span class="fu">c</span>(<span class="st">"$Y_{rel}$"</span>, <span class="st">"$Y_{norm}$"</span>, <span class="st">"$P_{up}$"</span>, <span class="st">"$P_{bal}$"</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$k$"</span>, <span class="st">"$P_{desorb}$"</span>, <span class="st">"$J_0$"</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$P_{CO2}$"</span>, <span class="st">"$P_{AAE10}$"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$Al_d$"</span>, <span class="st">"$Fe_d$"</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Variable</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Relative Yield"</span>, <span class="st">"Normalized Yield"</span>, <span class="st">"P Uptake"</span>, <span class="st">"P Balance"</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Rate Constant"</span>, <span class="st">"Desorbable P"</span>, <span class="st">"Initial P Flux"</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Water-Soluble P"</span>, <span class="st">"Chelate-Extractable P"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Dithionite-Extractable Al"</span>, <span class="st">"Dithionite-Extractable Fe"</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unit =</span> <span class="fu">c</span>(<span class="st">"unitless"</span>, <span class="st">"unitless"</span>, <span class="st">"kg P ha⁻¹"</span>, <span class="st">"kg P ha⁻¹"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">"min⁻¹"</span>, <span class="st">"mg P L⁻¹"</span>, <span class="st">"mg P L⁻¹ min⁻¹"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>           <span class="st">"mg P kg⁻¹"</span>, <span class="st">"mg P kg⁻¹"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>           <span class="st">"mg Al kg⁻¹"</span>, <span class="st">"mg Fe kg⁻¹"</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Description =</span> <span class="fu">c</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot yield normalized by the national mean yield for that year and crop."</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot yield normalized by the site-specific median yield of the highest P treatment for that year and crop."</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Total P removed by the harvested crop biomass over a growing season."</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Net P budget, calculated as P inputs (fertilizer) minus P outputs (uptake)."</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"First-order rate constant of P desorption, representing the speed of P release."</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Maximum desorbable P, representing the size of the readily available P pool."</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Product of $k$ and $P_{desorb}$, representing the initial flux of P from the soil."</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plant-available P measured by CO₂-saturated water extraction [@FAL1996Methodenbuch]."</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plant-available P measured by the ammonium-acetate-EDTA extraction method [@FAL1996Methodenbuch]."</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Free Al oxides (crystalline and amorphous) extracted with dithionite-citrate-bicarbonate [@Mehra1960Iron]."</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Free Fe oxides (crystalline and amorphous) extracted with dithionite-citrate-bicarbonate [@Mehra1960Iron]."</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(variables_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-variables" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Description of variables used in the agronomic and soil models.
+</figcaption>
+<div aria-describedby="tbl-variables-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 66%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Abbreviation</th>
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Unit</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(Y_{rel}\)</span></td>
+<td style="text-align: left;">Relative Yield</td>
+<td style="text-align: left;">unitless</td>
+<td style="text-align: left;">Plot yield normalized by the national mean yield for that year and crop.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(Y_{norm}\)</span></td>
+<td style="text-align: left;">Normalized Yield</td>
+<td style="text-align: left;">unitless</td>
+<td style="text-align: left;">Plot yield normalized by the site-specific median yield of the highest P treatment for that year and crop.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(P_{up}\)</span></td>
+<td style="text-align: left;">P Uptake</td>
+<td style="text-align: left;">kg P ha⁻¹</td>
+<td style="text-align: left;">Total P removed by the harvested crop biomass over a growing season.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(P_{bal}\)</span></td>
+<td style="text-align: left;">P Balance</td>
+<td style="text-align: left;">kg P ha⁻¹</td>
+<td style="text-align: left;">Net P budget, calculated as P inputs (fertilizer) minus P outputs (uptake).</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
+<td style="text-align: left;">Rate Constant</td>
+<td style="text-align: left;">min⁻¹</td>
+<td style="text-align: left;">First-order rate constant of P desorption, representing the speed of P release.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(P_{desorb}\)</span></td>
+<td style="text-align: left;">Desorbable P</td>
+<td style="text-align: left;">mg P L⁻¹</td>
+<td style="text-align: left;">Maximum desorbable P, representing the size of the readily available P pool.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
+<td style="text-align: left;">Initial P Flux</td>
+<td style="text-align: left;">mg P L⁻¹ min⁻¹</td>
+<td style="text-align: left;">Product of <span class="math inline">\(k\)</span> and <span class="math inline">\(P_{desorb}\)</span>, representing the initial flux of P from the soil.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(P_{CO2}\)</span></td>
+<td style="text-align: left;">Water-Soluble P</td>
+<td style="text-align: left;">mg P kg⁻¹</td>
+<td style="text-align: left;">Plant-available P measured by CO₂-saturated water extraction <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
+<td style="text-align: left;">Chelate-Extractable P</td>
+<td style="text-align: left;">mg P kg⁻¹</td>
+<td style="text-align: left;">Plant-available P measured by the ammonium-acetate-EDTA extraction method <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(Al_d\)</span></td>
+<td style="text-align: left;">Dithionite-Extractable Al</td>
+<td style="text-align: left;">mg Al kg⁻¹</td>
+<td style="text-align: left;">Free Al oxides (crystalline and amorphous) extracted with dithionite-citrate-bicarbonate <span class="citation" data-cites="Mehra1960Iron">(<a href="#ref-Mehra1960Iron" role="doc-biblioref">Mehra &amp; Jackson, 1960</a>)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(Fe_d\)</span></td>
+<td style="text-align: left;">Dithionite-Extractable Fe</td>
+<td style="text-align: left;">mg Fe kg⁻¹</td>
+<td style="text-align: left;">Free Fe oxides (crystalline and amorphous) extracted with dithionite-citrate-bicarbonate <span class="citation" data-cites="Mehra1960Iron">(<a href="#ref-Mehra1960Iron" role="doc-biblioref">Mehra &amp; Jackson, 1960</a>)</span>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="model-assumptions-and-diagnostics" class="level3" data-number="1.4.4">
+<h3 data-number="1.4.4" class="anchored" data-anchor-id="model-assumptions-and-diagnostics"><span class="header-section-number">1.4.4</span> Model Assumptions and Diagnostics</h3>
+<p>The validity of the linear mixed-effects models (<code>lmer</code>) relies on several key assumptions, primarily that the model residuals are normally distributed and homoscedastic (i.e., have constant variance across the range of predicted values). Prior to finalizing the models, these assumptions were rigorously checked through visual inspection of diagnostic plots, such as quantile-quantile (Q-Q) plots of the residuals and plots of residuals versus fitted values.</p>
+<p>Initial exploratory data analysis revealed that several of the predictor variables, most notably the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span> or PS), were strongly right-skewed. Using such variables directly in the linear models would violate the assumptions of linearity and homoscedasticity, leading to potentially biased and unreliable coefficient estimates.</p>
+<p>To address this, various transformations (including square root and logarithmic) were tested on the skewed variables. The natural log-transformation (<code>log()</code>) was found to be the most effective at normalizing the distribution of <span class="math inline">\(P_{desorb}\)</span> and producing well-behaved model residuals that more closely met the required assumptions. Therefore, <code>log(PS)</code> was used as a fixed effect in all subsequent agronomic models to ensure the statistical validity of the results.</p>
+<section id="models-of-p-availability-metrics-as-a-function-of-soil-properties" class="level4" data-number="1.4.4.1">
+<h4 data-number="1.4.4.1" class="anchored" data-anchor-id="models-of-p-availability-metrics-as-a-function-of-soil-properties"><span class="header-section-number">1.4.4.1</span> Models of P Availability Metrics as a Function of Soil Properties</h4>
+<p>First, to investigate the underlying soil-chemical drivers of the different P availability metrics (both kinetic and static), a series of models was built to predict each metric from key soil properties.</p>
+<ul>
+<li><strong>Fixed Effects Structure:</strong> The fixed effects were identical for all models in this category and included the primary soil physical and chemical properties: clay content, silt content, pH, organic carbon content, and dithionite-extractable iron (<span class="math inline">\(Fe_d\)</span>) and aluminum (<span class="math inline">\(Al_d\)</span>).</li>
+<li><strong>Random Effects Structure:</strong> The random effects structure accounted for the nested design of the STYCS experiment, with random intercepts for <code>year</code>, <code>Site</code>, <code>Site:block</code>, and <code>Site:Treatment</code>.</li>
+</ul>
+</section>
+<section id="comparative-models-of-agronomic-outcomes" class="level4" data-number="1.4.4.2">
+<h4 data-number="1.4.4.2" class="anchored" data-anchor-id="comparative-models-of-agronomic-outcomes"><span class="header-section-number">1.4.4.2</span> Comparative Models of Agronomic Outcomes</h4>
+<p>Second, the predictive power of the kinetic parameters was directly compared against that of the standard STP methods (“GRUD” system). For each agronomic response variable (Normalized Yield, P Uptake, and P Balance), two competing models were built. These models shared an identical random effects structure to ensure a fair comparison, differing only in their fixed effects.</p>
+<ul>
+<li><p><strong>Random Effects Structure (for all agronomic models):</strong> The structure <code>(1|year) + (1|Site) + (1|Site:block)</code> was used to control for variations due to the growing season, location, and in-field spatial differences.</p></li>
+<li><p><strong>Model 1: The Kinetic Approach</strong></p>
+<ul>
+<li><strong>Fixed Effects:</strong> This model used the kinetic parameters and their interaction: <code>k * log(PS)</code>. The interaction term tests the hypothesis that the benefit of a large desorbable P pool (<code>PS</code>) depends on the <em>rate</em> (<code>k</code>) at which it can be accessed.</li>
+</ul></li>
+<li><p><strong>Model 2: The Standard STP (GRUD) Approach</strong></p>
+<ul>
+<li><strong>Fixed Effects:</strong> This model used the two standard Swiss soil tests and their interaction: <code>P_CO2 * P_AAE10</code>.</li>
+</ul></li>
+</ul>
+<p>The relative performance of these two sets of models was then evaluated to determine whether the kinetic parameters provided a significant improvement in predictive power for key agronomic outcomes. Further the relative performance of these two approaches, along with other combinations of predictor sets, was rigorously evaluated using a machine learning benchmark workflow implemented in the <code>mlr3</code> package <span class="citation" data-cites="R-mlr3">(<a href="#ref-R-mlr3" role="doc-biblioref">Lang et al., 2019</a>)</span>. The predictive power of each predictor set was quantified using <strong>5-fold cross-validation</strong>. Performance was measured as the percentage of explained variance on the hold-out data (1 - MSE / Var(y)), providing a robust and unbiased estimate of how well each model would generalize to new data. This benchmark allowed for a direct comparison of the information content provided by the kinetic parameters versus the standard soil tests for predicting key agronomic outcomes.</p>
+
+
+
+</section>
+</section>
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-R-lme4" class="csl-entry" role="listitem">
+Bates, D., Mächler, M., Bolker, B., &amp; Walker, S. (2015). Fitting linear mixed-effects models using <span class="nocase">lme4</span>. <em>Journal of Statistical Software</em>, <em>67</em>(1), 1–48. <a href="https://doi.org/10.18637/jss.v067.i01">https://doi.org/10.18637/jss.v067.i01</a>
+</div>
+<div id="ref-flossmannExtractionMethodCharacterizing1982" class="csl-entry" role="listitem">
+Flossmann, R., &amp; Richter, D. (1982). <em>Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution.</em>
+</div>
+<div id="ref-FAL1996Methodenbuch" class="csl-entry" role="listitem">
+Forschungsanstalt für Agrarökologie und Landbau (FAL). (1996). <em>Methodenbuch für boden-, pflanzen- und nährstoffanalysen</em>. FAL.
+</div>
+<div id="ref-hirteYieldResponseSoil2021" class="csl-entry" role="listitem">
+Hirte, J., Richner, W., Orth, B., Liebisch, F., &amp; Flisch, R. (2021). Yield response to soil test phosphorus in <span>Switzerland</span>: <span>Pedoclimatic</span> drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Science of The Total Environment</em>, <em>755</em>, 143453. <a href="https://doi.org/10.1016/j.scitotenv.2020.143453">https://doi.org/10.1016/j.scitotenv.2020.143453</a>
+</div>
+<div id="ref-R-lmerTest" class="csl-entry" role="listitem">
+Kuznetsova, A., Brockhoff, P. B., &amp; Christensen, R. H. B. (2017). lmerTest package: Tests in linear mixed effects models. <em>Journal of Statistical Software</em>, <em>82</em>(13), 1–26. <a href="https://doi.org/10.18637/jss.v082.i13">https://doi.org/10.18637/jss.v082.i13</a>
+</div>
+<div id="ref-R-mlr3" class="csl-entry" role="listitem">
+Lang, M., Binder, M., Richter, J., Schratz, P., Casalicchio, G., Coors, S., Pfisterer, F., Fischer, S., Au, Q., &amp; Bischl, B. (2019). <span class="nocase">mlr3</span>: A modern object-oriented machine learning framework in <span>R</span>. <em>Journal of Open Source Software</em>, <em>4</em>(44), 1903. <a href="https://doi.org/10.21105/joss.01903">https://doi.org/10.21105/joss.01903</a>
+</div>
+<div id="ref-Mehra1960Iron" class="csl-entry" role="listitem">
+Mehra, O. P., &amp; Jackson, M. L. (1960). Iron oxide removal from soils and clays by a dithionite-citrate system buffered with sodium bicarbonate. <em>Clays and Clay Minerals</em>, <em>7</em>, 317–327.
+</div>
+<div id="ref-R-nlme" class="csl-entry" role="listitem">
+Pinheiro, J., Bates, D., DebRoy, S., Sarkar, D., &amp; R Core Team. (2022). <em>Nlme: Linear and nonlinear mixed effects models</em>. <a href="https://CRAN.R-project.org/package=nlme">https://CRAN.R-project.org/package=nlme</a>
+</div>
+<div id="ref-R-base" class="csl-entry" role="listitem">
+R Core Team. (2022). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>
+</div>
+<div id="ref-VanVeldhoven1987Malachite" class="csl-entry" role="listitem">
+Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosphorus in the scheldt estuary. <em>Estuarine, Coastal and Shelf Science</em>, <em>25</em>(6), 755–765.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ptochosgeorgos\.github\.io\/Article-P-desorption-kinetics\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

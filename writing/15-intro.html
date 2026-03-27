@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>intro – STYCS P-Kinetics Manuscript</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-f33fce411228158d07e3e7295642fce5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STYCS P-Kinetics Manuscript</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Manuscript</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#the-complexity-of-phosphorus" id="toc-the-complexity-of-phosphorus" class="nav-link" data-scroll-target="#the-complexity-of-phosphorus"><span class="header-section-number">1.1</span> The Complexity of Phosphorus</a></li>
+  <li><a href="#from-static-measurements-to-dynamic-understanding" id="toc-from-static-measurements-to-dynamic-understanding" class="nav-link" data-scroll-target="#from-static-measurements-to-dynamic-understanding"><span class="header-section-number">1.2</span> From Static Measurements to Dynamic Understanding</a></li>
+  <li><a href="#objectives-and-research-questions" id="toc-objectives-and-research-questions" class="nav-link" data-scroll-target="#objectives-and-research-questions"><span class="header-section-number">1.3</span> Objectives and Research Questions</a>
+  <ul class="collapse">
+  <li><a href="#research-questions-and-hypotheses" id="toc-research-questions-and-hypotheses" class="nav-link" data-scroll-target="#research-questions-and-hypotheses"><span class="header-section-number">1.3.1</span> Research Questions and Hypotheses</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="15-intro.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="15-intro.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="introduction" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
+<section id="the-complexity-of-phosphorus" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="the-complexity-of-phosphorus"><span class="header-section-number">1.1</span> The Complexity of Phosphorus</h2>
+<p>Phosphorus (P) is an essential macronutrient for all known life, forming a critical part of DNA and energy-transfer molecules <span class="citation" data-cites="Berg2019Biochemistry NIH2023Phosphorus Nelson2021Lehninger">(<a href="#ref-Berg2019Biochemistry" role="doc-biblioref">Berg et al., 2019</a>; <a href="#ref-NIH2023Phosphorus" role="doc-biblioref">National Institutes of Health, Office of Dietary Supplements, 2023</a>; <a href="#ref-Nelson2021Lehninger" role="doc-biblioref">Nelson et al., 2021</a>)</span>. In soils—where organic, mineral, and aqueous phases interface—its behavior is complex. In the presence of oxygen, P exists almost exclusively as orthophosphate (<span class="math inline">\(PO_4^{3-}\)</span>) and its protonated forms (<span class="math inline">\(HPO_4^{2-}\)</span> or <span class="math inline">\(H_2PO_4^{-}\)</span>), depending on the soil pH <span class="citation" data-cites="Brady2016Soils Sparks2003Environmental">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>; <a href="#ref-Sparks2003Environmental" role="doc-biblioref">Sparks, 2003</a>)</span>. These dissolved phosphate species are highly reactive; they are subject to adsorption onto the surfaces of clays and oxides and can precipitate with cations like calcium, iron, and aluminum to form minerals with low solubility <span class="citation" data-cites="Sposito2008Chemistry Bohn2002SoilWater Hinsinger2001Phosphorus">(<a href="#ref-Bohn2002SoilWater" role="doc-biblioref">Bohn et al., 2002</a>; <a href="#ref-Hinsinger2001Phosphorus" role="doc-biblioref">Hinsinger, 2001</a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref">Sposito, 2008</a>)</span>. Consequently, while total soil P concentrations can be substantial, often ranging from 200 to 3000 mg kg⁻¹, the concentration of orthophosphate in the soil solution—the form directly acquired by plant roots—is typically minuscule, often in the range of 0.001 to 1 mg L⁻¹. This vast difference between the total phosphorus stock and the infinitesimally small plant-available pool represents a central challenge for global agricultural productivity <span class="citation" data-cites="Brady2016Soils Holford1997SoilP Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>; <a href="#ref-Holford1997SoilP" role="doc-biblioref">Holford, 1997</a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref">Sposito, 2008</a>)</span>. This creates a profound agronomic and environmental dilemma: while the majority of applied P fertilizer is rapidly immobilized in the soil and remains unavailable to crops, the fraction that is lost from fields via runoff and erosion becomes a potent environmental pollutant. This fugitive P is a primary driver of eutrophication in freshwater ecosystems, which are often naturally P-limited <span class="citation" data-cites="Rast1996Eutrophication Abelson1999Dilemma">Sharpley et al. (<a href="#ref-Sharpley2003Water" role="doc-biblioref">2003</a>)</span>.</p>
+<p><strong>Soil organic matter (SOM) adds another layer of complexity to these interactions.</strong> Organic acids released during the decomposition of SOM can compete with phosphate for the same adsorption sites on mineral surfaces, which can increase P concentrations in the soil solution. Furthermore, humic substances can form stable complexes with cations like Al³⁺ and Fe³⁺, preventing them from precipitating phosphate and thereby enhancing its availability <span class="citation" data-cites="Stevenson1994Humus Gerke2010Humic">(<a href="#ref-Gerke2010Humic" role="doc-biblioref">Gerke, 2010</a>; <a href="#ref-Stevenson1994Humus" role="doc-biblioref">Stevenson, 1994</a>)</span>.</p>
+</section>
+<section id="from-static-measurements-to-dynamic-understanding" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="from-static-measurements-to-dynamic-understanding"><span class="header-section-number">1.2</span> From Static Measurements to Dynamic Understanding</h2>
+<p>To manage this challenge, soil testing methods were developed to estimate plant-available phosphorus. These tests are designed to measure two key components of P availability: the <strong>intensity factor</strong>, which is the concentration of P in the soil solution at a given moment, and the <strong>capacity factor</strong>, which represents the pool of weakly adsorbed P that can readily replenish the soil solution <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>. Traditional methods used in Switzerland and the surrounding DACH region, which are standardized by organizations like the <strong>VDLUFA</strong> (Verband Deutscher Landwirtschaftlicher Untersuchungs- und Forschungsanstalten) and form the basis of Swiss fertilization guidelines (<strong>GRUD</strong>; Grundlagen für die Düngung), often employ a dual-method approach. This strategy is designed to assess both the P-intensity and P-capacity factors separately by using a combination of weak and strong extractants. Weak extractants, such as CO₂-saturated water, are intended to measure the readily available P in the soil solution (intensity). In contrast, stronger, often chelate-based extractants like ammonium acetate EDTA (AAE10) or calcium-acetate-lactate (CAL) are used to estimate the more tightly bound, resupply pool of phosphorus (capacity) <span class="citation" data-cites="FAL1996Methodenbuch VDLUFA2000Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>; <a href="#ref-VDLUFA2000Methodenbuch" role="doc-biblioref">Verband Deutscher Landwirtschaftlicher Untersuchungs- und Forschungsanstalten (VDLUFA), 2000</a>)</span>. While this dual approach is logical, other international standards, such as the widely used Olsen-P method, rely on a single extraction to provide an index of plant-available P <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. Although these static tests are invaluable for basic fertility assessment, they do not capture the dynamic nature of P supply. A crucial missing piece of information is the rate at which P is replenished into the soil solution from the solid phase after being taken up by plant roots. This replenishment rate, or <strong>“kinetic factor”</strong>, is vital for sustaining crop growth, especially during periods of high demand <span class="citation" data-cites="Nye2000Solute Fardeau1991Phosphate">Frossard et al. (<a href="#ref-Frossard2000Processes" role="doc-biblioref">2000</a>)</span>.</p>
+<p>The importance of these dynamics is not a new concept. As early as 1982, <strong>Flossmann and Richter</strong> argued that characterizing the kinetics of P release was essential for refining fertilizer recommendations beyond what static tests alone could offer <span class="citation" data-cites="flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>)</span>. Modern research has reinforced this view, showing that fertilization strategies based solely on maintaining a critical soil test P (STP) concentration can be inefficient <span class="citation" data-cites="McDowell2001Approximating Rowe2016LegacyP">(<a href="#ref-McDowell2001Approximating" role="doc-biblioref">McDowell &amp; Sharpley, 2001</a>; <a href="#ref-Rowe2016LegacyP" role="doc-biblioref">Rowe et al., 2016</a>)</span>. In Switzerland, this has led to the accumulation of “legacy P” in many agricultural soils. Additionally, understanding the release kinetics of this legacy P is key to both improving nutrient use efficiency and protecting water ecosystems and reserves <span class="citation" data-cites="Hirte2018Relationship">(<a href="#ref-Hirte2018Relationship" role="doc-biblioref">Hirte et al., 2018</a>)</span>. Furthermore, critical STP levels are not constant; they are influenced by pedoclimatic factors like soil texture and temperature, making a “one-size-fits-all” approach to fertilization suboptimal <span class="citation" data-cites="hirteYieldResponseSoil2021 Sims2005Phosphorus Bell2013Factors">(<a href="#ref-Bell2013Factors" role="doc-biblioref">Bell et al., 2013</a>; <a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">Hirte, Richner, et al., 2021</a>; <a href="#ref-Sims2005Phosphorus" role="doc-biblioref">Sims &amp; Sharpley, 2005</a>)</span>.</p>
+</section>
+<section id="objectives-and-research-questions" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="objectives-and-research-questions"><span class="header-section-number">1.3</span> Objectives and Research Questions</h2>
+<p>An ideal set of parameters for phosphorus (P) management must move beyond simple agronomic sufficiency to encompass both environmental stewardship and the biophysical realities of nutrient acquisition by plants. To be truly effective, such parameters must: (1) be sensitive to changes in the soil P status resulting from fertilizer inputs and crop removal (the P balance) <span class="citation" data-cites="Johnston2001Phosphorus Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>; <a href="#ref-Johnston2001Phosphorus" role="doc-biblioref">Johnston et al., 2001</a>)</span>; (2) correlate with the risk of P loss to the environment (P export) <span class="citation" data-cites="Sharpley2000Phosphorus">(<a href="#ref-Sharpley2000Phosphorus" role="doc-biblioref">Sharpley et al., 2000</a>)</span>; and (3), most critically, reflect the kinetic nature of P supply to plant roots, which is governed by the slow diffusion of phosphate in the soil solution <span class="citation" data-cites="Nye2000Solute Kuang2012Phosphorus">(<a href="#ref-Kuang2012Phosphorus" role="doc-biblioref">Kuang et al., 2012</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>.</p>
+<p>This thesis hypothesizes that kinetic parameters describing P desorption, derived from a simple laboratory extraction, can serve as effective predictors for agronomic outcomes. To test this, soils were sourced from the long-term Swiss agricultural experiment STYCS <span class="citation" data-cites="Hirte2021Yield">(<a href="#ref-Hirte2021Yield" role="doc-biblioref">Hirte, Stüssel, et al., 2021</a>)</span>. The experiment’s multi-decade history has established stable P equilibria across a wide and deliberately created gradient of P availability (from 0% to 167% of recommended fertilization), allowing for robust modeling of crop responses. Furthermore, the trial encompasses six sites with diverse pedoclimatic conditions, ensuring that any findings have broad applicability across different Swiss agricultural landscapes. This study employs a modified version of the Flossmann &amp; Richter kinetic test to derive the desorption rate (k) and the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>). The performance of these new kinetic parameters will be compared against standard STP methods (<span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) by addressing the following research questions:</p>
+<section id="research-questions-and-hypotheses" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="research-questions-and-hypotheses"><span class="header-section-number">1.3.1</span> Research Questions and Hypotheses</h3>
+<p>Research Question 1: How well do standard soil test P (STP) methods predict agronomic outcomes and how do they relate to fundamental soil properties?</p>
+<ul>
+<li><p><strong>Hypothesis 1a (Agronomic Performance):</strong> The standard STP methods (<span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>), which measure the P <em>capacity</em> (the size of the readily available pool), will show a significant correlation with the P-Balance, as this is directly influenced by P inputs <span class="citation" data-cites="Johnston2001Phosphorus">(<a href="#ref-Johnston2001Phosphorus" role="doc-biblioref">Johnston et al., 2001</a>)</span>. However, they will be weak predictors of relative crop yield and P-uptake, as these agronomic outcomes are more dependent on the <em>rate</em> of P supply throughout the growing season <span class="citation" data-cites="Hirte2021Yield">(<a href="#ref-Hirte2021Yield" role="doc-biblioref">Hirte, Stüssel, et al., 2021</a>)</span>.</p></li>
+<li><p><strong>Hypothesis 1b (Relation to Soil Properties):</strong> The measured STP values will be positively correlated with soil clay and organic carbon content, reflecting the greater number of sorption sites in these soils <span class="citation" data-cites="Brady2016Soils">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>)</span>. Conversely, the P_AAE10 measurement will be negatively correlated with soil pH, particularly in soils with a <span class="math inline">\(pH &gt; 6.8\)</span>, due to the chelation of <span class="math inline">\(Ca^{2+}\)</span> and <span class="math inline">\(Mg^{2+}\)</span> by the EDTA in the extractant, which reduces its effectiveness <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>.</p></li>
+</ul>
+<p>Research Question 2: Can P desorption kinetics be reliably characterized for the diverse soils of the STYCS trial, and how do the derived kinetic parameters relate to soil properties?</p>
+<ul>
+<li><p><strong>Hypothesis 2a (Methodological Feasibility):</strong> The P desorption process in the STYCS soils will follow a first-order kinetic model. However, the original linear estimation method proposed by Flossmann &amp; Richter (1982) may be inaccurate because it relies on a potentially overestimated desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>). A non-linear modeling approach will provide more robust and replicable estimates of both the desorption rate constant (<em>k</em>) and the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) <span class="citation" data-cites="Kuang2012Phosphorus">(<a href="#ref-Kuang2012Phosphorus" role="doc-biblioref">Kuang et al., 2012</a>)</span>.</p></li>
+<li><p><strong>Hypothesis 2b (Relation to Soil Properties):</strong> The kinetic parameters will be significantly influenced by soil composition. The desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) is expected to correlate positively with clay and organic matter content, which provide sorption surfaces. The rate constant (<em>k</em>) is expected to be influenced by pH, as the speciation of orthophosphate changes, affecting its interaction with mineral surfaces and its mobility <span class="citation" data-cites="Sparks2003Environmental">(<a href="#ref-Sparks2003Environmental" role="doc-biblioref">Sparks, 2003</a>)</span>.</p></li>
+</ul>
+<p>Research Question 3: Can kinetic parameters significantly improve the prediction of agronomic outcomes compared to standard static STP methods?</p>
+<ul>
+<li><strong>Hypothesis 3 (Improved Predictive Power):</strong> Because plant P uptake is fundamentally limited by the slow diffusion of phosphate to the root surface, a dynamic measure is required for accurate prediction <span class="citation" data-cites="Nye2000Solute">(<a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. Therefore, a model incorporating the kinetic parameters (<em>k</em> and <span class="math inline">\(P_{desorb}\)</span>), which together describe the replenishment rate of the soil solution, will explain a significantly greater proportion of the variance in relative yield and P-uptake compared to models based solely on the static STP measurements <span class="citation" data-cites="Fardeau1991Phosphate Frossard2000Processes">(<a href="#ref-Fardeau1991Phosphate" role="doc-biblioref">Fardeau et al., 1991</a>; <a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>.</li>
+</ul>
+
+
+
+</section>
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-Abelson1999Dilemma" class="csl-entry" role="listitem">
+Abelson, P. H. (1999). The global phosphorus dilemma: A new insight into an old problem. <em>Science</em>, <em>283</em>(5410), 2015. <a href="https://doi.org/10.1126/science.283.5410.2015">https://doi.org/10.1126/science.283.5410.2015</a>
+</div>
+<div id="ref-Bell2013Factors" class="csl-entry" role="listitem">
+Bell, R. W., Bell, M. J., &amp; M. Tavora, W. J. G. de. (2013). Factors influencing the soil test calibration for colwell p and wheat under winter-dominant rainfall. <em>Crop and Pasture Science</em>, <em>64</em>(5), 489–501. <a href="https://doi.org/10.1071/CP13019">https://doi.org/10.1071/CP13019</a>
+</div>
+<div id="ref-Berg2019Biochemistry" class="csl-entry" role="listitem">
+Berg, J. M., Tymoczko, J. L., Jr., G. J. G., &amp; Stryer, L. (2019). <em>Biochemistry</em> (9th ed.). W. H. Freeman; Company.
+</div>
+<div id="ref-Bohn2002SoilWater" class="csl-entry" role="listitem">
+Bohn, H. L., Myer, R. A., &amp; O’Connor, G. A. (2002). <em>Soil and water chemistry: An integrative approach</em> (3rd ed.). John Wiley &amp; Sons.
+</div>
+<div id="ref-Brady2016Soils" class="csl-entry" role="listitem">
+Brady, N. C., &amp; Weil, R. R. (2016). <em>The nature and properties of soils</em> (15th ed.). Pearson.
+</div>
+<div id="ref-Fardeau1991Phosphate" class="csl-entry" role="listitem">
+Fardeau, J. C., Morel, C., &amp; Boniface, R. (1991). Phosphate ion transfer from soil to soil solution: Kinetic parameters. <em>Agronomie</em>, <em>11</em>(9), 787–797. <a href="https://doi.org/10.1051/agro:19910908">https://doi.org/10.1051/agro:19910908</a>
+</div>
+<div id="ref-flossmannExtractionMethodCharacterizing1982" class="csl-entry" role="listitem">
+Flossmann, R., &amp; Richter, D. (1982). <em>Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution.</em>
+</div>
+<div id="ref-FAL1996Methodenbuch" class="csl-entry" role="listitem">
+Forschungsanstalt für Agrarökologie und Landbau (FAL). (1996). <em>Methodenbuch für boden-, pflanzen- und nährstoffanalysen</em>. FAL.
+</div>
+<div id="ref-Frossard2000Processes" class="csl-entry" role="listitem">
+Frossard, E., Condron, L. M., Oberson, A., Sinaj, S., &amp; Fardeau, J. C. (2000). Processes governing phosphorus availability in temperate soils. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 15–23. <a href="https://doi.org/10.2134/jeq2000.00472425002900010003x">https://doi.org/10.2134/jeq2000.00472425002900010003x</a>
+</div>
+<div id="ref-Gerke2010Humic" class="csl-entry" role="listitem">
+Gerke, J. (2010). Humic (organic matter)-al(fe)-phosphate complexes: An underestimated phosphate form in soils and source of plant-available phosphate. <em>Soil Science</em>, <em>175</em>(9), 417–425. <a href="https://doi.org/10.1097/SS.0b013e3181f26a1d">https://doi.org/10.1097/SS.0b013e3181f26a1d</a>
+</div>
+<div id="ref-Hinsinger2001Phosphorus" class="csl-entry" role="listitem">
+Hinsinger, P. (2001). Phosphorus dynamics in the soil-plant continuum: A review. <em>Plant and Soil</em>, <em>237</em>(2), 167–191. <a href="https://doi.org/10.1023/A:1013339317511">https://doi.org/10.1023/A:1013339317511</a>
+</div>
+<div id="ref-Hirte2018Relationship" class="csl-entry" role="listitem">
+Hirte, J., Leifeld, J., Laggoun-Défarge, A., Mayer, P., &amp; Gubler, J. M. (2018). Relationship between soil phosphorus, phosphorus budget, and soil properties in swiss agricultural soils. <em>Ambio</em>, <em>47</em>(Suppl 1), 53–64. <a href="https://doi.org/10.1007/s13280-017-0987-9">https://doi.org/10.1007/s13280-017-0987-9</a>
+</div>
+<div id="ref-hirteYieldResponseSoil2021" class="csl-entry" role="listitem">
+Hirte, J., Richner, W., Orth, B., Liebisch, F., &amp; Flisch, R. (2021). Yield response to soil test phosphorus in <span>Switzerland</span>: <span>Pedoclimatic</span> drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Science of The Total Environment</em>, <em>755</em>, 143453. <a href="https://doi.org/10.1016/j.scitotenv.2020.143453">https://doi.org/10.1016/j.scitotenv.2020.143453</a>
+</div>
+<div id="ref-Hirte2021Yield" class="csl-entry" role="listitem">
+Hirte, J., Stüssel, C. E. M., Leifeld, J., Gubler, J. M., Sinaj, S., &amp; Frossard, E. (2021). Yield response to soil test phosphorus in switzerland: Pedoclimatic drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Agriculture, Ecosystems &amp; Environment</em>, <em>309</em>, 107270. <a href="https://doi.org/10.1016/j.agee.2020.107270">https://doi.org/10.1016/j.agee.2020.107270</a>
+</div>
+<div id="ref-Holford1997SoilP" class="csl-entry" role="listitem">
+Holford, I. C. R. (1997). Soil phosphorus: Its measurement, and its uptake by plants. <em>Australian Journal of Soil Research</em>, <em>35</em>(2), 227–239. <a href="https://doi.org/10.1071/S96047">https://doi.org/10.1071/S96047</a>
+</div>
+<div id="ref-Johnston2001Phosphorus" class="csl-entry" role="listitem">
+Johnston, A. E., Poulton, P. R., &amp; Goulding, K. W. T. (2001). Phosphorus in soils, crop production and water quality. <em>The Scientific World Journal</em>, <em>1</em>, 304–311. <a href="https://doi.org/10.1100/tsw.2001.272">https://doi.org/10.1100/tsw.2001.272</a>
+</div>
+<div id="ref-Kuang2012Phosphorus" class="csl-entry" role="listitem">
+Kuang, W., Wang, W. J., Liu, X. J., Cui, Y. F., Chen, Z. H., Wang, B. R., &amp; Lin, X. Y. (2012). Phosphorus desorption kinetics in soils with different long-term fertilization: A comparison of kinetic models. <em>Journal of Soils and Sediments</em>, <em>12</em>, 739–749. <a href="https://doi.org/10.1007/s11368-012-0498-8">https://doi.org/10.1007/s11368-012-0498-8</a>
+</div>
+<div id="ref-McDowell2001Approximating" class="csl-entry" role="listitem">
+McDowell, R. W., &amp; Sharpley, A. N. (2001). Approximating phosphorus release from soils to surface runoff and subsurface drainage. <em>Journal of Environmental Quality</em>, <em>30</em>(2), 508–520. <a href="https://doi.org/10.2134/jeq2001.302508x">https://doi.org/10.2134/jeq2001.302508x</a>
+</div>
+<div id="ref-NIH2023Phosphorus" class="csl-entry" role="listitem">
+National Institutes of Health, Office of Dietary Supplements. (2023). <em>Phosphorus: Fact sheet for health professionals</em>. <a href="https://ods.od.nih.gov/factsheets/Phosphorus-HealthProfessional/">https://ods.od.nih.gov/factsheets/Phosphorus-HealthProfessional/</a>
+</div>
+<div id="ref-Nelson2021Lehninger" class="csl-entry" role="listitem">
+Nelson, D. L., Cox, M. M., &amp; Hoskins, A. A. (2021). <em>Lehninger principles of biochemistry</em> (8th ed.). Macmillan Learning.
+</div>
+<div id="ref-Nye2000Solute" class="csl-entry" role="listitem">
+Nye, P. H., &amp; Tinker, P. B. (2000). <em>Solute movement in the rhizosphere</em>. Oxford University Press.
+</div>
+<div id="ref-Rast1996Eutrophication" class="csl-entry" role="listitem">
+Rast, W., &amp; Thornton, J. A. (1996). A eutrophication of waters: Control and management. In G. E. Likens (Ed.), <em>Limnology and oceanography</em> (pp. 253–289). Chapman &amp; Hall.
+</div>
+<div id="ref-Rowe2016LegacyP" class="csl-entry" role="listitem">
+Rowe, H., Withers, P. J. A., Baas, P., Chan, N. I., Doody, D., Holiman, J., Jacobs, B., Li, H., MacDonald, G. K., McDowell, R., Sharpley, A. N., Shen, J., Salm, C. van der, &amp; Weigelt, A. (2016). Integrating legacy phosphorus into sustainable nutrient management strategies for future food, bioenergy and water security. <em>Nutrient Cycling in Agroecosystems</em>, <em>104</em>(3), 393–412. <a href="https://doi.org/10.1007/s10705-015-9726-1">https://doi.org/10.1007/s10705-015-9726-1</a>
+</div>
+<div id="ref-Sharpley2000Phosphorus" class="csl-entry" role="listitem">
+Sharpley, A. N., Daniel, T. C., Sims, J. T., Lemunyon, J. L., Stevens, R. G., &amp; Parry, R. W. (2000). Agricultural phosphorus and eutrophication. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 1–9. <a href="https://doi.org/10.2134/jeq2000.00472425002900010001x">https://doi.org/10.2134/jeq2000.00472425002900010001x</a>
+</div>
+<div id="ref-Sharpley2003Water" class="csl-entry" role="listitem">
+Sharpley, A. N., Duiker, S. W., &amp; Feyereisen, G. W. (2003). Improving the agricultural water quality in the u.s. <em>Journal of Environmental Quality</em>, <em>32</em>(2), 421–439. <a href="https://doi.org/10.2134/jeq2003.4210">https://doi.org/10.2134/jeq2003.4210</a>
+</div>
+<div id="ref-Sims2005Phosphorus" class="csl-entry" role="listitem">
+Sims, J. T., &amp; Sharpley, A. N. (Eds.). (2005). <em>Phosphorus: Agriculture and the environment</em>. American Society of Agronomy, Crop Science Society of America, Soil Science Society of America. <a href="https://doi.org/10.2134/agronmonogr46">https://doi.org/10.2134/agronmonogr46</a>
+</div>
+<div id="ref-Sparks2003Environmental" class="csl-entry" role="listitem">
+Sparks, D. L. (2003). <em>Environmental soil chemistry</em> (2nd ed.). Academic Press. <a href="https://doi.org/10.1016/B978-0-12-656446-4.50001-X">https://doi.org/10.1016/B978-0-12-656446-4.50001-X</a>
+</div>
+<div id="ref-Sposito2008Chemistry" class="csl-entry" role="listitem">
+Sposito, G. (2008). <em>The chemistry of soils</em> (2nd ed.). Oxford University Press.
+</div>
+<div id="ref-Stevenson1994Humus" class="csl-entry" role="listitem">
+Stevenson, F. J. (1994). <em>Humus chemistry: Genesis, composition, reactions</em> (2nd ed.). John Wiley &amp; Sons.
+</div>
+<div id="ref-VDLUFA2000Methodenbuch" class="csl-entry" role="listitem">
+Verband Deutscher Landwirtschaftlicher Untersuchungs- und Forschungsanstalten (VDLUFA). (2000). <em>Methodenbuch band i: Die untersuchung von böden</em>. VDLUFA-Verlag.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ptochosgeorgos\.github\.io\/Article-P-desorption-kinetics\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
