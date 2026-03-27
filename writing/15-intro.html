@@ -210,7 +210,53 @@ window.Quarto = {
 <section id="from-static-tests-to-kinetic-parameters" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="from-static-tests-to-kinetic-parameters"><span class="header-section-number">1.4</span> From Static Tests to Kinetic Parameters</h2>
 <p>Given the analytical limitations of static operational tests and their failure to account for the dynamic replenishment rate of P during the growing season, an alternative approach is required <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>.</p>
-<p>This thesis hypothesizes that kinetic parameters describing P desorption, derived from a time-series laboratory extraction, can bypass the limitations of static capacity measurements and serve as a more effective, functional proxy for agronomic P availability. By characterizing the desorption rate constant (<span class="math inline">\(k\)</span>) and the maximum desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) using soils from the long-term Swiss agricultural experiment STYCS, this study aims to answer the following research questions:</p>
+<p>To clarify this transition from static operational testing to dynamic modeling, <a href="#tbl-terminology" class="quarto-xref">Table&nbsp;1</a> maps the fundamental theoretical components of soil P availability to their respective analytical proxies.</p>
+<div id="tbl-terminology" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-terminology-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
+</figcaption>
+<div aria-describedby="tbl-terminology-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Approach / Framework</th>
+<th style="text-align: left;">Intensity Factor</th>
+<th style="text-align: left;">Quantity (Capacity) Factor</th>
+<th style="text-align: left;">Kinetic Factor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">Frossard et al. (<a href="#ref-Frossard2000Processes" role="doc-biblioref">2000</a>)</span>)</strong></td>
+<td style="text-align: left;">P concentration in the soil solution at a given moment</td>
+<td style="text-align: left;">The pool of solid-phase P that can replenish the solution</td>
+<td style="text-align: left;">The rate of P transfer from the solid to the liquid phase</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Traditional / Static Proxy (GRUD)</strong></td>
+<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span> (Water-soluble P)</td>
+<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span> (Chelate-extractable P)</td>
+<td style="text-align: left;"><em>Not Measured</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Dynamic / Kinetic Proxy (This Study)</strong></td>
+<td style="text-align: left;">Initial P Flux (<span class="math inline">\(J_0\)</span>)</td>
+<td style="text-align: left;">Equilibrium Desorbable P (<span class="math inline">\(P_{desorb}\)</span>)</td>
+<td style="text-align: left;">Desorption Rate Constant (<span class="math inline">\(k\)</span>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>This thesis hypothesizes that kinetic parameters describing P desorption, derived from a time-series laboratory extraction, can bypass the limitations of static capacity measurements and serve as a more effective, functional proxy for agronomic P availability. By characterizing the desorption rate constant (<span class="math inline">\(k\)</span>) and the <strong>equilibrium desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>)</strong>—which represents the operational asymptote of P release under specific extraction conditions, rather than the absolute total soil P quantity—using soils from the long-term Swiss agricultural experiment STYCS, this study aims to answer the following research questions:</p>
 <ol type="1">
 <li>How well do standard, operationally defined soil tests (<span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) predict agronomic outcomes, and how are they influenced by overarching soil properties?</li>
 <li>Can non-linear modeling of P desorption kinetics provide a robust characterization of the P-Quantity and replenishment rate across diverse Swiss soils?</li>
