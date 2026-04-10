@@ -10,7 +10,7 @@ The experiment was set up as a **completely randomized block design** with four 
 
 The six experimental sites are located in the main crop-growing regions of Switzerland: **Rümlang-Altwi (ALT)**, **Cadenazzo (CAD)**, **Ellighausen (ELL)**, **Grabs (GRA)**, **Oensingen (OEN)**, and **Zurich-Reckenholz (REC)**. The key soil properties are summarized below.
 
-```r
+```{r}
 #| label: tbl-sites-corrected
 #| tbl-cap: "Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al. (2021)."
 
@@ -98,7 +98,7 @@ To test the core hypothesis, two competing sets of linear mixed-effects models (
 * **Model 1: The Kinetic/Thermodynamic Approach:** Utilized the novel Activity Flux ($J_0$) as the primary fixed effect, testing the hypothesis that dynamic supply rate dictates plant availability.
 * **Model 2: The Standard STP (GRUD) Approach:** Utilized the standard Swiss static soil tests ($P_{CO2}$ and $P_{AAE10}$) and their interaction as fixed effects.
 
-```r
+```{r}
 #| label: tbl-variables-updated
 #| tbl-cap: "Description of key variables used in the thermodynamic and agronomic models."
 
