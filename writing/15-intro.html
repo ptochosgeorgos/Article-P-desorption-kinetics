@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.36">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -59,10 +59,10 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-f33fce411228158d07e3e7295642fce5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a4b25f5ef8bf42551c34491f02c3422e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -163,12 +163,10 @@ window.Quarto = {
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a>
   <ul class="collapse">
   <li><a href="#the-agronomic-dilemma-of-phosphorus" id="toc-the-agronomic-dilemma-of-phosphorus" class="nav-link" data-scroll-target="#the-agronomic-dilemma-of-phosphorus"><span class="header-section-number">1.1</span> The Agronomic Dilemma of Phosphorus</a></li>
-  <li><a href="#conceptual-frameworks-vs.-operational-definitions" id="toc-conceptual-frameworks-vs.-operational-definitions" class="nav-link" data-scroll-target="#conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</a>
-  <ul class="collapse">
-  <li><a href="#extraction-mechanisms-of-standard-soil-tests" id="toc-extraction-mechanisms-of-standard-soil-tests" class="nav-link" data-scroll-target="#extraction-mechanisms-of-standard-soil-tests"><span class="header-section-number">1.2.1</span> Extraction Mechanisms of Standard Soil Tests</a></li>
-  </ul></li>
-  <li><a href="#the-problem-of-ionic-strength-and-activity" id="toc-the-problem-of-ionic-strength-and-activity" class="nav-link" data-scroll-target="#the-problem-of-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Problem of Ionic Strength and Activity</a></li>
-  <li><a href="#from-static-tests-to-kinetic-parameters" id="toc-from-static-tests-to-kinetic-parameters" class="nav-link" data-scroll-target="#from-static-tests-to-kinetic-parameters"><span class="header-section-number">1.4</span> From Static Tests to Kinetic Parameters</a></li>
+  <li><a href="#conceptual-frameworks-vs.-operational-definitions" id="toc-conceptual-frameworks-vs.-operational-definitions" class="nav-link" data-scroll-target="#conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</a></li>
+  <li><a href="#the-thermodynamic-flaw-ionic-strength-and-activity" id="toc-the-thermodynamic-flaw-ionic-strength-and-activity" class="nav-link" data-scroll-target="#the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</a></li>
+  <li><a href="#unifying-quantity-intensity-and-the-kinetic-bottleneck" id="toc-unifying-quantity-intensity-and-the-kinetic-bottleneck" class="nav-link" data-scroll-target="#unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</a></li>
+  <li><a href="#thesis-objectives-and-analytical-strategy" id="toc-thesis-objectives-and-analytical-strategy" class="nav-link" data-scroll-target="#thesis-objectives-and-analytical-strategy"><span class="header-section-number">1.5</span> Thesis Objectives and Analytical Strategy</a></li>
   </ul></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="15-intro.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="15-intro.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
@@ -187,37 +185,25 @@ window.Quarto = {
 </section>
 <section id="conceptual-frameworks-vs.-operational-definitions" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</h2>
-<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (<span class="math inline">\(I\)</span>):</strong> The concentration (or more accurately, the chemical activity) of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (<span class="math inline">\(Q\)</span>):</strong> The pool of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, typically represented as the ratio of change in Quantity to change in Intensity (<span class="math inline">\(\Delta Q / \Delta I\)</span>).</p>
-<p>While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
-<section id="extraction-mechanisms-of-standard-soil-tests" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="extraction-mechanisms-of-standard-soil-tests"><span class="header-section-number">1.2.1</span> Extraction Mechanisms of Standard Soil Tests</h3>
-<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms:</p>
-<ul>
-<li><strong>Olsen P (<span class="math inline">\(NaHCO_3\)</span>, pH 8.5):</strong> This method primarily measures desorbable P. The high concentration of bicarbonate ions (<span class="math inline">\(HCO_3^-\)</span>) outcompetes orthophosphate for adsorption sites on soil surfaces, effectively exchanging and releasing sorbed P into the solution <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>.</li>
-<li><strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> This stronger extractant attacks both sorbed and precipitated P forms. The EDTA acts as a powerful chelating agent, binding cations (<span class="math inline">\(Ca^{2+}\)</span>, <span class="math inline">\(Fe^{3+}\)</span>, <span class="math inline">\(Al^{3+}\)</span>) and thereby actively dissolving apatites and other P-bearing salts. Simultaneously, the acetate buffer facilitates the desorption of surface-bound P <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>.</li>
-<li><strong>Water Extractions (<span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>):</strong> Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms from both the intensity and weakly-bound capacity pools without fundamentally altering the native soil matrix.</li>
-</ul>
+<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (<span class="math inline">\(I\)</span>):</strong> The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (<span class="math inline">\(Q\)</span>):</strong> The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
+<p>While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
+<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (<span class="math inline">\(NaHCO_3\)</span>, pH 8.5):</strong> Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>. - <strong>Water Extractions (<span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>):</strong> Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
 </section>
+<section id="the-thermodynamic-flaw-ionic-strength-and-activity" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</h2>
+<p>The reliance on operational definitions introduces a critical analytical flaw when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its <strong>chemical activity (<span class="math inline">\(a\)</span>)</strong>, not its total stoichiometric concentration (<span class="math inline">\(c\)</span>).</p>
+<p>In the native soil solution, phosphate anions are electrostatically shielded by a cloud of background ions (<span class="math inline">\(Ca^{2+}, Mg^{2+}, K^+, NO_3^-, SO_4^{2-}\)</span>). This native ionic strength (<span class="math inline">\(I\)</span>) physically reduces the effective activity of the phosphate. The magnitude of this shielding is defined by the activity coefficient (<span class="math inline">\(\gamma\)</span>), where true chemical activity is <span class="math inline">\(a = c \cdot \gamma\)</span>.</p>
+<p>For strong extractants like Olsen or P-AAE10, the extractant solution has an overwhelmingly high ionic strength (e.g., <span class="math inline">\(I \approx 0.5 \text{ M}\)</span> for Olsen). This artificial salt load obliterates the native ionic strength of the soil. Consequently, while these methods successfully quantify the physical mass of phosphorus (<span class="math inline">\(Q\)</span>), they destroy the natural chemical environment, providing no information regarding the true thermodynamic Intensity (<span class="math inline">\(I\)</span>) perceived by the root.</p>
+<p>Conversely, while weak water extractions successfully preserve the native soil matrix, reading their variable activity against a standard <span class="math inline">\(I \approx 0\)</span> calibration curve renders the values mathematically incomparable across different pedoclimatic sites. For example, in heavily fertilized Swiss agricultural soils (such as the long-term STYCS 167% P-treatments), the dissolution of accumulated amendments can elevate pore water ionic strength to <span class="math inline">\(0.02 \text{ M}\)</span>. At a neutral pH, a large portion of P exists as the divalent <span class="math inline">\(HPO_4^{2-}\)</span> ion. Applying the Davies equation to this ionic strength yields an activity coefficient (<span class="math inline">\(\gamma\)</span>) of approximately <span class="math inline">\(0.58\)</span>. Therefore, over 40% of the chemically extracted mass is thermodynamically “masked” from the root. To resolve this, raw stoichiometric concentrations derived from water extractions must be mathematically corrected via the Davies equation to yield true thermodynamic activity.</p>
 </section>
-<section id="the-problem-of-ionic-strength-and-activity" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="the-problem-of-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Problem of Ionic Strength and Activity</h2>
-<p>The reliance on operational definitions introduces a critical analytical flaw when interpreting these tests, fundamentally tied to the principles of physical chemistry. Standard colorimetric P quantification (e.g., the molybdenum blue method) relies on calibration curves prepared in distilled water, where the ionic strength (<span class="math inline">\(I\)</span>) is effectively zero.</p>
-<p>However, in soil extracts, we measure the chemical <strong>activity</strong> of the ions, not their true stoichiometric concentration. Because the activity coefficient of an ion decreases as the ionic strength of the solution increases, the background matrix of the extractant drastically alters the measurement.</p>
-<p>For strong extractants like <strong>Olsen, P-CAL, and P-AAE10</strong>, the extractant solution itself has an overwhelmingly high ionic strength. This swamps the native ionic strength of the soil, ensuring that all samples—regardless of their origin—have an identical background matrix. Consequently, while these methods do not yield absolute thermodynamic values, they permit valid <strong>relative comparisons</strong> of P concentrations between different soils.</p>
-<p>Conversely, water extractions like <strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span></strong> take on the native, highly variable ionic strength of the specific soil being tested. Reading the activity of these variable soil solutions against an <span class="math inline">\(I=0\)</span> calibration curve renders the absolute values mathematically incomparable across different pedoclimatic sites.</p>
-<p>To utilize <span class="math inline">\(P_{H_2O}\)</span> as a true measure of theoretical P-Intensity, complex thermodynamic corrections—such as applying the <strong>Pitzer equations</strong> to calculate precise activity coefficients based on the specific ionic composition of each soil extract—would be required. Currently, such corrections are rarely applied in standard agronomic testing.</p>
-</section>
-<section id="from-static-tests-to-kinetic-parameters" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="from-static-tests-to-kinetic-parameters"><span class="header-section-number">1.4</span> From Static Tests to Kinetic Parameters</h2>
-<p>Given the analytical limitations of static operational tests and their failure to account for the dynamic replenishment rate of P during the growing season, an alternative approach is required <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>.</p>
-<p>To clarify this transition from static operational testing to dynamic modeling, <a href="#tbl-terminology" class="quarto-xref">Table&nbsp;1</a> maps the fundamental theoretical components of soil P availability to their respective analytical proxies.</p>
-<div id="tbl-terminology" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-terminology-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
-</figcaption>
-<div aria-describedby="tbl-terminology-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<section id="unifying-quantity-intensity-and-the-kinetic-bottleneck" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</h2>
+<p>Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction (<span class="math inline">\(Q\)</span>, such as <span class="math inline">\(P_{AAE10}\)</span>) to construct a purely thermodynamic <span class="math inline">\(Q(I)\)</span> framework. By parameterizing this relationship using a Freundlich isotherm (<span class="math inline">\(Q = K_f \cdot I^{1/n}\)</span>), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative (<span class="math inline">\(\frac{dQ}{dI}\)</span>).</p>
+<p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
+<p>To address this, we define a novel dynamic predictor: the <strong>Initial Activity Flux (<span class="math inline">\(J_0\)</span>)</strong>. This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant (<span class="math inline">\(k\)</span>) by the maximum thermodynamic activity (<span class="math inline">\(a_{max}\)</span>): <span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
+<p><strong>?@tbl-terminology</strong> maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.</p>
 <table class="caption-top table">
+<caption>Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.</caption>
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -235,32 +221,32 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">Frossard et al. (<a href="#ref-Frossard2000Processes" role="doc-biblioref">2000</a>)</span>)</strong></td>
-<td style="text-align: left;">P concentration in the soil solution at a given moment</td>
-<td style="text-align: left;">The pool of solid-phase P that can replenish the solution</td>
-<td style="text-align: left;">The rate of P transfer from the solid to the liquid phase</td>
+<td style="text-align: left;">Chemical activity of P in the soil solution</td>
+<td style="text-align: left;">Pool of solid-phase P that can replenish the solution</td>
+<td style="text-align: left;">Rate of P transfer from the solid to the liquid phase</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Traditional / Static Proxy (GRUD)</strong></td>
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span> (Water-soluble P)</td>
-<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span> (Chelate-extractable P)</td>
+<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span> (Raw Water-soluble Concentration)</td>
+<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span> (Chelate-extractable Mass)</td>
 <td style="text-align: left;"><em>Not Measured</em></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Dynamic / Kinetic Proxy (This Study)</strong></td>
-<td style="text-align: left;">Initial P Flux (<span class="math inline">\(J_0\)</span>)</td>
-<td style="text-align: left;">Equilibrium Desorbable P (<span class="math inline">\(P_{desorb}\)</span>)</td>
-<td style="text-align: left;">Desorption Rate Constant (<span class="math inline">\(k\)</span>)</td>
+<td style="text-align: left;"><strong>Dynamic / Thermodynamic Proxy (This Study)</strong></td>
+<td style="text-align: left;">Maximum Thermodynamic Activity (<span class="math inline">\(a_{max}\)</span>)</td>
+<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
+<td style="text-align: left;">Initial Activity Flux (<span class="math inline">\(J_0 = k \cdot a_{max}\)</span>)</td>
 </tr>
 </tbody>
 </table>
-</div>
-</figure>
-</div>
-<p>This thesis hypothesizes that kinetic parameters describing P desorption, derived from a time-series laboratory extraction, can bypass the limitations of static capacity measurements and serve as a more effective, functional proxy for agronomic P availability. By characterizing the desorption rate constant (<span class="math inline">\(k\)</span>) and the <strong>equilibrium desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>)</strong>—which represents the operational asymptote of P release under specific extraction conditions, rather than the absolute total soil P quantity—using soils from the long-term Swiss agricultural experiment STYCS, this study aims to answer the following research questions:</p>
+</section>
+<section id="thesis-objectives-and-analytical-strategy" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="thesis-objectives-and-analytical-strategy"><span class="header-section-number">1.5</span> Thesis Objectives and Analytical Strategy</h2>
+<p>This thesis hypothesizes that integrating thermodynamic activity and desorption kinetics provides a superior mechanistic framework for P-management compared to standard empirical testing. Using soils from the long-term Swiss agricultural experiment STYCS, this study aims to validate this framework through the following objectives:</p>
 <ol type="1">
-<li>How well do standard, operationally defined soil tests (<span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) predict agronomic outcomes, and how are they influenced by overarching soil properties?</li>
-<li>Can non-linear modeling of P desorption kinetics provide a robust characterization of the P-Quantity and replenishment rate across diverse Swiss soils?</li>
-<li>Do these dynamic kinetic parameters significantly improve the prediction of key agronomic outcomes (yield, P-uptake, and long-term P-balance) compared to traditional static methods?</li>
+<li><strong>Thermodynamic Framework Formulation:</strong> Establish thermodynamic <span class="math inline">\(Q(I)\)</span> isotherms across highly diverse pedoclimatic sites to calculate the true PBC, demonstrating how long-term cumulative P-balances shift the soil’s physical chemistry.</li>
+<li><strong>Agronomic Prediction:</strong> Statistically evaluate the predictive power of the kinetic Activity Flux (<span class="math inline">\(J_0\)</span>) against relative crop yield and P-uptake. To rigorously isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected <span class="math inline">\(J_0\)</span> will significantly outperform standard static extractions.</li>
+<li><strong>Mechanistic Validation:</strong> Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.</li>
 </ol>
 
 
