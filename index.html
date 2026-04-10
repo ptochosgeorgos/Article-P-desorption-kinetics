@@ -415,20 +415,100 @@ window.Quarto = {
 <section id="sec-experimental-sites" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="sec-experimental-sites"><span class="header-section-number">2.2</span> Experimental Sites</h2>
 <p>The six experimental sites are located in the main crop-growing regions of Switzerland: <strong>Rümlang-Altwi (ALT)</strong>, <strong>Cadenazzo (CAD)</strong>, <strong>Ellighausen (ELL)</strong>, <strong>Grabs (GRA)</strong>, <strong>Oensingen (OEN)</strong>, and <strong>Zurich-Reckenholz (REC)</strong>. The key soil properties are summarized below.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-sites-corrected</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al. (2021)."</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sites_df_corrected <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Site =</span> <span class="fu">c</span>(<span class="st">"ALT"</span>, <span class="st">"CAD"</span>, <span class="st">"ELL"</span>, <span class="st">"GRA"</span>, <span class="st">"OEN"</span>, <span class="st">"REC"</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Soil Type (WRB)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Calcaric Cambisol"</span>, <span class="st">"Eutric Fluvisol"</span>, <span class="st">"Eutric Cambisol"</span>, <span class="st">"Calcaric Fluvisol"</span>, <span class="st">"Gleyic-calc. Cambisol"</span>, <span class="st">"Eutric Gleysol"</span>),</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Clay (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">8</span>, <span class="dv">33</span>, <span class="dv">17</span>, <span class="dv">37</span>, <span class="dv">39</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Sand (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">48</span>, <span class="dv">40</span>, <span class="dv">31</span>, <span class="dv">34</span>, <span class="dv">32</span>, <span class="dv">25</span>),</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Organic C (g/kg)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">14</span>, <span class="dv">23</span>, <span class="dv">16</span>, <span class="dv">24</span>, <span class="dv">27</span>),</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">pH (H2O)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">7.9</span>, <span class="fl">6.3</span>, <span class="fl">6.6</span>, <span class="fl">8.3</span>, <span class="fl">7.1</span>, <span class="fl">7.4</span>),</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sites_df_corrected)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sites_df_corrected <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Site =</span> <span class="fu">c</span>(<span class="st">"ALT"</span>, <span class="st">"CAD"</span>, <span class="st">"ELL"</span>, <span class="st">"GRA"</span>, <span class="st">"OEN"</span>, <span class="st">"REC"</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Soil Type (WRB)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Calcaric Cambisol"</span>, <span class="st">"Eutric Fluvisol"</span>, <span class="st">"Eutric Cambisol"</span>, <span class="st">"Calcaric Fluvisol"</span>, <span class="st">"Gleyic-calc. Cambisol"</span>, <span class="st">"Eutric Gleysol"</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Clay (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">8</span>, <span class="dv">33</span>, <span class="dv">17</span>, <span class="dv">37</span>, <span class="dv">39</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Sand (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">48</span>, <span class="dv">40</span>, <span class="dv">31</span>, <span class="dv">34</span>, <span class="dv">32</span>, <span class="dv">25</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Organic C (g/kg)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">14</span>, <span class="dv">23</span>, <span class="dv">16</span>, <span class="dv">24</span>, <span class="dv">27</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">pH (H2O)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">7.9</span>, <span class="fl">6.3</span>, <span class="fl">6.6</span>, <span class="fl">8.3</span>, <span class="fl">7.1</span>, <span class="fl">7.4</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sites_df_corrected)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-sites-corrected" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al.&nbsp;(2021).
+</figcaption>
+<div aria-describedby="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 30%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 23%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Site</th>
+<th style="text-align: left;">Soil Type (WRB)</th>
+<th style="text-align: right;">Clay (%)</th>
+<th style="text-align: right;">Sand (%)</th>
+<th style="text-align: right;">Organic C (g/kg)</th>
+<th style="text-align: right;">pH (H2O)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ALT</td>
+<td style="text-align: left;">Calcaric Cambisol</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">7.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CAD</td>
+<td style="text-align: left;">Eutric Fluvisol</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">6.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ELL</td>
+<td style="text-align: left;">Eutric Cambisol</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">6.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GRA</td>
+<td style="text-align: left;">Calcaric Fluvisol</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">8.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OEN</td>
+<td style="text-align: left;">Gleyic-calc. Cambisol</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">7.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REC</td>
+<td style="text-align: left;">Eutric Gleysol</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">7.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
 <p>Soil samples for this thesis were collected in the year 2022 from the topsoil layer (0-20 cm).</p>
 </section>
 <section id="sec-phosphorus-desorption-kinetics" class="level2" data-number="2.3">
@@ -485,32 +565,108 @@ window.Quarto = {
 <li><strong>Model 1: The Kinetic/Thermodynamic Approach:</strong> Utilized the novel Activity Flux (<span class="math inline">\(J_0\)</span>) as the primary fixed effect, testing the hypothesis that dynamic supply rate dictates plant availability.</li>
 <li><strong>Model 2: The Standard STP (GRUD) Approach:</strong> Utilized the standard Swiss static soil tests (<span class="math inline">\(P_{CO2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) and their interaction as fixed effects.</li>
 </ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-variables-updated</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: "Description of key variables used in the thermodynamic and agronomic models."</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>variables_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Abbreviation =</span> <span class="fu">c</span>(<span class="st">"$Y_{rel</span><span class="sc">\\</span><span class="st">_hist}$"</span>, <span class="st">"$Uptake_{rel}$"</span>, <span class="st">"$P_{bal}$"</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$k$"</span>, <span class="st">"$a_{max}$"</span>, <span class="st">"$J_0$"</span>, </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$P_{AAE10}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">text{PBC}$"</span>),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Variable</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Relative Yield (Historic)"</span>, <span class="st">"Relative P Uptake"</span>, <span class="st">"Cumulative P Balance"</span>, </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Rate Constant"</span>, <span class="st">"Maximum Activity (Intensity)"</span>, <span class="st">"Activity Flux"</span>, </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Standard Mass (Quantity)"</span>, <span class="st">"Phosphorus Buffering Capacity"</span>),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unit =</span> <span class="fu">c</span>(<span class="st">"unitless"</span>, <span class="st">"unitless"</span>, <span class="st">"kg P ha⁻¹"</span>, </span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>           <span class="st">"min⁻¹"</span>, <span class="st">"µM"</span>, <span class="st">"µM min⁻¹"</span>, </span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>           <span class="st">"mg P kg⁻¹"</span>, <span class="st">"mg kg⁻¹ µM⁻¹"</span>),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Description =</span> <span class="fu">c</span>(</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot yield normalized by the site/crop-specific 95th percentile of historical well-fertilized yields."</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot P-uptake normalized by historical maximum uptake for the specific site and crop."</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Long-term net P budget (inputs minus outputs)."</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"First-order rate constant of P desorption."</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Davies-corrected thermodynamic activity asymptote of the water-desorbable P pool."</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Initial thermodynamic supply rate, calculated as $k </span><span class="sc">\\</span><span class="st">times a_{max}$."</span>,</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Physical mass of extractable P (AAE10 method), acting as the Q-factor."</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The mathematical derivative ($dQ/dI$) of the site-specific Freundlich isotherm."</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(variables_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>variables_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Abbreviation =</span> <span class="fu">c</span>(<span class="st">"$Y_{rel</span><span class="sc">\\</span><span class="st">_hist}$"</span>, <span class="st">"$Uptake_{rel}$"</span>, <span class="st">"$P_{bal}$"</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$k$"</span>, <span class="st">"$a_{max}$"</span>, <span class="st">"$J_0$"</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$P_{AAE10}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">text{PBC}$"</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Variable</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Relative Yield (Historic)"</span>, <span class="st">"Relative P Uptake"</span>, <span class="st">"Cumulative P Balance"</span>, </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Rate Constant"</span>, <span class="st">"Maximum Activity (Intensity)"</span>, <span class="st">"Activity Flux"</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Standard Mass (Quantity)"</span>, <span class="st">"Phosphorus Buffering Capacity"</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unit =</span> <span class="fu">c</span>(<span class="st">"unitless"</span>, <span class="st">"unitless"</span>, <span class="st">"kg P ha⁻¹"</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>           <span class="st">"min⁻¹"</span>, <span class="st">"µM"</span>, <span class="st">"µM min⁻¹"</span>, </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">"mg P kg⁻¹"</span>, <span class="st">"mg kg⁻¹ µM⁻¹"</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Description =</span> <span class="fu">c</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot yield normalized by the site/crop-specific 95th percentile of historical well-fertilized yields."</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot P-uptake normalized by historical maximum uptake for the specific site and crop."</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Long-term net P budget (inputs minus outputs)."</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"First-order rate constant of P desorption."</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Davies-corrected thermodynamic activity asymptote of the water-desorbable P pool."</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Initial thermodynamic supply rate, calculated as $k </span><span class="sc">\\</span><span class="st">times a_{max}$."</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Physical mass of extractable P (AAE10 method), acting as the Q-factor."</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The mathematical derivative ($dQ/dI$) of the site-specific Freundlich isotherm."</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(variables_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-variables-updated" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Description of key variables used in the thermodynamic and agronomic models.
+</figcaption>
+<div aria-describedby="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 18%">
+<col style="width: 8%">
+<col style="width: 63%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Abbreviation</th>
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Unit</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(Y_{rel\_hist}\)</span></td>
+<td style="text-align: left;">Relative Yield (Historic)</td>
+<td style="text-align: left;">unitless</td>
+<td style="text-align: left;">Plot yield normalized by the site/crop-specific 95th percentile of historical well-fertilized yields.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(Uptake_{rel}\)</span></td>
+<td style="text-align: left;">Relative P Uptake</td>
+<td style="text-align: left;">unitless</td>
+<td style="text-align: left;">Plot P-uptake normalized by historical maximum uptake for the specific site and crop.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(P_{bal}\)</span></td>
+<td style="text-align: left;">Cumulative P Balance</td>
+<td style="text-align: left;">kg P ha⁻¹</td>
+<td style="text-align: left;">Long-term net P budget (inputs minus outputs).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
+<td style="text-align: left;">Rate Constant</td>
+<td style="text-align: left;">min⁻¹</td>
+<td style="text-align: left;">First-order rate constant of P desorption.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(a_{max}\)</span></td>
+<td style="text-align: left;">Maximum Activity (Intensity)</td>
+<td style="text-align: left;">µM</td>
+<td style="text-align: left;">Davies-corrected thermodynamic activity asymptote of the water-desorbable P pool.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
+<td style="text-align: left;">Activity Flux</td>
+<td style="text-align: left;">µM min⁻¹</td>
+<td style="text-align: left;">Initial thermodynamic supply rate, calculated as <span class="math inline">\(k \times a_{max}\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
+<td style="text-align: left;">Standard Mass (Quantity)</td>
+<td style="text-align: left;">mg P kg⁻¹</td>
+<td style="text-align: left;">Physical mass of extractable P (AAE10 method), acting as the Q-factor.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\text{PBC}\)</span></td>
+<td style="text-align: left;">Phosphorus Buffering Capacity</td>
+<td style="text-align: left;">mg kg⁻¹ µM⁻¹</td>
+<td style="text-align: left;">The mathematical derivative (<span class="math inline">\(dQ/dI\)</span>) of the site-specific Freundlich isotherm.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
 </section>
 <section id="mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" class="level3" data-number="2.4.5">
 <h3 data-number="2.4.5" class="anchored" data-anchor-id="mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification"><span class="header-section-number">2.4.5</span> 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)</h3>
@@ -756,12 +912,12 @@ Figure&nbsp;5: Soil P parameters across six P fertilization treatments and six e
 </section>
 <section id="sec-p-params-soil-props" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="sec-p-params-soil-props"><span class="header-section-number">3.4</span> Predicting P Parameters from Soil Properties</h2>
-<p>To understand the underlying drivers of the standard and kinetic P parameters, and to test <strong>Hypotheses 1b and 2b</strong>, a series of linear mixed-effects models were fitted. Each model predicted one of the P parameters based on the core soil properties: organic carbon (<span class="math inline">\(C_{org}\)</span>), clay content, silt content, pH, and dithionite-extractable Al (<span class="math inline">\(Al_d\)</span>) and Fe (<span class="math inline">\(Fe_d\)</span>). The results are summarized in <a href="#tbl-soil-prop-models" class="quarto-xref">Table&nbsp;1</a>.</p>
+<p>To understand the underlying drivers of the standard and kinetic P parameters, and to test <strong>Hypotheses 1b and 2b</strong>, a series of linear mixed-effects models were fitted. Each model predicted one of the P parameters based on the core soil properties: organic carbon (<span class="math inline">\(C_{org}\)</span>), clay content, silt content, pH, and dithionite-extractable Al (<span class="math inline">\(Al_d\)</span>) and Fe (<span class="math inline">\(Fe_d\)</span>). The results are summarized in <a href="#tbl-soil-prop-models" class="quarto-xref">Table&nbsp;3</a>.</p>
 <div class="cell">
 <div id="tbl-soil-prop-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soil-prop-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Results of linear mixed-effects models predicting P parameters from intrinsic soil properties <strong>?@tbl-variables</strong>. Significance codes: ‘<em><strong>’ p &lt; 0.001, ’</strong>’ p &lt; 0.01, ’</em>’ p &lt; 0.05.
+Table&nbsp;3: Results of linear mixed-effects models predicting P parameters from intrinsic soil properties <strong>?@tbl-variables</strong>. Significance codes: ‘<em><strong>’ p &lt; 0.001, ’</strong>’ p &lt; 0.01, ’</em>’ p &lt; 0.05.
 </figcaption>
 <div aria-describedby="tbl-soil-prop-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -910,12 +1066,12 @@ Figure&nbsp;7: Comparison of Cadenazzo yields with original and swapped (P0 &lt;
 </section>
 <section id="predicting-site-normalized-yield-y_norm" class="level3" data-number="3.5.2">
 <h3 data-number="3.5.2" class="anchored" data-anchor-id="predicting-site-normalized-yield-y_norm"><span class="header-section-number">3.5.2</span> Predicting Site-Normalized Yield (<span class="math inline">\(Y_{norm}\)</span>)</h3>
-<p>The analysis reveals a clear and striking difference between the predictive power of the standard STP methods and the kinetic parameters for site-normalized yield, as seen in <a href="#tbl-ynorm-models" class="quarto-xref">Table&nbsp;2</a>.</p>
+<p>The analysis reveals a clear and striking difference between the predictive power of the standard STP methods and the kinetic parameters for site-normalized yield, as seen in <a href="#tbl-ynorm-models" class="quarto-xref">Table&nbsp;4</a>.</p>
 <div class="cell">
 <div id="tbl-ynorm-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ynorm-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Results of linear mixed-effects models predicting Site-Normalized Yield (<span class="math inline">\(Y_{norm}\)</span>).
+Table&nbsp;4: Results of linear mixed-effects models predicting Site-Normalized Yield (<span class="math inline">\(Y_{norm}\)</span>).
 </figcaption>
 <div aria-describedby="tbl-ynorm-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1016,7 +1172,7 @@ Table&nbsp;2: Results of linear mixed-effects models predicting Site-Normalized 
 <div id="tbl-yrel-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-yrel-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Results of linear mixed-effects models predicting National-Normalized Yield (<span class="math inline">\(Y_{rel}\)</span>).
+Table&nbsp;5: Results of linear mixed-effects models predicting National-Normalized Yield (<span class="math inline">\(Y_{rel}\)</span>).
 </figcaption>
 <div aria-describedby="tbl-yrel-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1120,7 +1276,7 @@ Table&nbsp;3: Results of linear mixed-effects models predicting National-Normali
 <div id="tbl-pexport-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pexport-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4: Results of linear mixed-effects models predicting P-Export (<span class="math inline">\(P_{up}\)</span>).
+Table&nbsp;6: Results of linear mixed-effects models predicting P-Export (<span class="math inline">\(P_{up}\)</span>).
 </figcaption>
 <div aria-describedby="tbl-pexport-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1221,7 +1377,7 @@ Table&nbsp;4: Results of linear mixed-effects models predicting P-Export (<span 
 <div id="tbl-pbalance-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pbalance-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;5: Results of linear mixed-effects models predicting P-Balance (<span class="math inline">\(P_{bal}\)</span>).
+Table&nbsp;7: Results of linear mixed-effects models predicting P-Balance (<span class="math inline">\(P_{bal}\)</span>).
 </figcaption>
 <div aria-describedby="tbl-pbalance-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
