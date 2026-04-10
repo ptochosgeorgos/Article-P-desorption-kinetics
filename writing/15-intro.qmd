@@ -6,47 +6,51 @@ Phosphorus (P) is an essential macronutrient for all life, yet its management in
 
 ## Conceptual Frameworks vs. Operational Definitions
 
-To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters [@Frossard2000Processes]:
-1. **P-Intensity ($I$):** The concentration (or more accurately, the chemical activity) of P in the soil solution at any given moment.
-2. **P-Quantity or Capacity ($Q$):** The pool of solid-phase P that is readily desorbable and can replenish the soil solution.
-3. **Phosphorus Buffering Capacity (PBC):** The resistance of the soil to changes in P-Intensity, typically represented as the ratio of change in Quantity to change in Intensity ($\Delta Q / \Delta I$).
+To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters [@Frossard2000Processes]: 
+1. **P-Intensity ($I$):** The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 
+2. **P-Quantity or Capacity ($Q$):** The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 
+3. **Phosphorus Buffering Capacity (PBC):** The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity ($dQ / dI$).
 
-While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on **operational definitions**. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.
+While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on **operational definitions**. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio. 
 
-### Extraction Mechanisms of Standard Soil Tests
 Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms:
+- **Olsen P ($NaHCO_3$, pH 8.5):** Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces [@Olsen1954].
+- **P-AAE10 (Ammonium Acetate EDTA, pH 4.65):** A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption [@FAL1996Methodenbuch].
+- **Water Extractions ($P_{H_2O}$ and $P_{CO_2}$):** Weak extractions using distilled or $CO_2$-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.
 
-* **Olsen P ($NaHCO_3$, pH 8.5):** This method primarily measures desorbable P. The high concentration of bicarbonate ions ($HCO_3^-$) outcompetes orthophosphate for adsorption sites on soil surfaces, effectively exchanging and releasing sorbed P into the solution [@Olsen1954].
-* **P-AAE10 (Ammonium Acetate EDTA, pH 4.65):** This stronger extractant attacks both sorbed and precipitated P forms. The EDTA acts as a powerful chelating agent, binding cations ($Ca^{2+}$, $Fe^{3+}$, $Al^{3+}$) and thereby actively dissolving apatites and other P-bearing salts. Simultaneously, the acetate buffer facilitates the desorption of surface-bound P [@FAL1996Methodenbuch].
-* **Water Extractions ($P_{H_2O}$ and $P_{CO_2}$):** Weak extractions using distilled or $CO_2$-saturated water exert minimal chemical force, attempting to extract readily soluble forms from both the intensity and weakly-bound capacity pools without fundamentally altering the native soil matrix.
+## The Thermodynamic Flaw: Ionic Strength and Activity
 
-## The Problem of Ionic Strength and Activity
+The reliance on operational definitions introduces a critical analytical flaw when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its **chemical activity ($a$)**, not its total stoichiometric concentration ($c$). 
 
-The reliance on operational definitions introduces a critical analytical flaw when interpreting these tests, fundamentally tied to the principles of physical chemistry. Standard colorimetric P quantification (e.g., the molybdenum blue method) relies on calibration curves prepared in distilled water, where the ionic strength ($I$) is effectively zero. 
+In the native soil solution, phosphate anions are electrostatically shielded by a cloud of background ions ($Ca^{2+}, Mg^{2+}, K^+, NO_3^-, SO_4^{2-}$). This native ionic strength ($I$) physically reduces the effective activity of the phosphate. The magnitude of this shielding is defined by the activity coefficient ($\gamma$), where true chemical activity is $a = c \cdot \gamma$.
 
-However, in soil extracts, we measure the chemical **activity** of the ions, not their true stoichiometric concentration. Because the activity coefficient of an ion decreases as the ionic strength of the solution increases, the background matrix of the extractant drastically alters the measurement.
+For strong extractants like Olsen or P-AAE10, the extractant solution has an overwhelmingly high ionic strength (e.g., $I \approx 0.5 \text{ M}$ for Olsen). This artificial salt load obliterates the native ionic strength of the soil. Consequently, while these methods successfully quantify the physical mass of phosphorus ($Q$), they destroy the natural chemical environment, providing no information regarding the true thermodynamic Intensity ($I$) perceived by the root.
 
-For strong extractants like **Olsen, P-CAL, and P-AAE10**, the extractant solution itself has an overwhelmingly high ionic strength. This swamps the native ionic strength of the soil, ensuring that all samples—regardless of their origin—have an identical background matrix. Consequently, while these methods do not yield absolute thermodynamic values, they permit valid **relative comparisons** of P concentrations between different soils.
+Conversely, while weak water extractions successfully preserve the native soil matrix, reading their variable activity against a standard $I \approx 0$ calibration curve renders the values mathematically incomparable across different pedoclimatic sites. For example, in heavily fertilized Swiss agricultural soils (such as the long-term STYCS 167% P-treatments), the dissolution of accumulated amendments can elevate pore water ionic strength to $0.02 \text{ M}$. At a neutral pH, a large portion of P exists as the divalent $HPO_4^{2-}$ ion. Applying the Davies equation to this ionic strength yields an activity coefficient ($\gamma$) of approximately $0.58$. Therefore, over 40% of the chemically extracted mass is thermodynamically "masked" from the root. To resolve this, raw stoichiometric concentrations derived from water extractions must be mathematically corrected via the Davies equation to yield true thermodynamic activity.
 
-Conversely, water extractions like **$P_{H_2O}$ and $P_{CO_2}$** take on the native, highly variable ionic strength of the specific soil being tested. Reading the activity of these variable soil solutions against an $I=0$ calibration curve renders the absolute values mathematically incomparable across different pedoclimatic sites. 
+## Unifying Quantity, Intensity, and the Kinetic Bottleneck
 
-To utilize $P_{H_2O}$ as a true measure of theoretical P-Intensity, complex thermodynamic corrections—such as applying the **Pitzer equations** to calculate precise activity coefficients based on the specific ionic composition of each soil extract—would be required. Currently, such corrections are rarely applied in standard agronomic testing.
+Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction ($Q$, such as $P_{AAE10}$) to construct a purely thermodynamic $Q(I)$ framework. By parameterizing this relationship using a Freundlich isotherm ($Q = K_f \cdot I^{1/n}$), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative ($\frac{dQ}{dI}$). 
 
-## From Static Tests to Kinetic Parameters
+However, even with a correct thermodynamic understanding of $Q$ and $I$, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck [@Nye2000Solute; @flossmannExtractionMethodCharacterizing1982]. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.
 
-Given the analytical limitations of static operational tests and their failure to account for the dynamic replenishment rate of P during the growing season, an alternative approach is required [@Nye2000Solute; @flossmannExtractionMethodCharacterizing1982]. 
+To address this, we define a novel dynamic predictor: the **Initial Activity Flux ($J_0$)**. This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant ($k$) by the maximum thermodynamic activity ($a_{max}$):
+$$J_0 = k \cdot a_{max}$$
 
-To clarify this transition from static operational testing to dynamic modeling, @tbl-terminology maps the fundamental theoretical components of soil P availability to their respective analytical proxies.
+@tbl-terminology maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.
 
 | Approach / Framework | Intensity Factor | Quantity (Capacity) Factor | Kinetic Factor |
-| :--- | :--- | :--- | :--- |
-| **Theoretical Concept (@Frossard2000Processes)** | P concentration in the soil solution at a given moment | The pool of solid-phase P that can replenish the solution | The rate of P transfer from the solid to the liquid phase |
-| **Traditional / Static Proxy (GRUD)** | $P_{CO_2}$ (Water-soluble P) | $P_{AAE10}$ (Chelate-extractable P) | *Not Measured* |
-| **Dynamic / Kinetic Proxy (This Study)** | Initial P Flux ($J_0$) | Equilibrium Desorbable P ($P_{desorb}$) | Desorption Rate Constant ($k$) |
-: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies. {#tbl-terminology}
+|:-----------------|:-----------------|:-----------------|:-----------------|
+| **Theoretical Concept (@Frossard2000Processes)** | Chemical activity of P in the soil solution | Pool of solid-phase P that can replenish the solution | Rate of P transfer from the solid to the liquid phase |
+| **Traditional / Static Proxy (GRUD)** | $P_{CO_2}$ (Raw Water-soluble Concentration) | $P_{AAE10}$ (Chelate-extractable Mass) | *Not Measured* |
+| **Dynamic / Thermodynamic Proxy (This Study)** | Maximum Thermodynamic Activity ($a_{max}$) | $P_{AAE10}$ | Initial Activity Flux ($J_0 = k \cdot a_{max}$) |
 
-This thesis hypothesizes that kinetic parameters describing P desorption, derived from a time-series laboratory extraction, can bypass the limitations of static capacity measurements and serve as a more effective, functional proxy for agronomic P availability. By characterizing the desorption rate constant ($k$) and the **equilibrium desorbable P pool ($P_{desorb}$)**—which represents the operational asymptote of P release under specific extraction conditions, rather than the absolute total soil P quantity—using soils from the long-term Swiss agricultural experiment STYCS, this study aims to answer the following research questions:
+: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
 
-1. How well do standard, operationally defined soil tests ($P_{CO_2}$ and $P_{AAE10}$) predict agronomic outcomes, and how are they influenced by overarching soil properties?
-2. Can non-linear modeling of P desorption kinetics provide a robust characterization of the P-Quantity and replenishment rate across diverse Swiss soils?
-3. Do these dynamic kinetic parameters significantly improve the prediction of key agronomic outcomes (yield, P-uptake, and long-term P-balance) compared to traditional static methods?
+## Thesis Objectives and Analytical Strategy
+
+This thesis hypothesizes that integrating thermodynamic activity and desorption kinetics provides a superior mechanistic framework for P-management compared to standard empirical testing. Using soils from the long-term Swiss agricultural experiment STYCS, this study aims to validate this framework through the following objectives:
+
+1. **Thermodynamic Framework Formulation:** Establish thermodynamic $Q(I)$ isotherms across highly diverse pedoclimatic sites to calculate the true PBC, demonstrating how long-term cumulative P-balances shift the soil's physical chemistry.
+2. **Agronomic Prediction:** Statistically evaluate the predictive power of the kinetic Activity Flux ($J_0$) against relative crop yield and P-uptake. To rigorously isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected $J_0$ will significantly outperform standard static extractions.
+3. **Mechanistic Validation:** Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.
