@@ -15,6 +15,10 @@ jobs:
       contents: write  # Needed to push the rendered site to the gh-pages branch
 
     steps:
+      - name: Install Linux system dependencies for R packages
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y libpoppler-cpp-dev libmagick++-dev
       - name: Check out repository
         uses: actions/checkout@v4
 
