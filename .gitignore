@@ -5,3 +5,4 @@
 /_freeze/
 .Rproj.user
 .Rhistory
+**/*.quarto_ipynb

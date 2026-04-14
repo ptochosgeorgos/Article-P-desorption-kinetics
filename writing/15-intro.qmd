@@ -6,21 +6,15 @@ Phosphorus (P) is an essential macronutrient for all life, yet its management in
 
 ## Conceptual Frameworks vs. Operational Definitions
 
-To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters [@Frossard2000Processes]: 
-1. **P-Intensity ($I$):** The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 
-2. **P-Quantity or Capacity ($Q$):** The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 
-3. **Phosphorus Buffering Capacity (PBC):** The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity ($dQ / dI$).
+To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters [@Frossard2000Processes]: 1. **P-Intensity (**$I$): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. **P-Quantity or Capacity (**$Q$): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. **Phosphorus Buffering Capacity (PBC):** The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity ($dQ / dI$).
 
-While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on **operational definitions**. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio. 
+While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on **operational definitions**. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.
 
-Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms:
-- **Olsen P ($NaHCO_3$, pH 8.5):** Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces [@Olsen1954].
-- **P-AAE10 (Ammonium Acetate EDTA, pH 4.65):** A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption [@FAL1996Methodenbuch].
-- **Water Extractions ($P_{H_2O}$ and $P_{CO_2}$):** Weak extractions using distilled or $CO_2$-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.
+Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - **Olsen P (**$NaHCO_3$, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces [@Olsen1954]. - **P-AAE10 (Ammonium Acetate EDTA, pH 4.65):** A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption [@FAL1996Methodenbuch]. - **Water Extractions (**$P_{H_2O}$ and $P_{CO_2}$): Weak extractions using distilled or $CO_2$-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.
 
 ## The Thermodynamic Flaw: Ionic Strength and Activity
 
-The reliance on operational definitions introduces a critical analytical flaw when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its **chemical activity ($a$)**, not its total stoichiometric concentration ($c$). 
+The reliance on operational definitions introduces a critical analytical flaw when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its **chemical activity (**$a$), not its total stoichiometric concentration ($c$).
 
 In the native soil solution, phosphate anions are electrostatically shielded by a cloud of background ions ($Ca^{2+}, Mg^{2+}, K^+, NO_3^-, SO_4^{2-}$). This native ionic strength ($I$) physically reduces the effective activity of the phosphate. The magnitude of this shielding is defined by the activity coefficient ($\gamma$), where true chemical activity is $a = c \cdot \gamma$.
 
@@ -30,12 +24,11 @@ Conversely, while weak water extractions successfully preserve the native soil m
 
 ## Unifying Quantity, Intensity, and the Kinetic Bottleneck
 
-Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction ($Q$, such as $P_{AAE10}$) to construct a purely thermodynamic $Q(I)$ framework. By parameterizing this relationship using a Freundlich isotherm ($Q = K_f \cdot I^{1/n}$), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative ($\frac{dQ}{dI}$). 
+Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction ($Q$, such as $P_{AAE10}$) to construct a purely thermodynamic $Q(I)$ framework. By parameterizing this relationship using a Freundlich isotherm ($Q = K_f \cdot I^{1/n}$), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative ($\frac{dQ}{dI}$).
 
 However, even with a correct thermodynamic understanding of $Q$ and $I$, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck [@Nye2000Solute; @flossmannExtractionMethodCharacterizing1982]. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.
 
-To address this, we define a novel dynamic predictor: the **Initial Activity Flux ($J_0$)**. This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant ($k$) by the maximum thermodynamic activity ($a_{max}$):
-$$J_0 = k \cdot a_{max}$$
+To address this, we define a novel dynamic predictor: the **Initial Activity Flux (**$J_0$). This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant ($k$) by the maximum thermodynamic activity ($a_{max}$): $$J_0 = k \cdot a_{max}$$
 
 @tbl-terminology maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.
 
@@ -47,10 +40,60 @@ $$J_0 = k \cdot a_{max}$$
 
 : Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
 
+
+```{tikz}
+#| fig-cap: "Conceptual model of the rhizosphere phosphorus cycle."
+#| echo: false
+#| fig-align: center
+
+\begin{tikzpicture}[
+    node distance=4.5cm,
+    % Styles for pools and sinks (NO BLANK LINES ALLOWED IN THIS BLOCK)
+    measured_pool/.style={rectangle, rounded corners, draw=black, very thick, fill=blue!10, text width=3.5cm, align=center, minimum height=2.2cm},
+    solid_pool/.style={rectangle, rounded corners, draw=black, very thick, fill=orange!15, text width=3.5cm, align=center, minimum height=2.2cm},
+    unmeasured_pool/.style={rectangle, rounded corners, draw=gray, dashed, fill=gray!5, text width=2.5cm, align=center, minimum height=1.5cm, text=gray},
+    sink/.style={ellipse, draw=green!60!black, very thick, fill=green!10, text width=3.2cm, align=center, minimum height=1.5cm},
+    modifier/.style={rectangle, rounded corners, draw=purple, dashed, fill=purple!5, text width=2.8cm, align=center, minimum height=1.2cm},
+    measured_arrow/.style={-{Stealth[scale=1.2]}, line width=1.5pt, draw=blue!80!black},
+    standard_arrow/.style={-{Stealth[scale=1.2]}, thick, draw=black},
+    unmeasured_arrow/.style={dashed, -{Stealth[scale=1.2]}, thick, draw=gray},
+    modifier_arrow/.style={->, >=stealth, decorate, decoration={snake, amplitude=.4mm, segment length=3mm, post length=1mm}, draw=purple, thick}
+]
+
+% 1. The Nodes (Pools & Sinks)
+\node[measured_pool] (soluble) {\textbf{Soluble P} \\ Intensity ($a_{max}$)};
+
+\node[solid_pool, right=of soluble] (solid) {\textbf{Solid Phase P} \\ (Sorbed \& Mineral) \\ Quantity ($P_{AAE10}$)};
+
+\node[unmeasured_pool, left=of soluble] (organic) {Organic P \\ (Unmeasured)};
+
+\node[sink, above=of soluble, yshift=1.5cm] (plant) {\textbf{Plant Uptake} \\ ($Y_{rel\_hist}$)};
+
+\node[modifier, below left=1cm and 0.2cm of soluble] (ionic) {Pore Water \\ Ionic Strength ($I$)};
+
+% 2. The Arrows (Processes)
+\draw[measured_arrow] (solid.160) -- node[above, font=\bfseries] {Desorption/Dissolution($k$)} (soluble.20);
+\draw[standard_arrow] (soluble.340) -- node[below] {Adsorption/Precipitation} (solid.200);
+
+\draw[unmeasured_arrow] (organic.20) -- node[above, text=gray] {Mineralization} (soluble.160);
+\draw[unmeasured_arrow] (soluble.200) -- node[below, text=gray] {Immobilization} (organic.340);
+
+\draw[measured_arrow, draw=green!60!black] (soluble.north) -- node[right, align=left] {\textbf{Activity Flux ($J_0$)} \\ \textit{+ Diffusion Limit ($D_e$)}} (plant.south);
+
+\draw[modifier_arrow] (ionic.north) -- node[left, font=\footnotesize, text=purple, xshift=-0.1cm] {Shielding ($\gamma$)} (soluble.200);
+
+% 3. Buffering Capacity (PBC) Overarching Relationship
+\draw[<->, dashed, very thick, draw=purple] (solid.south) -- ++(0,-1) -| node[pos=0.25, below, font=\bfseries, text=purple] {Phosphorus Buffering Capacity (PBC = $dQ/dI$)} (soluble.south);
+
+\end{tikzpicture}
+
+```
+
+
 ## Thesis Objectives and Analytical Strategy
 
 This thesis hypothesizes that integrating thermodynamic activity and desorption kinetics provides a superior mechanistic framework for P-management compared to standard empirical testing. Using soils from the long-term Swiss agricultural experiment STYCS, this study aims to validate this framework through the following objectives:
 
-1. **Thermodynamic Framework Formulation:** Establish thermodynamic $Q(I)$ isotherms across highly diverse pedoclimatic sites to calculate the true PBC, demonstrating how long-term cumulative P-balances shift the soil's physical chemistry.
-2. **Agronomic Prediction:** Statistically evaluate the predictive power of the kinetic Activity Flux ($J_0$) against relative crop yield and P-uptake. To rigorously isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected $J_0$ will significantly outperform standard static extractions.
-3. **Mechanistic Validation:** Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.
+1.  **Thermodynamic Framework Formulation:** Establish thermodynamic $Q(I)$ isotherms across highly diverse pedoclimatic sites to calculate the true PBC, demonstrating how long-term cumulative P-balances shift the soil's physical chemistry.
+2.  **Agronomic Prediction:** Statistically evaluate the predictive power of the kinetic Activity Flux ($J_0$) against relative crop yield and P-uptake. To rigorously isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected $J_0$ will significantly outperform standard static extractions.
+3.  **Mechanistic Validation:** Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.

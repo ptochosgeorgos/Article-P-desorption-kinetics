@@ -31,19 +31,19 @@ format:
 
 \newpage
 
-{{< include writing/25-results.qmd >}}
+<!-- {{< include writing/25-results.qmd >}} -->
 
 \newpage
 
-{{< include writing/30-discussion.qmd >}}
+<!-- {{< include writing/30-discussion.qmd >}} -->
 
 \newpage
 
-{{< include writing/35-conclusion.qmd >}}
+<!-- {{< include writing/35-conclusion.qmd >}} -->
 
 \newpage
 
-{{< include writing/40-acknowledgments.qmd >}}
+<!-- {{< include writing/40-acknowledgments.qmd >}} -->
 
 
 \newpage

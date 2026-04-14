@@ -39,6 +39,7 @@ format:
     number-sections: true
 
   pdf:
+    
     documentclass: article
     papersize: a4
     pdf-engine: lualatex
