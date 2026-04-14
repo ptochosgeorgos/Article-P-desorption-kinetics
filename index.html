@@ -9,7 +9,7 @@
 <meta name="author" content="Marc Jerónimo Pérez y Ropero">
 <meta name="author" content="Frank Liebisch">
 <meta name="author" content="Emmanuel Frossard">
-<meta name="dcterms.date" content="2026-04-10">
+<meta name="dcterms.date" content="2026-04-14">
 
 <title>P-release kinetics as a predictor for P-availability in Swiss cropping systems – STYCS P-Kinetics Manuscript</title>
 <style>
@@ -225,45 +225,12 @@ window.Quarto = {
   <li><a href="#mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" id="toc-mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" class="nav-link" data-scroll-target="#mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification"><span class="header-section-number">2.4.5</span> 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">3</span> Results</a>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">3</span> References</a></li>
+  <li><a href="#appendix-thermodynamic-correction-of-p_co_2-extractions" id="toc-appendix-thermodynamic-correction-of-p_co_2-extractions" class="nav-link" data-scroll-target="#appendix-thermodynamic-correction-of-p_co_2-extractions"><span class="header-section-number">4</span> Appendix: Thermodynamic Correction of <span class="math inline">\(P_{CO_2}\)</span> Extractions</a>
   <ul class="collapse">
-  <li><a href="#establishment-of-the-p-desorption-kinetic-model" id="toc-establishment-of-the-p-desorption-kinetic-model" class="nav-link" data-scroll-target="#establishment-of-the-p-desorption-kinetic-model"><span class="header-section-number">3.1</span> Establishment of the P-Desorption Kinetic Model</a>
-  <ul class="collapse">
-  <li><a href="#initial-approach-failure-of-the-linearized-model" id="toc-initial-approach-failure-of-the-linearized-model" class="nav-link" data-scroll-target="#initial-approach-failure-of-the-linearized-model"><span class="header-section-number">3.1.1</span> Initial Approach: Failure of the Linearized Model</a></li>
-  <li><a href="#final-approach-successful-non-linear-model" id="toc-final-approach-successful-non-linear-model" class="nav-link" data-scroll-target="#final-approach-successful-non-linear-model"><span class="header-section-number">3.1.2</span> Final Approach: Successful Non-Linear Model</a></li>
-  </ul></li>
-  <li><a href="#comparison-with-isotopic-exchange-kinetics-iek" id="toc-comparison-with-isotopic-exchange-kinetics-iek" class="nav-link" data-scroll-target="#comparison-with-isotopic-exchange-kinetics-iek"><span class="header-section-number">3.2</span> Comparison with Isotopic Exchange Kinetics (IEK)</a></li>
-  <li><a href="#sec-effects-of-fertilization-on-agronomic-and-soil-parameters" id="toc-sec-effects-of-fertilization-on-agronomic-and-soil-parameters" class="nav-link" data-scroll-target="#sec-effects-of-fertilization-on-agronomic-and-soil-parameters"><span class="header-section-number">3.3</span> Effects of Fertilization on Agronomic and Soil Parameters</a>
-  <ul class="collapse">
-  <li><a href="#sec-agronomic-responses-to-p-fertilization" id="toc-sec-agronomic-responses-to-p-fertilization" class="nav-link" data-scroll-target="#sec-agronomic-responses-to-p-fertilization"><span class="header-section-number">3.3.1</span> Agronomic Responses to P Fertilization</a></li>
-  <li><a href="#sec-soil-p-parameters-as-a-function-of-p-fertilization" id="toc-sec-soil-p-parameters-as-a-function-of-p-fertilization" class="nav-link" data-scroll-target="#sec-soil-p-parameters-as-a-function-of-p-fertilization"><span class="header-section-number">3.3.2</span> Soil P Parameters as a Function of P Fertilization</a></li>
-  </ul></li>
-  <li><a href="#sec-p-params-soil-props" id="toc-sec-p-params-soil-props" class="nav-link" data-scroll-target="#sec-p-params-soil-props"><span class="header-section-number">3.4</span> Predicting P Parameters from Soil Properties</a></li>
-  <li><a href="#sec-agronomic-modeling" id="toc-sec-agronomic-modeling" class="nav-link" data-scroll-target="#sec-agronomic-modeling"><span class="header-section-number">3.5</span> Predictive Modeling of Agronomic Outcomes</a>
-  <ul class="collapse">
-  <li><a href="#anomaly-in-the-cadenazzo-yield-data" id="toc-anomaly-in-the-cadenazzo-yield-data" class="nav-link" data-scroll-target="#anomaly-in-the-cadenazzo-yield-data"><span class="header-section-number">3.5.1</span> Anomaly in the Cadenazzo Yield Data</a></li>
-  <li><a href="#predicting-site-normalized-yield-y_norm" id="toc-predicting-site-normalized-yield-y_norm" class="nav-link" data-scroll-target="#predicting-site-normalized-yield-y_norm"><span class="header-section-number">3.5.2</span> Predicting Site-Normalized Yield (<span class="math inline">\(Y_{norm}\)</span>)</a></li>
-  <li><a href="#predicting-national-normalized-yield-y_rel" id="toc-predicting-national-normalized-yield-y_rel" class="nav-link" data-scroll-target="#predicting-national-normalized-yield-y_rel"><span class="header-section-number">3.5.3</span> Predicting National-Normalized Yield (<span class="math inline">\(Y_{rel}\)</span>)</a></li>
-  <li><a href="#predicting-p-uptake-p_up" id="toc-predicting-p-uptake-p_up" class="nav-link" data-scroll-target="#predicting-p-uptake-p_up"><span class="header-section-number">3.5.4</span> Predicting P-Uptake (<span class="math inline">\(P_{up}\)</span>)</a></li>
-  <li><a href="#predicting-p-balance-p_bal" id="toc-predicting-p-balance-p_bal" class="nav-link" data-scroll-target="#predicting-p-balance-p_bal"><span class="header-section-number">3.5.5</span> Predicting P-Balance (<span class="math inline">\(P_{bal}\)</span>)</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">4</span> Discussion</a>
-  <ul class="collapse">
-  <li><a href="#hypothesis-1-the-nuanced-role-of-standard-soil-tests" id="toc-hypothesis-1-the-nuanced-role-of-standard-soil-tests" class="nav-link" data-scroll-target="#hypothesis-1-the-nuanced-role-of-standard-soil-tests"><span class="header-section-number">4.1</span> Hypothesis 1: The Nuanced Role of Standard Soil Tests</a></li>
-  <li><a href="#hypothesis-2-characterizing-p-desorption-kinetics" id="toc-hypothesis-2-characterizing-p-desorption-kinetics" class="nav-link" data-scroll-target="#hypothesis-2-characterizing-p-desorption-kinetics"><span class="header-section-number">4.2</span> Hypothesis 2: Characterizing P Desorption Kinetics</a></li>
-  <li><a href="#hypothesis-3-the-context-dependent-power-of-kinetic-parameters" id="toc-hypothesis-3-the-context-dependent-power-of-kinetic-parameters" class="nav-link" data-scroll-target="#hypothesis-3-the-context-dependent-power-of-kinetic-parameters"><span class="header-section-number">4.3</span> Hypothesis 3: The Context-Dependent Power of Kinetic Parameters</a>
-  <ul class="collapse">
-  <li><a href="#conclusion-and-outlook" id="toc-conclusion-and-outlook" class="nav-link" data-scroll-target="#conclusion-and-outlook"><span class="header-section-number">4.3.1</span> Conclusion and Outlook</a></li>
-  </ul></li>
-  </ul></li>
-  <li><a href="#acknowledgments" id="toc-acknowledgments" class="nav-link" data-scroll-target="#acknowledgments"><span class="header-section-number">5</span> Acknowledgments</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">6</span> References</a></li>
-  <li><a href="#appendix-thermodynamic-correction-of-p_co_2-extractions" id="toc-appendix-thermodynamic-correction-of-p_co_2-extractions" class="nav-link" data-scroll-target="#appendix-thermodynamic-correction-of-p_co_2-extractions"><span class="header-section-number">7</span> Appendix: Thermodynamic Correction of <span class="math inline">\(P_{CO_2}\)</span> Extractions</a>
-  <ul class="collapse">
-  <li><a href="#a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant" id="toc-a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant" class="nav-link" data-scroll-target="#a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant"><span class="header-section-number">7.1</span> A.1. Intrinsic Ionic Strength of the <span class="math inline">\(P_{CO_2}\)</span> Extractant</a></li>
-  <li><a href="#a.2.-justification-for-the-davies-equation" id="toc-a.2.-justification-for-the-davies-equation" class="nav-link" data-scroll-target="#a.2.-justification-for-the-davies-equation"><span class="header-section-number">7.2</span> A.2. Justification for the Davies Equation</a></li>
-  <li><a href="#a.3.-implementation-of-thermodynamic-correction" id="toc-a.3.-implementation-of-thermodynamic-correction" class="nav-link" data-scroll-target="#a.3.-implementation-of-thermodynamic-correction"><span class="header-section-number">7.3</span> A.3. Implementation of Thermodynamic Correction</a></li>
+  <li><a href="#a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant" id="toc-a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant" class="nav-link" data-scroll-target="#a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant"><span class="header-section-number">4.1</span> A.1. Intrinsic Ionic Strength of the <span class="math inline">\(P_{CO_2}\)</span> Extractant</a></li>
+  <li><a href="#a.2.-justification-for-the-davies-equation" id="toc-a.2.-justification-for-the-davies-equation" class="nav-link" data-scroll-target="#a.2.-justification-for-the-davies-equation"><span class="header-section-number">4.2</span> A.2. Justification for the Davies Equation</a></li>
+  <li><a href="#a.3.-implementation-of-thermodynamic-correction" id="toc-a.3.-implementation-of-thermodynamic-correction" class="nav-link" data-scroll-target="#a.3.-implementation-of-thermodynamic-correction"><span class="header-section-number">4.3</span> A.3. Implementation of Thermodynamic Correction</a></li>
   </ul></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
@@ -313,7 +280,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 10, 2026</p>
+      <p class="date">April 14, 2026</p>
     </div>
   </div>
   
@@ -339,13 +306,13 @@ window.Quarto = {
 </section>
 <section id="conceptual-frameworks-vs.-operational-definitions" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</h2>
-<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (<span class="math inline">\(I\)</span>):</strong> The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (<span class="math inline">\(Q\)</span>):</strong> The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
+<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (</strong><span class="math inline">\(I\)</span>): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (</strong><span class="math inline">\(Q\)</span>): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
 <p>While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
-<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (<span class="math inline">\(NaHCO_3\)</span>, pH 8.5):</strong> Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>. - <strong>Water Extractions (<span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>):</strong> Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
+<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
 </section>
 <section id="the-thermodynamic-flaw-ionic-strength-and-activity" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</h2>
-<p>The reliance on operational definitions introduces a critical analytical flaw when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its <strong>chemical activity (<span class="math inline">\(a\)</span>)</strong>, not its total stoichiometric concentration (<span class="math inline">\(c\)</span>).</p>
+<p>The reliance on operational definitions introduces a critical analytical flaw when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its <strong>chemical activity (</strong><span class="math inline">\(a\)</span>), not its total stoichiometric concentration (<span class="math inline">\(c\)</span>).</p>
 <p>In the native soil solution, phosphate anions are electrostatically shielded by a cloud of background ions (<span class="math inline">\(Ca^{2+}, Mg^{2+}, K^+, NO_3^-, SO_4^{2-}\)</span>). This native ionic strength (<span class="math inline">\(I\)</span>) physically reduces the effective activity of the phosphate. The magnitude of this shielding is defined by the activity coefficient (<span class="math inline">\(\gamma\)</span>), where true chemical activity is <span class="math inline">\(a = c \cdot \gamma\)</span>.</p>
 <p>For strong extractants like Olsen or P-AAE10, the extractant solution has an overwhelmingly high ionic strength (e.g., <span class="math inline">\(I \approx 0.5 \text{ M}\)</span> for Olsen). This artificial salt load obliterates the native ionic strength of the soil. Consequently, while these methods successfully quantify the physical mass of phosphorus (<span class="math inline">\(Q\)</span>), they destroy the natural chemical environment, providing no information regarding the true thermodynamic Intensity (<span class="math inline">\(I\)</span>) perceived by the root.</p>
 <p>Conversely, while weak water extractions successfully preserve the native soil matrix, reading their variable activity against a standard <span class="math inline">\(I \approx 0\)</span> calibration curve renders the values mathematically incomparable across different pedoclimatic sites. For example, in heavily fertilized Swiss agricultural soils (such as the long-term STYCS 167% P-treatments), the dissolution of accumulated amendments can elevate pore water ionic strength to <span class="math inline">\(0.02 \text{ M}\)</span>. At a neutral pH, a large portion of P exists as the divalent <span class="math inline">\(HPO_4^{2-}\)</span> ion. Applying the Davies equation to this ionic strength yields an activity coefficient (<span class="math inline">\(\gamma\)</span>) of approximately <span class="math inline">\(0.58\)</span>. Therefore, over 40% of the chemically extracted mass is thermodynamically “masked” from the root. To resolve this, raw stoichiometric concentrations derived from water extractions must be mathematically corrected via the Davies equation to yield true thermodynamic activity.</p>
@@ -354,7 +321,7 @@ window.Quarto = {
 <h2 data-number="1.4" class="anchored" data-anchor-id="unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</h2>
 <p>Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction (<span class="math inline">\(Q\)</span>, such as <span class="math inline">\(P_{AAE10}\)</span>) to construct a purely thermodynamic <span class="math inline">\(Q(I)\)</span> framework. By parameterizing this relationship using a Freundlich isotherm (<span class="math inline">\(Q = K_f \cdot I^{1/n}\)</span>), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative (<span class="math inline">\(\frac{dQ}{dI}\)</span>).</p>
 <p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
-<p>To address this, we define a novel dynamic predictor: the <strong>Initial Activity Flux (<span class="math inline">\(J_0\)</span>)</strong>. This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant (<span class="math inline">\(k\)</span>) by the maximum thermodynamic activity (<span class="math inline">\(a_{max}\)</span>): <span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
+<p>To address this, we define a novel dynamic predictor: the <strong>Initial Activity Flux (</strong><span class="math inline">\(J_0\)</span>). This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant (<span class="math inline">\(k\)</span>) by the maximum thermodynamic activity (<span class="math inline">\(a_{max}\)</span>): <span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
 <p><strong>?@tbl-terminology</strong> maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.</p>
 <table class="caption-top table">
 <caption>Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.</caption>
@@ -393,6 +360,33 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|echo: false</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magick)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to ImageMagick 6.9.12.98
+Enabled features: fontconfig, freetype, fftw, heic, lcms, pango, raw, webp, x11
+Disabled features: cairo, ghostscript, rsvg</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using 4 threads</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdftools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using poppler version 24.02.0</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Conceptual model of the rhizosphere phosphorus cycle.</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="thesis-objectives-and-analytical-strategy" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="thesis-objectives-and-analytical-strategy"><span class="header-section-number">1.5</span> Thesis Objectives and Analytical Strategy</h2>
@@ -409,24 +403,13 @@ window.Quarto = {
 <h1 data-number="2"><span class="header-section-number">2</span> Materials and Methods</h1>
 <section id="sec-the-long-term-phosphorus-fertilization-experiment" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="sec-the-long-term-phosphorus-fertilization-experiment"><span class="header-section-number">2.1</span> The Long-Term Phosphorus Fertilization Experiment</h2>
-<p>The soil samples for this thesis originate from a set of six long-term field trials in Switzerland, established by Agroscope between 1989 and 1992. The primary objective of these experiments was to validate and re-evaluate Swiss phosphorus (P) fertilization guidelines by assessing long-term crop yield responses to varying P inputs across different pedoclimatic conditions. A detailed description of the experimental design and site characteristics can be found in <span class="citation" data-cites="hirteYieldResponseSoil2021">Hirte, Richner, et al. (<a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">2021</a>)</span>.</p>
+<p>The soil samples for this thesis originate from a set of six long-term field trials in Switzerland, established by Agroscope between 1989 and 1992. The primary objective of these experiments was to validate and re-evaluate Swiss phosphorus (P) fertilization guidelines by assessing long-term crop yield responses to varying P inputs across different pedoclimatic conditions. A detailed description of the experimental design and site characteristics can be found in <span class="citation" data-cites="hirteYieldResponseSoil2021">Hirte et al. (<a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">2021</a>)</span>.</p>
 <p>The experiment was set up as a <strong>completely randomized block design</strong> with four field replications at each site. The core of the experiment consists of six fixed-plot treatments representing different P fertilization levels, which were applied annually as superphosphate before tillage and sowing. These levels were based on percentages of the officially recommended P inputs: 0% (Zero), 33% (Deficit), 67% (Reduced), 100% (Norm), 133% (Elevated), and 167% (Surplus).</p>
 </section>
 <section id="sec-experimental-sites" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="sec-experimental-sites"><span class="header-section-number">2.2</span> Experimental Sites</h2>
 <p>The six experimental sites are located in the main crop-growing regions of Switzerland: <strong>Rümlang-Altwi (ALT)</strong>, <strong>Cadenazzo (CAD)</strong>, <strong>Ellighausen (ELL)</strong>, <strong>Grabs (GRA)</strong>, <strong>Oensingen (OEN)</strong>, and <strong>Zurich-Reckenholz (REC)</strong>. The key soil properties are summarized below.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sites_df_corrected <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Site =</span> <span class="fu">c</span>(<span class="st">"ALT"</span>, <span class="st">"CAD"</span>, <span class="st">"ELL"</span>, <span class="st">"GRA"</span>, <span class="st">"OEN"</span>, <span class="st">"REC"</span>),</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Soil Type (WRB)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Calcaric Cambisol"</span>, <span class="st">"Eutric Fluvisol"</span>, <span class="st">"Eutric Cambisol"</span>, <span class="st">"Calcaric Fluvisol"</span>, <span class="st">"Gleyic-calc. Cambisol"</span>, <span class="st">"Eutric Gleysol"</span>),</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Clay (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">22</span>, <span class="dv">8</span>, <span class="dv">33</span>, <span class="dv">17</span>, <span class="dv">37</span>, <span class="dv">39</span>),</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Sand (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">48</span>, <span class="dv">40</span>, <span class="dv">31</span>, <span class="dv">34</span>, <span class="dv">32</span>, <span class="dv">25</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Organic C (g/kg)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">14</span>, <span class="dv">23</span>, <span class="dv">16</span>, <span class="dv">24</span>, <span class="dv">27</span>),</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">pH (H2O)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">7.9</span>, <span class="fl">6.3</span>, <span class="fl">6.6</span>, <span class="fl">8.3</span>, <span class="fl">7.1</span>, <span class="fl">7.4</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(sites_df_corrected)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-sites-corrected" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -566,29 +549,6 @@ Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data
 <li><strong>Model 2: The Standard STP (GRUD) Approach:</strong> Utilized the standard Swiss static soil tests (<span class="math inline">\(P_{CO2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) and their interaction as fixed effects.</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>variables_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Abbreviation =</span> <span class="fu">c</span>(<span class="st">"$Y_{rel</span><span class="sc">\\</span><span class="st">_hist}$"</span>, <span class="st">"$Uptake_{rel}$"</span>, <span class="st">"$P_{bal}$"</span>, </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$k$"</span>, <span class="st">"$a_{max}$"</span>, <span class="st">"$J_0$"</span>, </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"$P_{AAE10}$"</span>, <span class="st">"$</span><span class="sc">\\</span><span class="st">text{PBC}$"</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Variable</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Relative Yield (Historic)"</span>, <span class="st">"Relative P Uptake"</span>, <span class="st">"Cumulative P Balance"</span>, </span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Rate Constant"</span>, <span class="st">"Maximum Activity (Intensity)"</span>, <span class="st">"Activity Flux"</span>, </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Standard Mass (Quantity)"</span>, <span class="st">"Phosphorus Buffering Capacity"</span>),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Unit =</span> <span class="fu">c</span>(<span class="st">"unitless"</span>, <span class="st">"unitless"</span>, <span class="st">"kg P ha⁻¹"</span>, </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>           <span class="st">"min⁻¹"</span>, <span class="st">"µM"</span>, <span class="st">"µM min⁻¹"</span>, </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">"mg P kg⁻¹"</span>, <span class="st">"mg kg⁻¹ µM⁻¹"</span>),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Description =</span> <span class="fu">c</span>(</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot yield normalized by the site/crop-specific 95th percentile of historical well-fertilized yields."</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Plot P-uptake normalized by historical maximum uptake for the specific site and crop."</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Long-term net P budget (inputs minus outputs)."</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"First-order rate constant of P desorption."</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Davies-corrected thermodynamic activity asymptote of the water-desorbable P pool."</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Initial thermodynamic supply rate, calculated as $k </span><span class="sc">\\</span><span class="st">times a_{max}$."</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Physical mass of extractable P (AAE10 method), acting as the Q-factor."</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The mathematical derivative ($dQ/dI$) of the site-specific Freundlich isotherm."</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(variables_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div id="tbl-variables-updated" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -679,890 +639,25 @@ Table&nbsp;2: Description of key variables used in the thermodynamic and agronom
 <p><span class="math display">\[J_r = \frac{V_{max1} \cdot (a_l - a_{min})}{K_{m1} + (a_l - a_{min})} + \frac{V_{max2} \cdot (a_l - a_{min})}{K_{m2} + (a_l - a_{min})}\]</span></p>
 <p>The modified PDEs were solved numerically in R utilizing the <code>ReacTran</code> and <code>deSolve</code> packages to generate dynamic spatial profiles of the P-depletion zone over time.</p>
 <div style="page-break-after: always;"></div>
-</section>
-</section>
-</section>
-<section id="results" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>create_coef_table <span class="ot">&lt;-</span> <span class="cf">function</span>(lmer_models, </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">covariate_order =</span> <span class="cn">NULL</span>, </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">covariate_labels =</span> <span class="cn">NULL</span>, <span class="co"># NEU: Benannter Vektor für Zeilennamen</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">model_labels =</span> <span class="cn">NULL</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                              <span class="at">descriptor =</span> <span class="st">"Response"</span>) {   <span class="co"># NEU: Benannter Vektor für Spaltennamen</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract coefficients and p-values (Ihre Originalfunktion, keine Änderung hier)</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  extract_coef_info <span class="ot">&lt;-</span> <span class="cf">function</span>(model) {</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... (keine Änderung, Ihr Code bleibt hier)</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    coef_matrix <span class="ot">&lt;-</span> <span class="fu">summary</span>(model)<span class="sc">|&gt;</span> <span class="fu">coef</span>()</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    estimates <span class="ot">&lt;-</span> coef_matrix[, <span class="dv">1</span>]</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    p_values <span class="ot">&lt;-</span> coef_matrix[, <span class="fu">ncol</span>(coef_matrix)]</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    formatted_coef <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_along</span>(estimates), <span class="cf">function</span>(i) {</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      est_str <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, estimates[i])</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>      stars <span class="ot">&lt;-</span> <span class="cf">if</span> (p_values[i] <span class="sc">&lt;</span> <span class="fl">0.001</span>) <span class="st">"***"</span> <span class="cf">else</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>               <span class="cf">if</span> (p_values[i] <span class="sc">&lt;</span> <span class="fl">0.01</span>) <span class="st">"** "</span> <span class="cf">else</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>               <span class="cf">if</span> (p_values[i] <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="st">"* "</span> <span class="cf">else</span>  <span class="st">""</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(est_str,stars)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">names</span>(formatted_coef) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(coef_matrix)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(formatted_coef)</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract R-squared values (Ihre Originalfunktion, keine Änderung hier)</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  extract_r_squared <span class="ot">&lt;-</span> <span class="cf">function</span>(model) {</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... (keine Änderung, Ihr Code bleibt hier)</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    r2_values <span class="ot">&lt;-</span> MuMIn<span class="sc">::</span><span class="fu">r.squaredGLMM</span>(model) <span class="co"># MuMIn:: hinzugefügt für Klarheit</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">c</span>(</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">R2m =</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, r2_values[<span class="dv">1</span>, <span class="st">"R2m"</span>]),</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">R2c =</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, r2_values[<span class="dv">1</span>, <span class="st">"R2c"</span>])</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Daten extrahieren (Ihr Originalcode)</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  all_coefs <span class="ot">&lt;-</span> <span class="fu">lapply</span>(lmer_models, extract_coef_info)</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  all_r_squared <span class="ot">&lt;-</span> <span class="fu">lapply</span>(lmer_models, extract_r_squared)</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  all_covariate_names <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(<span class="fu">lapply</span>(all_coefs, names)))</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(covariate_order)) {</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    covariate_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"(Intercept)"</span>, <span class="fu">sort</span>(all_covariate_names[all_covariate_names <span class="sc">!=</span> <span class="st">"(Intercept)"</span>]))</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  covariate_order <span class="ot">&lt;-</span> covariate_order[covariate_order <span class="sc">%in%</span> all_covariate_names]</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  final_order <span class="ot">&lt;-</span> <span class="fu">c</span>(covariate_order, <span class="st">"R2m"</span>, <span class="st">"R2c"</span>)</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Matrix erstellen (Ihr Originalcode)</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  results_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="st">""</span>,</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>                           <span class="at">nrow =</span> <span class="fu">length</span>(final_order),</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>                           <span class="at">ncol =</span> <span class="fu">length</span>(lmer_models),</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>                           <span class="at">dimnames =</span> <span class="fu">list</span>(final_order, <span class="fu">names</span>(lmer_models)))</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Matrix füllen (Ihr Originalcode)</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (model_name <span class="cf">in</span> <span class="fu">names</span>(lmer_models)) {</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    model_coefs <span class="ot">&lt;-</span> all_coefs[[model_name]]</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (covar <span class="cf">in</span> <span class="fu">names</span>(model_coefs)) {</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (covar <span class="sc">%in%</span> covariate_order) {</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        results_matrix[covar, model_name] <span class="ot">&lt;-</span> model_coefs[covar]</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    r2_values <span class="ot">&lt;-</span> all_r_squared[[model_name]]</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    results_matrix[<span class="st">"R2m"</span>, model_name] <span class="ot">&lt;-</span> r2_values[<span class="st">"R2m"</span>]</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    results_matrix[<span class="st">"R2c"</span>, model_name] <span class="ot">&lt;-</span> r2_values[<span class="st">"R2c"</span>]</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- NEU: Zeilen- und Spaltennamen ersetzen ---</span></span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ersetze die Zeilennamen (Kovariaten), falls covariate_labels übergeben wurde</span></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(covariate_labels)) {</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Finde die Übereinstimmungen in den aktuellen Zeilennamen</span></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    row_matches <span class="ot">&lt;-</span> <span class="fu">match</span>(<span class="fu">rownames</span>(results_matrix), <span class="fu">names</span>(covariate_labels))</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ersetze nur die, die gefunden wurden</span></span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>    new_rownames <span class="ot">&lt;-</span> <span class="fu">rownames</span>(results_matrix)</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>    new_rownames[<span class="sc">!</span><span class="fu">is.na</span>(row_matches)] <span class="ot">&lt;-</span> covariate_labels[row_matches[<span class="sc">!</span><span class="fu">is.na</span>(row_matches)]]</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rownames</span>(results_matrix) <span class="ot">&lt;-</span> new_rownames</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Ersetze die Spaltennamen (Modelle), falls model_labels übergeben wurde</span></span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(model_labels)) {</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>    col_matches <span class="ot">&lt;-</span> <span class="fu">match</span>(<span class="fu">colnames</span>(results_matrix), <span class="fu">names</span>(model_labels))</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>    new_colnames <span class="ot">&lt;-</span> <span class="fu">colnames</span>(results_matrix)</span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>    new_colnames[<span class="sc">!</span><span class="fu">is.na</span>(col_matches)] <span class="ot">&lt;-</span> model_labels[col_matches[<span class="sc">!</span><span class="fu">is.na</span>(col_matches)]]</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(results_matrix) <span class="ot">&lt;-</span> new_colnames</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>  <span class="co"># --- Ende der neuen Sektion ---</span></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert to data frame for kable</span></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>  results_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">"Predictor"</span> <span class="ot">=</span> <span class="fu">rownames</span>(results_matrix),</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>                           results_matrix,</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>                           <span class="at">check.names =</span> <span class="cn">FALSE</span>, <span class="co"># Verhindert, dass R Spaltennamen ändert</span></span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>                           <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>  results_df</span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>The results of this study are presented in two main parts. First, the development and validation of the phosphorus (P) desorption kinetic model are detailed, justifying the final modeling approach. Second, the descriptive trends of both agronomic outcomes and soil P parameters in response to long-term fertilization and site differences are explored visually. Finally, the predictive power of the kinetic and standard P parameters is formally evaluated using linear mixed-effects models.</p>
-<section id="establishment-of-the-p-desorption-kinetic-model" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="establishment-of-the-p-desorption-kinetic-model"><span class="header-section-number">3.1</span> Establishment of the P-Desorption Kinetic Model</h2>
-<p>The primary goal was to derive two key parameters for each soil sample: the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) and the rate constant (<span class="math inline">\(k\)</span>). The analysis proceeded in two stages: an initial test of a linearized model, followed by the implementation of a more robust non-linear model.</p>
-<section id="initial-approach-failure-of-the-linearized-model" class="level3" data-number="3.1.1">
-<h3 data-number="3.1.1" class="anchored" data-anchor-id="initial-approach-failure-of-the-linearized-model"><span class="header-section-number">3.1.1</span> Initial Approach: Failure of the Linearized Model</h3>
-<p>Following the conceptual framework of Flossmann and Richter (1982), the first-order kinetic equation was linearized. A core assumption of this model is that the linear relationship must pass through the origin (0/0) of the coordinate system. To test this, linear models were fitted to the transformed data for each sample individually. The results revealed a systematic failure of this assumption, as the estimated intercepts for the majority of samples were highly significantly different from zero (p &lt; 0.05). This consistent statistical deviation indicated that the linearized approach was not a valid representation of the data. The visual evidence in <a href="#fig-linearized-model" class="quarto-xref">Figure&nbsp;1</a> supports this conclusion.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-linearized-model" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-linearized-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-linearized-model-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-linearized-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Test of the linearized first-order kinetic model. The plot visually supports the statistical finding that many intercepts are not zero.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="final-approach-successful-non-linear-model" class="level3" data-number="3.1.2">
-<h3 data-number="3.1.2" class="anchored" data-anchor-id="final-approach-successful-non-linear-model"><span class="header-section-number">3.1.2</span> Final Approach: Successful Non-Linear Model</h3>
-<p>Given the statistical failure of the linearized model, a direct non-linear modeling approach was adopted to estimate both <span class="math inline">\(P_{desorb}\)</span> and <span class="math inline">\(k\)</span> simultaneously from the untransformed data. This approach does not rely on the assumption of a zero intercept and proved to be far more successful, accurately capturing the curvilinear shape of the desorption data for nearly all samples (<a href="#fig-nonlinear-model" class="quarto-xref">Figure&nbsp;2</a>). The final parameters were extracted from a non-linear mixed-effects model (<code>nlme</code>) to account for the hierarchical data structure. <strong>These final <code>nlme</code>-derived coefficients were used for all subsequent analyses.</strong></p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-nonlinear-model" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-nonlinear-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-nonlinear-model-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-nonlinear-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Non-linear first-order kinetic model fits for P desorption over time. Points represent measured data and solid lines represent the fitted model for each replicate.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="comparison-with-isotopic-exchange-kinetics-iek" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="comparison-with-isotopic-exchange-kinetics-iek"><span class="header-section-number">3.2</span> Comparison with Isotopic Exchange Kinetics (IEK)</h2>
-<p>To validate the newly derived kinetic parameters against an established benchmark, the capacity (<span class="math inline">\(P_{desorb}\)</span>) and kinetic (<span class="math inline">\(k\)</span>) parameters were compared to data from Isotopic Exchange Kinetics (IEK) studies previously conducted on the same long-term trial sites by Demaria et al.&nbsp;(2013). This comparison aims to determine if the simpler, non-equilibrium desorption method used in this thesis captures similar aspects of soil P dynamics as the more complex, equilibrium-based IEK method.</p>
-<p>The size of the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) was compared against the long-term isotopically exchangeable P pool measured after 7 days (<span class="math inline">\(E_{7d}\)</span>). The desorption rate constant (<span class="math inline">\(k\)</span>) was compared against the IEK kinetic parameter measured after 24 hours (<span class="math inline">\(n_{1d}\)</span>). Spearman’s rank correlation was used to robustly test for monotonic trends between the different methods.</p>
-<div id="fig-iek-comparison" class="quarto-layout-panel">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-iek-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="quarto-layout-row">
-<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-iek-comparison" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div id="fig-iek-comparison-1" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-subfloat-fig figure">
-<div aria-describedby="fig-iek-comparison-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-iek-comparison-1.png" class="img-fluid figure-img" data-ref-parent="fig-iek-comparison">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-iek-comparison-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-(a) Capacity: <span class="math inline">\(P_{\text{desorb}}\)</span> vs <span class="math inline">\(E_{\text{7d}}\)</span>
-</figcaption>
-</figure>
-</div>
-</div>
-<div class="cell-output-display quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-iek-comparison" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div id="fig-iek-comparison-2" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-subfloat-fig figure">
-<div aria-describedby="fig-iek-comparison-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-iek-comparison-2.png" class="img-fluid figure-img" data-ref-parent="fig-iek-comparison">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-iek-comparison-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-(b) Kinetics: k vs <span class="math inline">\(n_{\text{1d}}\)</span>
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-iek-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Correlation between desorption-derived kinetic parameters and IEK-derived parameters. (A) Capacity parameters: Desorbable P (<span class="math inline">\(P_{\text{desorb}}\)</span>) vs.&nbsp;Isotopically Exchangeable P (<span class="math inline">\(E_{\text{7d}}\)</span>). (B) Kinetic parameters: Rate Constant (<span class="math inline">\(k\)</span>) vs.&nbsp;IEK kinetic parameter (<span class="math inline">\(n_{\text{1d}}\)</span>).
-</figcaption>
-</figure>
-</div>
-<p>The analysis revealed a statistically significant, moderate positive correlation between the capacity parameters, <span class="math inline">\(P_{desorb}\)</span> and <span class="math inline">\(E_{7d}\)</span> (<a href="#fig-iek-comparison" class="quarto-xref">Figure&nbsp;3</a>). The Spearman’s rank correlation coefficient was 0.4 with a p-value of &lt; 0.001.</p>
-<p>Similarly, a statistically significant, moderate positive correlation was found between the kinetic parameters, <span class="math inline">\(k\)</span> and <span class="math inline">\(n_{1d}\)</span> (<a href="#fig-iek-comparison" class="quarto-xref">Figure&nbsp;3</a>). The Spearman’s rank correlation coefficient was 0.36 with a p-value of &lt; 0.001.</p>
-<p>These results indicate that the simpler, non-equilibrium desorption method used in this study successfully captures both the capacity and intensity aspects of soil P lability, providing results that are consistent with the more complex, equilibrium-based IEK method reported by <span class="citation" data-cites="demariaSoilPropertiesPhosphorus2013">(<a href="#ref-demariaSoilPropertiesPhosphorus2013" role="doc-biblioref">Demaria et al., 2013</a>)</span>.</p>
-</section>
-<section id="sec-effects-of-fertilization-on-agronomic-and-soil-parameters" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="sec-effects-of-fertilization-on-agronomic-and-soil-parameters"><span class="header-section-number">3.3</span> Effects of Fertilization on Agronomic and Soil Parameters</h2>
-<p>Having established a robust method to determine the kinetic parameters, the next step was to explore the effects of the long-term P fertilization treatments on both the agronomic outcomes and the soil P test parameters.</p>
-<section id="sec-agronomic-responses-to-p-fertilization" class="level3" data-number="3.3.1">
-<h3 data-number="3.3.1" class="anchored" data-anchor-id="sec-agronomic-responses-to-p-fertilization"><span class="header-section-number">3.3.1</span> Agronomic Responses to P Fertilization</h3>
-<p>The long-term application of different P fertilization levels had a pronounced impact on the primary agronomic outcomes, including two different metrics for yield, P Uptake (<span class="math inline">\(P_{up}\)</span>), and P Balance (<span class="math inline">\(P_{bal}\)</span>), though the response varied considerably between sites (<a href="#fig-agronomic-responses" class="quarto-xref">Figure&nbsp;4</a>).</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-agronomic-responses" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-agronomic-responses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-agronomic-responses-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-agronomic-responses-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Agronomic response variables across six P fertilization treatments and six experimental sites. Data from 2017-2022.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>Yield Metrics (</strong><span class="math inline">\(Y_{norm}\)</span> and <span class="math inline">\(Y_{rel}\)</span>): Both yield metrics showed a generally positive response to P fertilization. The site-normalized yield (<span class="math inline">\(Y_{norm}\)</span>) shows the response relative to the site’s potential for that year, with most yields plateauing around the Norm (100%) treatment. The national-normalized yield (<span class="math inline">\(Y_{rel}\)</span>) provides a broader context, showing how yields at each site compare to the national average.</p>
-<p><strong>P Uptake (</strong><span class="math inline">\(P_{up}\)</span>): P uptake by crops followed a similar trend to yield, increasing with fertilization, often continuing to increase at the highest fertilization levels, suggesting luxury consumption.</p>
-<p><strong>P Balance (</strong><span class="math inline">\(P_{bal}\)</span>): The P balance showed a strong, linear relationship with fertilization. The Zero and Deficit treatments resulted in a negative balance (mining soil P), while the Elevated and Surplus treatments led to a significant P surplus.</p>
-</section>
-<section id="sec-soil-p-parameters-as-a-function-of-p-fertilization" class="level3" data-number="3.3.2">
-<h3 data-number="3.3.2" class="anchored" data-anchor-id="sec-soil-p-parameters-as-a-function-of-p-fertilization"><span class="header-section-number">3.3.2</span> Soil P Parameters as a Function of P Fertilization</h3>
-<p>The different soil P test parameters, including the standard STP methods and the newly derived kinetic parameters, all responded to the long-term fertilization treatments (<a href="#fig-soil-parameters" class="quarto-xref">Figure&nbsp;5</a>).</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-soil-parameters" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-soil-parameters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-soil-parameters-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-soil-parameters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Soil P parameters across six P fertilization treatments and six experimental sites.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>Standard STPs (</strong><span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>): Both standard soil P tests showed a clear and consistent increase with rising P fertilization levels across all sites, confirming their sensitivity to management.</p>
-<p><strong>Kinetic Parameters (</strong><span class="math inline">\(k\)</span>, <span class="math inline">\(P_{desorb}\)</span>, and <span class="math inline">\(J_0\)</span>): <strong>Desorbable P (</strong><span class="math inline">\(P_{desorb}\)</span>): This parameter behaved very similarly to the standard STPs, increasing steadily with P fertilization and confirming its role as a “capacity” indicator.<br>
-<strong>Rate Constant (</strong><span class="math inline">\(k\)</span>): The rate constant showed a more complex pattern, with no strong, consistent trend with fertilization. This suggests that while fertilization increases the <em>amount</em> of available P, it may not change the intrinsic <em>release rate</em>. <strong>Initial P Flux (</strong><span class="math inline">\(J_0\)</span>): As the product of <span class="math inline">\(P_{desorb}\)</span> and <span class="math inline">\(k\)</span>, this parameter integrates both capacity and intensity. It showed a strong positive response to fertilization, driven primarily by the increase in <span class="math inline">\(P_{desorb}\)</span>.</p>
-<p>These initial observations suggest that the kinetic parameters, particularly the rate constant <span class="math inline">\(k\)</span>, may provide unique information about the soil’s P dynamics not captured by the static tests P-CO2 and P-AAE10 alone. The next section will use formal statistical models to test these relationships.</p>
-</section>
-</section>
-<section id="sec-p-params-soil-props" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="sec-p-params-soil-props"><span class="header-section-number">3.4</span> Predicting P Parameters from Soil Properties</h2>
-<p>To understand the underlying drivers of the standard and kinetic P parameters, and to test <strong>Hypotheses 1b and 2b</strong>, a series of linear mixed-effects models were fitted. Each model predicted one of the P parameters based on the core soil properties: organic carbon (<span class="math inline">\(C_{org}\)</span>), clay content, silt content, pH, and dithionite-extractable Al (<span class="math inline">\(Al_d\)</span>) and Fe (<span class="math inline">\(Fe_d\)</span>). The results are summarized in <a href="#tbl-soil-prop-models" class="quarto-xref">Table&nbsp;3</a>.</p>
-<div class="cell">
-<div id="tbl-soil-prop-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-soil-prop-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Results of linear mixed-effects models predicting P parameters from intrinsic soil properties <strong>?@tbl-variables</strong>. Significance codes: ‘<em><strong>’ p &lt; 0.001, ’</strong>’ p &lt; 0.01, ’</em>’ p &lt; 0.05.
-</figcaption>
-<div aria-describedby="tbl-soil-prop-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 15%">
-<col style="width: 19%">
-<col style="width: 15%">
-<col style="width: 15%">
-<col style="width: 16%">
-<col style="width: 18%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Predictor</th>
-<th style="text-align: left;"><span class="math inline">\(P_{desorb}\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(k\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(J_0\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Intercept</td>
-<td style="text-align: left;">21.444</td>
-<td style="text-align: left;">0.454</td>
-<td style="text-align: left;">21.189</td>
-<td style="text-align: left;">14.014</td>
-<td style="text-align: left;">23.126</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(Al_{d}\)</span></td>
-<td style="text-align: left;">-8.706***</td>
-<td style="text-align: left;">-0.072***</td>
-<td style="text-align: left;">-8.631***</td>
-<td style="text-align: left;">-4.417***</td>
-<td style="text-align: left;">-9.473***</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(Fe_{d}\)</span></td>
-<td style="text-align: left;">-1.068***</td>
-<td style="text-align: left;">0.005</td>
-<td style="text-align: left;">-1.084***</td>
-<td style="text-align: left;">-0.845***</td>
-<td style="text-align: left;">-0.606***</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Clay</td>
-<td style="text-align: left;">-0.006***</td>
-<td style="text-align: left;">-0.016***</td>
-<td style="text-align: left;">-0.085***</td>
-<td style="text-align: left;">0.015</td>
-<td style="text-align: left;">-0.029***</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(C_{org}\)</span></td>
-<td style="text-align: left;">0.612</td>
-<td style="text-align: left;">0.137</td>
-<td style="text-align: left;">1.250</td>
-<td style="text-align: left;">0.269</td>
-<td style="text-align: left;">1.454</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">pH</td>
-<td style="text-align: left;">-0.018***</td>
-<td style="text-align: left;">-0.021***</td>
-<td style="text-align: left;">-0.092***</td>
-<td style="text-align: left;">0.124</td>
-<td style="text-align: left;">0.012</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Silt</td>
-<td style="text-align: left;">-0.000***</td>
-<td style="text-align: left;">0.004</td>
-<td style="text-align: left;">0.008</td>
-<td style="text-align: left;">-0.015***</td>
-<td style="text-align: left;">-0.049***</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(R^2_m\)</span></td>
-<td style="text-align: left;">0.393</td>
-<td style="text-align: left;">0.212</td>
-<td style="text-align: left;">0.368</td>
-<td style="text-align: left;">0.362</td>
-<td style="text-align: left;">0.494</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(R^2_c\)</span></td>
-<td style="text-align: left;">0.996</td>
-<td style="text-align: left;">0.915</td>
-<td style="text-align: left;">0.993</td>
-<td style="text-align: left;">0.995</td>
-<td style="text-align: left;">0.997</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</figure>
-</div>
-</div>
-<p>The analysis reveals that the capacity-based P pools and the kinetic rate constant are controlled by different sets of soil properties, strongly supporting the hypotheses.</p>
-<p>In line with <strong>Hypothesis 2b</strong>, the kinetic capacity parameter, <strong>Desorbable P (</strong><span class="math inline">\(P_{desorb}\)</span>), showed a highly significant negative relationship with both dithionite-extractable iron (<span class="math inline">\(Fe_d\)</span>) and aluminum (<span class="math inline">\(Al_d\)</span>). This provides strong evidence that the total pool of free oxides, which represent the primary P sorption surfaces in the soil, is a key factor controlling the size of the readily desorbable P pool.</p>
-<p>Also confirming <strong>Hypothesis 2b</strong>, the <strong>Rate Constant (<em>k</em>)</strong> was governed by a different set of properties. It was not significantly influenced by the free oxides but instead showed a significant negative relationship with <code>Clay</code> content and a positive relationship with organic carbon (<span class="math inline">\(C_{org}\)</span>). This clearly distinguishes the kinetic component from the capacity component, suggesting that while oxides control <em>how much</em> P can be held, soil texture and organic matter influence <em>how fast</em> it can be released.</p>
-<p>The standard STP methods showed patterns consistent with <strong>Hypothesis 1b</strong>. <strong>Organic Carbon (</strong><span class="math inline">\(C_{org}\)</span>) had a highly significant positive effect on <span class="math inline">\(P_{AAE10}\)</span>, and <strong>pH</strong> had a significant negative effect, as predicted. The relationship of the STP measures with the dithionite-extractable oxides was less consistent than that of <span class="math inline">\(P_{desorb}\)</span>, with only <span class="math inline">\(P_{AAE10}\)</span> showing a significant negative link to <span class="math inline">\(Al_d\)</span>.</p>
-</section>
-<section id="sec-agronomic-modeling" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="sec-agronomic-modeling"><span class="header-section-number">3.5</span> Predictive Modeling of Agronomic Outcomes</h2>
-<p>To formally evaluate the predictive power of the standard STP methods against the kinetic parameters, a series of linear mixed-effects models were fitted for each of the primary agronomic response variables. To test the central hypotheses of this thesis, the predictive power of the kinetic parameters was directly compared against that of the standard STP methods for several key agronomic outcomes. For each response variable—Normalized Yield (<span class="math inline">\(Y_{rel}\)</span>), P Uptake (<span class="math inline">\(P_{up}\)</span>), and P Balance (<span class="math inline">\(P_{bal}\)</span>)—a set of competing linear mixed-effects models was constructed.</p>
-<p>To ensure a fair comparison, all models shared an identical random effects structure (<code>(1|year) + (1|Site) + (1|Site:block)</code>), differing only in their fixed effects. Four distinct models were evaluated: <span class="math inline">\(P_{CO_2}\)</span> Model: Used the standard water-soluble P test as the sole predictor. <span class="math inline">\(P_{AAE10}\)</span> Model: Used the standard chelate-extractable P test as the sole predictor. <strong>STP Interaction Model:</strong> Included both standard tests and their interaction term (<span class="math inline">\(P_{CO_2} * P_{AAE10}\)</span>) to capture their combined effect. <strong>Kinetic Model:</strong> Used the log-transformed desorbable P pool (<span class="math inline">\(log(P_{desorb})\)</span>), the rate constant (<em>k</em>), and their interaction (<span class="math inline">\(J_0\)</span>) as predictors.</p>
-<p>The performance of these models for each agronomic outcome is presented in the following sections.</p>
-<section id="anomaly-in-the-cadenazzo-yield-data" class="level3" data-number="3.5.1">
-<h3 data-number="3.5.1" class="anchored" data-anchor-id="anomaly-in-the-cadenazzo-yield-data"><span class="header-section-number">3.5.1</span> Anomaly in the Cadenazzo Yield Data</h3>
-<p>A preliminary visual analysis of the agronomic data revealed a significant anomaly at the Cadenazzo (CAD) site. As shown in <a href="#fig-yield-comparison" class="quarto-xref">Figure&nbsp;6</a>, the Cadenazzo site exhibited substantially higher overall yields than all other locations. More critically, the yield response to P fertilization did not follow the expected agronomic trend. The zero-fertilizer treatment (<code>P0</code>) showed the highest median yield, while the surplus treatment (<code>P166</code>) was among the lowest.</p>
-<p>A simple label swap between <code>P0</code> and <code>P166</code> was hypothesized and tested (<a href="#fig-yield-cadenazzo-fix" class="quarto-xref">Figure&nbsp;7</a>). While this correction established a more monotonic trend, the resulting pattern remained questionable, with the corrected <code>P166</code> yield being inexplicably higher than the <code>P100</code> and <code>P133</code> treatments, which is not a typical biological response.</p>
-<p>Unfortunately, a deeper investigation into the cause of this anomaly was impossible, as the corresponding soil analysis data (STPs, organic carbon, etc.) for the Cadenazzo site were unavailable due to sample loss. Without this data, it cannot be determined whether the issue stems from a persistent micro-site anomaly, a more complex data recording error, or other unknown factors. Given these unresolved inconsistencies and the site’s unusually high productivity, the Cadenazzo data was retained in the models but is recognized as a significant source of unexplained variance that likely contributed to the poor predictive performance of all models for yield-related metrics like <span class="math inline">\(Y_{norm}\)</span> and <span class="math inline">\(Y_{rel}\)</span>.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-yield-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-yield-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-yield-comparison-1.png" class="img-fluid figure-img" width="672">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yield-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Annual dry matter yield across P fertilization treatments, faceted by experimental site, highlighting the anomalous pattern at Cadenazzo (CAD).
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-yield-cadenazzo-fix" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-yield-cadenazzo-fix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-yield-cadenazzo-fix-1.png" class="img-fluid figure-img" width="672">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-yield-cadenazzo-fix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7: Comparison of Cadenazzo yields with original and swapped (P0 &lt;&gt; P166) treatment labels.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="predicting-site-normalized-yield-y_norm" class="level3" data-number="3.5.2">
-<h3 data-number="3.5.2" class="anchored" data-anchor-id="predicting-site-normalized-yield-y_norm"><span class="header-section-number">3.5.2</span> Predicting Site-Normalized Yield (<span class="math inline">\(Y_{norm}\)</span>)</h3>
-<p>The analysis reveals a clear and striking difference between the predictive power of the standard STP methods and the kinetic parameters for site-normalized yield, as seen in <a href="#tbl-ynorm-models" class="quarto-xref">Table&nbsp;4</a>.</p>
-<div class="cell">
-<div id="tbl-ynorm-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ynorm-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4: Results of linear mixed-effects models predicting Site-Normalized Yield (<span class="math inline">\(Y_{norm}\)</span>).
-</figcaption>
-<div aria-describedby="tbl-ynorm-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 37%">
-<col style="width: 14%">
-<col style="width: 16%">
-<col style="width: 21%">
-<col style="width: 10%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Predictor</th>
-<th style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></th>
-<th style="text-align: left;">STP-interaction</th>
-<th style="text-align: left;">kinetic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Intercept</td>
-<td style="text-align: left;">1.059***</td>
-<td style="text-align: left;">0.532***</td>
-<td style="text-align: left;">1.096***</td>
-<td style="text-align: left;">0.980</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">2.262</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">0.931</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{desorb}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">-0.063</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">0.120***</td>
-<td style="text-align: left;">-0.006</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></td>
-<td style="text-align: left;">0.162***</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">0.137</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2} \times P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">0.016</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(R^2_m\)</span></td>
-<td style="text-align: left;">0.218</td>
-<td style="text-align: left;">0.198</td>
-<td style="text-align: left;">0.220</td>
-<td style="text-align: left;">0.014</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(R^2_c\)</span></td>
-<td style="text-align: left;">0.358</td>
-<td style="text-align: left;">0.474</td>
-<td style="text-align: left;">0.365</td>
-<td style="text-align: left;">0.360</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</figure>
-</div>
-</div>
-<p>The analysis for site-normalized yield showed that both the <code>$P_{CO_2}$</code> and <code>$P_{AAE10}$</code> models had highly significant coefficients and explained 21.8% and 19.8% of the variance, respectively. The combined STP-interaction model performed best, explaining 22% of the variance. In contrast, the kinetic model had a marginal R² of only 1.4%, and none of its parameters were statistically significant.</p>
-</section>
-<section id="predicting-national-normalized-yield-y_rel" class="level3" data-number="3.5.3">
-<h3 data-number="3.5.3" class="anchored" data-anchor-id="predicting-national-normalized-yield-y_rel"><span class="header-section-number">3.5.3</span> Predicting National-Normalized Yield (<span class="math inline">\(Y_{rel}\)</span>)</h3>
-<p>The models predicting national-normalized yield (<span class="math inline">\(Y_{rel}\)</span>) reveal that both standard and kinetic soil phosphorus tests struggle to explain the variance in crop yields on their own, though standard tests show slightly better performance in this context.</p>
-<div class="cell">
-<div id="tbl-yrel-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-yrel-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;5: Results of linear mixed-effects models predicting National-Normalized Yield (<span class="math inline">\(Y_{rel}\)</span>).
-</figcaption>
-<div aria-describedby="tbl-yrel-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 36%">
-<col style="width: 14%">
-<col style="width: 15%">
-<col style="width: 20%">
-<col style="width: 12%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Predictor</th>
-<th style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></th>
-<th style="text-align: left;">STP-interaction</th>
-<th style="text-align: left;">kinetic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Intercept</td>
-<td style="text-align: left;">104.862***</td>
-<td style="text-align: left;">75.343***</td>
-<td style="text-align: left;">130.274***</td>
-<td style="text-align: left;">56.375</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">377.498**</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">171.507**</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{desorb}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">-27.486*</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">7.111**</td>
-<td style="text-align: left;">-6.537</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></td>
-<td style="text-align: left;">8.853**</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">23.091</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2} \times P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">-3.110</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(R^2_m\)</span></td>
-<td style="text-align: left;">0.074</td>
-<td style="text-align: left;">0.063</td>
-<td style="text-align: left;">0.078</td>
-<td style="text-align: left;">0.022</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(R^2_c\)</span></td>
-<td style="text-align: left;">0.569</td>
-<td style="text-align: left;">0.537</td>
-<td style="text-align: left;">0.596</td>
-<td style="text-align: left;">0.439</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</figure>
-</div>
-</div>
-<section id="performance-of-standard-stp-methods" class="level4" data-number="3.5.3.1">
-<h4 data-number="3.5.3.1" class="anchored" data-anchor-id="performance-of-standard-stp-methods"><span class="header-section-number">3.5.3.1</span> Performance of Standard STP Methods</h4>
-<p>The models based on standard soil tests, <code>$P_{CO_2}$</code> and <code>$P_{AAE10}$</code>, were significant predictors, explaining 7.4% and 6.3% of the variance in yield, respectively. The model including their interaction term performed slightly better, explaining 7.8% of the variance. The model based on kinetic parameters demonstrated lower predictive power, with a marginal R² of 2.2%. A critical observation across all models is the large discrepancy between the marginal R² (<span class="math inline">\(R^2_m\)</span>) and the conditional R² (<span class="math inline">\(R^2_c\)</span>). For instance, in the best-performing STP model, the marginal R² is only 0.078, but the conditional R² is 0.596.</p>
-</section>
-</section>
-<section id="predicting-p-uptake-p_up" class="level3" data-number="3.5.4">
-<h3 data-number="3.5.4" class="anchored" data-anchor-id="predicting-p-uptake-p_up"><span class="header-section-number">3.5.4</span> Predicting P-Uptake (<span class="math inline">\(P_{up}\)</span>)</h3>
-<p>When predicting P-uptake, both the standard and kinetic models demonstrate similarly weak predictive power, with none of the approaches standing out as superior.</p>
-<div class="cell">
-<div id="tbl-pexport-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pexport-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;6: Results of linear mixed-effects models predicting P-Export (<span class="math inline">\(P_{up}\)</span>).
-</figcaption>
-<div aria-describedby="tbl-pexport-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 36%">
-<col style="width: 14%">
-<col style="width: 15%">
-<col style="width: 20%">
-<col style="width: 12%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Predictor</th>
-<th style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></th>
-<th style="text-align: left;">STP-interaction</th>
-<th style="text-align: left;">kinetic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Intercept</td>
-<td style="text-align: left;">27.522***</td>
-<td style="text-align: left;">8.090</td>
-<td style="text-align: left;">30.632*</td>
-<td style="text-align: left;">29.599***</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">22.622</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">11.928</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{desorb}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1.954</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">4.824***</td>
-<td style="text-align: left;">-0.805</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></td>
-<td style="text-align: left;">5.177***</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">8.069</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2} \times P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">-0.814</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(R^2_m\)</span></td>
-<td style="text-align: left;">0.064</td>
-<td style="text-align: left;">0.073</td>
-<td style="text-align: left;">0.065</td>
-<td style="text-align: left;">0.064</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(R^2_c\)</span></td>
-<td style="text-align: left;">0.625</td>
-<td style="text-align: left;">0.603</td>
-<td style="text-align: left;">0.623</td>
-<td style="text-align: left;">0.648</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</figure>
-</div>
-</div>
-<p>When predicting P-uptake, the individual standard soil tests, <span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>, were significant positive predictors, explaining 6.4% and 7.3% of the variance, respectively. The interaction model did not improve the explained variance. The kinetic model performed on par with the standard individual tests, explaining 6.4% of the variance, though none of its parameters were individually significant. As with yield, a large difference between the marginal and conditional R² values was observed across all models.</p>
-</section>
-<section id="predicting-p-balance-p_bal" class="level3" data-number="3.5.5">
-<h3 data-number="3.5.5" class="anchored" data-anchor-id="predicting-p-balance-p_bal"><span class="header-section-number">3.5.5</span> Predicting P-Balance (<span class="math inline">\(P_{bal}\)</span>)</h3>
-<p>The prediction of the P-Balance (<span class="math inline">\(P_{bal}\)</span>) reveals a stark and decisive contrast between the kinetic and standard STP approaches, providing the strongest evidence in favor of the kinetic methodology.</p>
-<div class="cell">
-<div id="tbl-pbalance-models" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pbalance-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;7: Results of linear mixed-effects models predicting P-Balance (<span class="math inline">\(P_{bal}\)</span>).
-</figcaption>
-<div aria-describedby="tbl-pbalance-models-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 36%">
-<col style="width: 14%">
-<col style="width: 15%">
-<col style="width: 20%">
-<col style="width: 12%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Predictor</th>
-<th style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></th>
-<th style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></th>
-<th style="text-align: left;">STP-interaction</th>
-<th style="text-align: left;">kinetic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Intercept</td>
-<td style="text-align: left;">4.441</td>
-<td style="text-align: left;">7.691</td>
-<td style="text-align: left;">3.649</td>
-<td style="text-align: left;">43.833***</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">84.993</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">33.029</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{desorb}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">16.947***</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">-0.794</td>
-<td style="text-align: left;">0.187</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2}\)</span></td>
-<td style="text-align: left;">-0.928</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">-2.442</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{CO_2} \times P_{AAE10}\)</span></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">0.462</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><span class="math inline">\(R^2_m\)</span></td>
-<td style="text-align: left;">0.001</td>
-<td style="text-align: left;">0.001</td>
-<td style="text-align: left;">0.001</td>
-<td style="text-align: left;">0.572</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(R^2_c\)</span></td>
-<td style="text-align: left;">0.810</td>
-<td style="text-align: left;">0.807</td>
-<td style="text-align: left;">0.811</td>
-<td style="text-align: left;">0.744</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</figure>
-</div>
-</div>
-<p>The kinetic model emerged as a strong predictor of the P-Balance, explaining 57.2% of the variance, with the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) being a highly significant predictor. In contrast, all models based on the standard STP methods had marginal R² values of 0.1% and no significant predictors. The conditional R² for the STP models was high (around 0.81), while the kinetic model had both a high marginal R² (0.572) and a high conditional R² (0.744).</p>
+<!-- {{< include writing/25-results.qmd >}} -->
+<div style="page-break-after: always;"></div>
+<!-- {{< include writing/30-discussion.qmd >}} -->
+<div style="page-break-after: always;"></div>
+<!-- {{< include writing/35-conclusion.qmd >}} -->
+<div style="page-break-after: always;"></div>
+<!-- {{< include writing/40-acknowledgments.qmd >}} -->
 <div style="page-break-after: always;"></div>
 </section>
 </section>
 </section>
-<section id="discussion" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Discussion</h1>
-<p>Before addressing the individual hypotheses, it is crucial to first evaluate the overall feasibility of the experimental results and the integrity of the underlying data. A critical examination of the agronomic data revealed a significant and implausible anomaly at the Cadenazzo (CAD) site. Across multiple years, the zero-fertilizer treatment (<code>P0</code>), which has not received P for nearly 40 years, consistently showed higher median yields than the optimally fertilized treatments. This contradicts fundamental agronomic principles and stands in contrast to previous findings from the same long-term experiment <span class="citation" data-cites="hirte2021">(<a href="#ref-hirte2021" role="doc-biblioref"><strong>hirte2021?</strong></a>)</span>, suggesting a systematic issue with the data from this specific site. As the corresponding soil analysis data for Cadenazzo was unavailable, a definitive explanation for this anomaly could not be found. This unresolved issue, combined with the site’s uniquely high productivity, introduces significant unexplained variance and must be considered when interpreting the performance of the predictive models, particularly for yield-based metrics.</p>
-<p>A second key observation is the consistent, large discrepancy between the marginal R-squared (<span class="math inline">\(R^2_m\)</span>) and conditional R-squared (<span class="math inline">\(R^2_c\)</span>) values in the models for yield and P-uptake. This finding is plausible and expected, as it underscores that in P-sufficient Swiss soils, crop yield is primarily co-limited by overarching pedoclimatic factors rather than P availability alone. The Swiss fertilization guidelines (GRUD), on which the <code>P100</code> treatment is based, were designed to ensure P is never limiting, which over decades has led to a widespread accumulation of “legacy P” in many agricultural soils <span class="citation" data-cites="Hirte2018Relationship">(<a href="#ref-Hirte2018Relationship" role="doc-biblioref">Hirte et al., 2018</a>)</span>. Consequently, the <code>P100</code> and <code>P166</code> treatments in this study were likely operating in a P-surplus range, well above the critical threshold for a yield response. This lack of P-limitation means the experiment was not designed to effectively test the sensitivity of different soil P metrics for predicting yield, which fundamentally influences the size and significance of the effects we could detect.</p>
-<p>Therefore, a marginal R² of around 8% for a model predicting national-normalized yield based on a single soil P metric should not be considered low. In fact, it is arguably higher than expected, demonstrating that despite the overwhelming influence of climate and the general P-sufficiency of the soils, both static and kinetic P tests can still capture a statistically significant, albeit small, portion of the variance in crop productivity. With this context established, we can proceed to a detailed evaluation of the specific hypotheses.</p>
-<section id="hypothesis-1-the-nuanced-role-of-standard-soil-tests" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="hypothesis-1-the-nuanced-role-of-standard-soil-tests"><span class="header-section-number">4.1</span> Hypothesis 1: The Nuanced Role of Standard Soil Tests</h2>
-<p><strong>Hypothesis 1a</strong> posited that standard STP methods (<span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) would correlate with the P-Balance but be weak predictors of crop yield. The findings challenge this hypothesis in two unexpected ways.</p>
-<p>First, the STP methods <strong>failed completely to predict the P-Balance</strong>. The models showed no relationship between these static tests and the long-term nutrient surplus or deficit, directly contradicting our hypothesis. This is a critical finding, as it suggests that while tests like <span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span> are sensitive to short-term changes from annual fertilization, they do not adequately capture the cumulative, long-term P status of the soil system.</p>
-<p>Second, the performance of STP methods in predicting yield was highly context-dependent. When predicting <strong>site-normalized yield (</strong><span class="math inline">\(Y_{norm}\)</span>), which assesses the yield response relative to a site’s own potential, the STP models were remarkably effective, explaining up to 22% of the variance. This result contradicts the part of our hypothesis that expected weak performance and suggests that for <em>within-field</em> management, where the goal is to ensure P is not limiting relative to that specific environment’s potential, traditional capacity-based tests are well-suited and robust.</p>
-<p>However, when predicting <strong>national-normalized yield (</strong><span class="math inline">\(Y_{rel}\)</span>) and <strong>P-uptake (</strong><span class="math inline">\(P_{up}\)</span>), the STP models performed poorly, aligning with our initial expectations. The weak performance in predicting yield and P-uptake can likely be attributed to several factors. Firstly, crop yield in field settings is often co-limited by multiple factors beyond phosphorus. Year-to-year variations in climate, such as solar radiation and water availability, as well as the supply of other key nutrients like nitrogen, can become the primary drivers of productivity, masking the more subtle influence of soil P status <span class="citation" data-cites="Sadras2002 Sinclair1998">(<a href="#ref-Sadras2002" role="doc-biblioref">Sadras, 2002</a>; <a href="#ref-Sinclair1998" role="doc-biblioref">Sinclair, 1998</a>)</span>. The large gap between the marginal and conditional <span class="math inline">\(R^2\)</span> in our models strongly suggests that these site- and year-specific variables, captured by the random effects, were indeed the dominant factors.</p>
-<p>Furthermore, response variables like <span class="math inline">\(P_{up}\)</span> and <span class="math inline">\(P_{bal}\)</span> are calculated as the product of yield and P concentration, which can introduce and propagate measurement uncertainty. If yield itself is only weakly correlated with soil P status, this “noise” is carried into the derived variables, making it even more difficult to establish a clear statistical relationship <span class="citation" data-cites="Rowe2016LegacyP">(<a href="#ref-Rowe2016LegacyP" role="doc-biblioref">Rowe et al., 2016</a>)</span>.</p>
-<p>The predictive weakness may also stem from the experimental design and modeling approach. This study utilized samples primarily from the P-deficient (0%) and P-sufficient (100% and 167%) treatments. Crop yield response to fertilizer typically follows a saturation curve, and it is possible that our dataset was concentrated on the less responsive parts of this curve, thus lacking statistical power in the most dynamic range <span class="citation" data-cites="Schlesinger2009">(<a href="#ref-Schlesinger2009" role="doc-biblioref">Schlesinger, 2009</a>)</span>. While our use of a linear mixed-effects model was appropriate for the available data, it cannot capture the diminishing returns characteristic of crop nutrient response. As demonstrated by <strong>Hirte et al.&nbsp;(2021)</strong> on these same STYCS trials, non-linear models like the Mitscherlich equation are better suited for describing such saturation kinetics but would require data from the intermediate fertilization levels to be applied robustly <span class="citation" data-cites="Hirte2021Yield">(<a href="#ref-Hirte2021Yield" role="doc-biblioref">Hirte, Stüssel, et al., 2021</a>)</span>.</p>
-<p>Regarding <strong>Hypothesis 1b</strong>, the findings were largely supportive. The analysis of soil properties confirmed that STP measurements are not pure measures of P but are instead complex indices reflecting a combination of P status and overarching soil chemistry. The predicted negative relationship between <strong>pH</strong> and <span class="math inline">\(P_{AAE10}\)</span> was observed, and the underlying chemical mechanisms for this are well-established, particularly in calcareous or high-pH soils like several in this study (e.g., ALT, GRA).</p>
-<p>The AAE10 method relies on two key components: ammonium acetate as a buffer and EDTA as a chelating agent to dissolve mineral-bound P. However, its effectiveness is compromised in soils with high pH and an abundance of free calcium (<span class="math inline">\(Ca^{2+}\)</span>) and magnesium (<span class="math inline">\(Mg^{2+}\)</span>) cations, often from calcium carbonates (<span class="math inline">\(CaCO_3\)</span>). There are two primary reasons for this:</p>
-<ol type="1">
-<li><strong>Consumption of EDTA:</strong> The primary role of EDTA is to bind to cations like iron and aluminum that precipitate phosphate, thereby releasing P into the solution. However, EDTA has a high affinity for divalent cations, so in calcareous soils, a significant portion of the EDTA is consumed by binding to the abundant free <span class="math inline">\(Ca^{2+}\)</span> and <span class="math inline">\(Mg^{2+}\)</span>, making it less available to extract the target phosphate compounds <span class="citation" data-cites="Fixen1993">(<a href="#ref-Fixen1993" role="doc-biblioref">Fixen &amp; Grove, 1993</a>)</span>.</li>
-<li><strong>Buffering Capacity:</strong> The acetate buffer in the AAE10 solution is designed to maintain a consistent pH. However, soils with high carbonate content have a strong natural buffering capacity that can resist the pH change intended by the extractant, further reducing its efficiency in dissolving pH-sensitive P minerals.</li>
-</ol>
-<p>This known limitation explains why <span class="math inline">\(P_{AAE10}\)</span> can underestimate plant-available P in calcareous soils and supports our finding of a significant pH-dependence. It underscores that the choice of an appropriate soil test must take into account the fundamental chemistry of the soil matrix itself.</p>
-</section>
-<section id="hypothesis-2-characterizing-p-desorption-kinetics" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="hypothesis-2-characterizing-p-desorption-kinetics"><span class="header-section-number">4.2</span> Hypothesis 2: Characterizing P Desorption Kinetics</h2>
-<p><strong>Hypothesis 2a</strong> focused on the methodological feasibility of characterizing P desorption. It predicted that while the process would follow first-order kinetics, a non-linear modeling approach would be more robust than the original linearized method proposed by Flossmann &amp; Richter (1982). The results from this thesis unequivocally support this hypothesis. Our initial attempts to linearize the desorption data failed systematically, with model intercepts deviating significantly from the required origin, thus violating a core assumption of the method.</p>
-<p>This statistical failure has a fundamental chemical basis. The linearized model requires an <em>a priori</em> estimate of the maximum desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>), which Flossmann and Richter approximated by subtracting a water-soluble P measurement from a stronger chemical extractant (e.g., <span class="math inline">\(P_{desorb} \approx P_{CAL} - P_{H2O}\)</span>). However, in all but the most severely depleted soils, the P value from the stronger extractant is orders of magnitude greater than that from water (<span class="math inline">\(P_{CAL} &gt;&gt; P_{H2O}\)</span>). This leads to an estimated <span class="math inline">\(P_{desorb}\)</span> that is vastly higher than the actual solubility limit of phosphate in the soil solution. A kinetic desorption curve in water can physically only plateau at the concentration dictated by mineral solubility; by providing the model with a theoretical maximum that is chemically unattainable, the linearization becomes mathematically invalid. This explains why the linearized approach failed and underscores the necessity of a method that does not rely on such flawed assumptions.</p>
-<p>In contrast, the direct application of a non-linear mixed-effects model successfully captured the curvilinear nature of P release for nearly all samples by estimating <span class="math inline">\(P_{desorb}\)</span> directly from the kinetic data itself. This confirms that while the foundational concept of first-order kinetics is sound, modern computational methods that avoid data transformation provide a far more accurate and statistically valid approach to parameter estimation <span class="citation" data-cites="Kuang2012Phosphorus">(<a href="#ref-Kuang2012Phosphorus" role="doc-biblioref">Kuang et al., 2012</a>)</span>.</p>
-<p>While the non-linear model proved robust, visual inspection of the kinetic curves revealed that two specific replicates—from the P100 and P166 treatments at the Ellighausen site—showed markedly higher and faster P release than their counterparts. To determine whether this was due to a methodological artifact or true field variability, the standard soil test results for all replicates at this site were examined (<a href="#fig-ell-outlier-check-dual-axis" class="quarto-xref">Figure&nbsp;8</a>). The diagnostic plot clearly shows that these same two replicates also registered as significant outliers for both <span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>. This consistent pattern across three independent measurement techniques strongly suggests that the deviation is not a result of error in the kinetic procedure, but rather reflects genuine <strong>micro-site heterogeneity</strong>.</p>
-<p>Such heterogeneity could arise from several sources. One plausible explanation, given the decades-long application of Triple-Superphosphate (primarily monocalcium phosphate), is the presence of residual, undissolved fertilizer granules in the soil matrix. The accidental inclusion of even a single such particle in the 10g subsample for a specific replicate would lead to artificially inflated P values across all chemical extractions <span class="citation" data-cites="Fisher1925">(<a href="#ref-Fisher1925" role="doc-biblioref">Fisher, 1925</a>)</span>. This highlights a fundamental challenge in soil analysis and reinforces the importance of robust modeling. The use of a non-linear <em>mixed-effects</em> model is particularly advantageous in this context, as it is designed to handle such individual variations by estimating a common overall trend while allowing for random deviations for each sample, thereby preventing a few anomalous data points from unduly influencing the overall conclusions [<span class="citation" data-cites="Fisher1925">Fisher (<a href="#ref-Fisher1925" role="doc-biblioref">1925</a>)</span>; Fisher1935; Yates1964; <span class="citation" data-cites="VanEs2002">Van Es et al. (<a href="#ref-VanEs2002" role="doc-biblioref">2002</a>)</span>].</p>
-<p>Ultimately, the successful validation of our derived parameters against established Isotopic Exchange Kinetic (IEK) data further solidifies the robustness of our methodological approach, demonstrating that this simpler extraction method effectively captures both the capacity (<span class="math inline">\(P_{desorb}\)</span>) and intensity (<em>k</em>) aspects of P dynamics.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div id="fig-ell-outlier-check-dual-axis" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ell-outlier-check-dual-axis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-ell-outlier-check-dual-axis-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ell-outlier-check-dual-axis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: Diagnostic plot for <span class="math inline">\(P_{\text{AAE10}}\)</span> (left axis) and <span class="math inline">\(P_{\text{CO2}}\)</span> (right axis) for all replicates at the Ellighausen (ELL) site, faceted by P fertilization treatment.
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p><strong>Hypothesis 2b</strong> predicted that the derived kinetic parameters would be significantly influenced by fundamental soil properties, and this was also strongly supported by the findings. The analysis revealed a clear and meaningful separation in the drivers of the capacity and kinetic components. The desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>), representing the quantity of readily available P, was strongly and negatively correlated with dithionite-extractable iron and aluminum. This aligns perfectly with established soil science principles, as these free oxides provide the primary sorption surfaces that bind P, thereby controlling the size of the exchangeable pool <span class="citation" data-cites="Brady2016Soils Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref">Sposito, 2008</a>)</span>.</p>
-<p>Conversely, the rate constant (<em>k</em>), which represents the speed of P release, was not primarily driven by the oxide content but was instead significantly related to soil texture (clay content) and pH. The negative relationship with clay content is logical, as higher clay content can increase the tortuosity of diffusion pathways, effectively slowing the movement of phosphate from the solid phase to the bulk solution <span class="citation" data-cites="Nye2000Solute">(<a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. The influence of pH is also consistent with known phosphate chemistry, as pH governs the speciation of orthophosphate ions and their affinity for mineral surfaces <span class="citation" data-cites="Sparks2003Environmental">(<a href="#ref-Sparks2003Environmental" role="doc-biblioref">Sparks, 2003</a>)</span>. These distinct relationships confirm that <span class="math inline">\(P_{desorb}\)</span> and <em>k</em> are not redundant parameters; they represent fundamentally different aspects of P availability—the size of the pool and the rate of access to it—which are governed by different soil-chemical and physical properties.</p>
-</section>
-<section id="hypothesis-3-the-context-dependent-power-of-kinetic-parameters" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="hypothesis-3-the-context-dependent-power-of-kinetic-parameters"><span class="header-section-number">4.3</span> Hypothesis 3: The Context-Dependent Power of Kinetic Parameters</h2>
-<p>The central hypothesis of this thesis predicted that a model incorporating kinetic parameters (<em>k</em> and <span class="math inline">\(P_{desorb}\)</span>) would explain a significantly greater proportion of the variance in agronomic outcomes compared to models based on standard, static STP measurements. The results provide a nuanced verdict: the hypothesis was strongly supported in one context, but clearly refuted in others, revealing that the utility of kinetic parameters is highly dependent on the specific agronomic question being addressed.</p>
-<p>The most compelling support for <strong>Hypothesis 3</strong> came from the prediction of the <strong>P-Balance (</strong><span class="math inline">\(P_{bal}\)</span>). In this analysis, the kinetic model, driven by the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>), was exceptionally powerful, explaining over 57% of the variance. In stark contrast, the standard STP models had zero predictive power. This is the most significant finding of this study. The P-Balance represents the long-term integration of nutrient inputs and outputs, and the fact that a kinetic capacity parameter (<span class="math inline">\(P_{desorb}\)</span>) so perfectly captures this state demonstrates its superiority for assessing the cumulative effects of soil management. It suggests that while standard tests reflect the immediate chemical environment, <span class="math inline">\(P_{desorb}\)</span> provides a more holistic measure of the soil’s P supply capacity and its legacy from past fertilization.</p>
-<p>However, when predicting yield and P-uptake, the hypothesis was not supported. The reasons for this are likely multifaceted and highlight several limitations of the current study. A primary factor is that the P fertilization levels analyzed (0%, 100%, and 167%) may not have created conditions where P was the primary limiting factor for yield. The standard 100% fertilization rate in the STYCS trial is already designed for optimal yield, and decades of application at this level have likely led to significant “legacy P” accumulation <span class="citation" data-cites="Hirte2018Relationship">(<a href="#ref-Hirte2018Relationship" role="doc-biblioref">Hirte et al., 2018</a>)</span>. Consequently, the 167% treatment would only add to this surplus, while the 0% treatment represents an extreme deficiency. A direct comparison between kinetic and static tests would be far more powerful if intermediate levels (e.g., 33% and 67%) were included, as this is the range where the <em>rate</em> of P supply is most likely to be a yield-limiting factor.</p>
-<p>Furthermore, the linear mixed-effects models used, while appropriate for the data structure, could not account for two major sources of variation. First, as seen in the exploratory analysis in with the mlr3-model-comparisons, weather variables alone were often strong predictors of yield. The <code>(1|year)</code> and <code>(1|Site)</code> random effects in our models are proxies for this, bundling complex pedoclimatic information—such as growing degree days, soil moisture patterns, and soil textural differences—into single terms. These effects were so large that they overshadowed the more subtle influence of soil P status. Future studies could improve predictive power by incorporating specific weather covariates as fixed effects, allowing for a clearer isolation of the soil P signal.</p>
-<p>Second, the assumption of a linear P response is a simplification. As shown by <strong>Hirte et al.&nbsp;(2021)</strong>, crop yield response to P is non-linear and best described by a saturation curve. This is particularly relevant given the high yields observed at some sites, such as Cadenazzo, where relative yields reached up to 300% in some years, a level far beyond any plausible linear response to P. A more robust modeling approach would involve fitting non-linear models, though this would, as previously noted, require data from the full spectrum of fertilization treatments.</p>
-<div style="page-break-after: always;"></div>
-<section id="conclusion-and-outlook" class="level3" data-number="4.3.1">
-<h3 data-number="4.3.1" class="anchored" data-anchor-id="conclusion-and-outlook"><span class="header-section-number">4.3.1</span> Conclusion and Outlook</h3>
-<p>This thesis set out to test the hypothesis that P desorption kinetics, grounded in the diffusion-limited reality of P uptake, would provide a superior prediction of agronomic outcomes compared to conventional static soil tests (STPs). The first step required a critical re-evaluation of the kinetic methodology itself. We successfully demonstrated that the original linearized approach of Flossmann &amp; Richter (1982) is based on a chemically flawed premise, where the estimated desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) far exceeds the physical solubility of phosphate. By implementing a direct non-linear modeling approach, we derived robust kinetic parameters free from these assumptions. However, this refined method remains sensitive, as evidenced by outlier replicates that were ultimately attributed to the “nugget effect” of residual fertilizer granules, a persistent challenge in soil analysis.</p>
-<p>The comparative analysis of the predictive models yielded a nuanced picture. Contrary to our primary hypothesis, the kinetic parameters were not universally superior. For predicting site- and national-normalized yield (<span class="math inline">\(Y_{norm}\)</span>, <span class="math inline">\(Y_{rel}\)</span>) and P-uptake (<span class="math inline">\(P_{up}\)</span>), the kinetic model offered no significant advantage and, in some cases, performed worse than standard STP methods. This strongly suggests that under the conditions of the STYCS trial, where P was likely not the primary limiting factor for yield due to a history of adequate fertilization, the subtle differences in P supply dynamics were overshadowed by larger environmental drivers.</p>
-<p>However, the most striking finding of this study was the exceptional success of the kinetic model in predicting the <strong>P-Balance (<span class="math inline">\(P_{bal}\)</span>)</strong>. While STP methods completely failed, the desorbable P pool (<span class="math inline">\(P_{desorb}\)</span>) alone explained over 57% of the variance in the long-term nutrient budget. The interpretation of this is critical: the P-Balance is an indicator of nutrient stewardship and environmental risk. A soil with a highly positive P-Balance has a large store of “legacy P,” which can sustain future crops but also poses a risk of loss to the environment. The success of <span class="math inline">\(P_{desorb}\)</span> as a predictor means it is a far superior metric for assessing this long-term soil P status and sustainability than conventional STPs.</p>
-<p>Furthermore, this study provides evidence questioning the concurrent use of multiple STP methods. While systems like GRUD and VDLUFA employ two tests to differentiate P-intensity and P-capacity, our models showed that <span class="math inline">\(P_{CO_2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span> contained largely redundant information for predicting agronomic outcomes. The non-significant interaction term indicated that combining them did not improve predictions. This is a crucial finding, suggesting that while these methods may extract chemically distinct P pools—as shown by the isotopic exchange data from Demaria et al.—this chemical difference does not translate into a functional difference for agronomic modeling in this context.</p>
-<p>Looking forward, this work should be seen as a successful “beta-trial” for a promising, mechanistically-grounded soil testing approach. The current kinetic protocol is in dire need of refinement to improve its robustness. The centrifugation step (4000 rpm for 15 minutes) created highly compact sediments, particularly in clay-rich soils. Consequently, the magnetic stir bar required considerable time (up to 10 minutes) to achieve full resuspension, meaning the reactive surface area was not constant at the beginning of the experiment, violating a key assumption of kinetic modeling. Furthermore, the decanting process left a residue of P-rich colloids on the sediment surface, which, upon resuspension, likely contributed to an immediate release of P, invalidating the assumption of P(t=0)=0 and necessitating a time correction in our model.</p>
-<p>More fundamentally, a soil suspension with a 1:20 soil-to-water ratio is a highly artificial system that does not reflect the conditions at an intact soil-matrix to soil-solution interface. The process of suspension creates new reactive surfaces while simultaneously diluting sorption sites, and it remains an open question how kinetic parameters derived from such a system translate to the processes occurring in a structured field soil. A crucial element missing from all such chemical extractions is the <strong>active plant sink</strong>. A plant root constantly removes phosphate from the solution, fundamentally altering the chemical equilibrium. The rate of uptake is not a simple chemical reaction but is governed by biological Michaelis-Menten kinetics of membrane transporters. How the purely chemical rate constant (<em>k</em>) from a lab experiment corresponds to the biologically-driven P flux in the rhizosphere is unknown and represents a key knowledge gap that must be studied to understand how far these artificial results can be extrapolated to field conditions.</p>
-<p>The primary limitation of this study was the experimental context, which also informs the most promising directions for future research. A more robust approach would be to deconstruct composite response variables like <span class="math inline">\(P_{up}\)</span>. Future studies should model crop <strong>yield</strong> and plant P <strong>concentration</strong> separately. Yield should be predicted using the primary agronomic drivers (N supply, climate variables like temperature and precipitation, soil texture), while the P concentration in plant tissue should be modeled as a direct function of soil P availability metrics like the kinetic parameters. The product of these two independent models would provide a more mechanistically sound prediction of P-uptake. To properly test this, future experiments must include intermediate fertilization levels (P33, P66) to capture the P-responsive range and allow for non-linear modeling. By refining both the experimental protocol and the modeling strategy in this way, P desorption kinetics holds the potential to evolve into a powerful tool that provides not just a number, but a true understanding of a soil’s capacity to supply phosphorus over time.</p>
-<div style="page-break-after: always;"></div>
-</section>
-</section>
-</section>
-<section id="acknowledgments" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Acknowledgments</h1>
-<p>Without my wife I could not have again and again found the energy and time to work on my deeply personally motivated thesis. While she gave me the space to work, she tended to our little son, who in return with his intruiging way of demanding and negotiating play-time, attention and proximity, constantly earthed and reminded me of our dependence on others. The idea for this thesis came from many lengthy discussions with Frank Liebisch, where he, although being so busy, invested so much time in my development to an agronomist during my internship. He endured over and over my harsh critique on the nature and issues of agronomic research, and understood my drustration on the limitations posed on agronomic researchers, while still giving me hope in the possibility of progress and knowledge gain. It is not common, that a master student can choose his own topic and methodology for his master thesis, Emmanuel Frossard agreed immediately upon hearing from my idea. He knew that the task I set myself was difficult and extensive, but he not only showed confidence in my ability to grow on the pitfalls and issues, he would always remind me with his charactersitic words. “Il faut avoir le courage”, that acknowloding one’s own limitation and ignorance and simultaneously making falsifiable claims and to stand for them, is a cardinal attitude I can grow into. The support of Frank and Emmanuel went beyond their responsibility as specialists, I will never forget the kindness and patience shown to me, knowing that I behaved often spiky and frustrated, when my abstract and often idealistic considerations met the hard reality of soil-chemisty-measurements. Gratiously Emmanuel Frossard provided me access to the group’s laboratory, where Laurie Schönholzer supported me heavily, developing the protocol for my experiments. She not only shared her professional knowledge, but would also educate me on the code how to properly prepare and clean a lab. My wife reports, that I behave differently since then when it comes to our household. I benefited increadibly from this thesis. Lukas Graz introduced me to Quarto and helped me setting up a workflow, that is both safe in terms of data-loss and reproducible. He relentlessly explained me the pitfalls when using hierarchical models, aided in the selection of the effect-structure and taught me both as a friend and specialist invaluable lessons, how to structure and effiently write R-code, approaching complex real data. He encouraged me over and over, this thesis would not have been possible without him. I would also like to acknowledge the use of Google’s Gemini language model in the preparation of this thesis. It served as a valuable programming assistant for debugging R and LaTeX code, and as an editorial tool for improving language, formatting, and the overall structure of the manuscript, particularly in the discussion and conclusion sections.</p>
-<div style="page-break-after: always;"></div>
-</section>
-<section id="references" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> References</h1>
+<section id="references" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
 <div id="ref-R-lme4" class="csl-entry" role="listitem">
 Bates, D., Mächler, M., Bolker, B., &amp; Walker, S. (2015). Fitting linear mixed-effects models using <span class="nocase">lme4</span>. <em>Journal of Statistical Software</em>, <em>67</em>(1), 1–48. <a href="https://doi.org/10.18637/jss.v067.i01">https://doi.org/10.18637/jss.v067.i01</a>
 </div>
 <div id="ref-Brady2016Soils" class="csl-entry" role="listitem">
 Brady, N. C., &amp; Weil, R. R. (2016). <em>The nature and properties of soils</em> (15th ed.). Pearson.
-</div>
-<div id="ref-demariaSoilPropertiesPhosphorus2013" class="csl-entry" role="listitem">
-Demaria, P., Sinaj, S., Flisch, R., &amp; Frossard, E. (2013). Soil <span>Properties</span> and <span>Phosphorus Isotopic Exchangeability</span> in <span>Cropped Temperate Soils</span>. <em>Communications in Soil Science and Plant Analysis</em>, <em>44</em>(1–4), 287–300. <a href="https://doi.org/10.1080/00103624.2013.741896">https://doi.org/10.1080/00103624.2013.741896</a>
-</div>
-<div id="ref-Fisher1925" class="csl-entry" role="listitem">
-Fisher, R. A. (1925). <em>Statistical methods for research workers</em>. Oliver; Boyd.
-</div>
-<div id="ref-Fixen1993" class="csl-entry" role="listitem">
-Fixen, P. E., &amp; Grove, J. H. (1993). Testing soils for phosphorus. <em>Soil Science Society of America Book Series</em>, <em>3</em>, 141–180. <a href="https://doi.org/10.2136/sssabookser3.2ed.c11">https://doi.org/10.2136/sssabookser3.2ed.c11</a>
 </div>
 <div id="ref-flossmannExtractionMethodCharacterizing1982" class="csl-entry" role="listitem">
 Flossmann, R., &amp; Richter, D. (1982). <em>Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution.</em>
@@ -1573,17 +668,8 @@ Forschungsanstalt für Agrarökologie und Landbau (FAL). (1996). <em>Methodenbuc
 <div id="ref-Frossard2000Processes" class="csl-entry" role="listitem">
 Frossard, E., Condron, L. M., Oberson, A., Sinaj, S., &amp; Fardeau, J. C. (2000). Processes governing phosphorus availability in temperate soils. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 15–23. <a href="https://doi.org/10.2134/jeq2000.00472425002900010003x">https://doi.org/10.2134/jeq2000.00472425002900010003x</a>
 </div>
-<div id="ref-Hirte2018Relationship" class="csl-entry" role="listitem">
-Hirte, J., Leifeld, J., Laggoun-Défarge, A., Mayer, P., &amp; Gubler, J. M. (2018). Relationship between soil phosphorus, phosphorus budget, and soil properties in swiss agricultural soils. <em>Ambio</em>, <em>47</em>(Suppl 1), 53–64. <a href="https://doi.org/10.1007/s13280-017-0987-9">https://doi.org/10.1007/s13280-017-0987-9</a>
-</div>
 <div id="ref-hirteYieldResponseSoil2021" class="csl-entry" role="listitem">
 Hirte, J., Richner, W., Orth, B., Liebisch, F., &amp; Flisch, R. (2021). Yield response to soil test phosphorus in <span>Switzerland</span>: <span>Pedoclimatic</span> drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Science of The Total Environment</em>, <em>755</em>, 143453. <a href="https://doi.org/10.1016/j.scitotenv.2020.143453">https://doi.org/10.1016/j.scitotenv.2020.143453</a>
-</div>
-<div id="ref-Hirte2021Yield" class="csl-entry" role="listitem">
-Hirte, J., Stüssel, C. E. M., Leifeld, J., Gubler, J. M., Sinaj, S., &amp; Frossard, E. (2021). Yield response to soil test phosphorus in switzerland: Pedoclimatic drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Agriculture, Ecosystems &amp; Environment</em>, <em>309</em>, 107270. <a href="https://doi.org/10.1016/j.agee.2020.107270">https://doi.org/10.1016/j.agee.2020.107270</a>
-</div>
-<div id="ref-Kuang2012Phosphorus" class="csl-entry" role="listitem">
-Kuang, W., Wang, W. J., Liu, X. J., Cui, Y. F., Chen, Z. H., Wang, B. R., &amp; Lin, X. Y. (2012). Phosphorus desorption kinetics in soils with different long-term fertilization: A comparison of kinetic models. <em>Journal of Soils and Sediments</em>, <em>12</em>, 739–749. <a href="https://doi.org/10.1007/s11368-012-0498-8">https://doi.org/10.1007/s11368-012-0498-8</a>
 </div>
 <div id="ref-Nye2000Solute" class="csl-entry" role="listitem">
 Nye, P. H., &amp; Tinker, P. B. (2000). <em>Solute movement in the rhizosphere</em>. Oxford University Press.
@@ -1594,26 +680,8 @@ Pinheiro, J., Bates, D., DebRoy, S., Sarkar, D., &amp; R Core Team. (2022). <em>
 <div id="ref-R-base" class="csl-entry" role="listitem">
 R Core Team. (2022). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>
 </div>
-<div id="ref-Rowe2016LegacyP" class="csl-entry" role="listitem">
-Rowe, H., Withers, P. J. A., Baas, P., Chan, N. I., Doody, D., Holiman, J., Jacobs, B., Li, H., MacDonald, G. K., McDowell, R., Sharpley, A. N., Shen, J., Salm, C. van der, &amp; Weigelt, A. (2016). Integrating legacy phosphorus into sustainable nutrient management strategies for future food, bioenergy and water security. <em>Nutrient Cycling in Agroecosystems</em>, <em>104</em>(3), 393–412. <a href="https://doi.org/10.1007/s10705-015-9726-1">https://doi.org/10.1007/s10705-015-9726-1</a>
-</div>
-<div id="ref-Sadras2002" class="csl-entry" role="listitem">
-Sadras, V. O. (2002). Co-limitation of crop yield by water and nitrogen in semi-arid environments. <em>Agronomie</em>, <em>22</em>(5), 433–445. <a href="https://doi.org/10.1051/agro:2002018">https://doi.org/10.1051/agro:2002018</a>
-</div>
-<div id="ref-Schlesinger2009" class="csl-entry" role="listitem">
-Schlesinger, W. H. (2009). <em>Biogeochemistry: An analysis of global change</em> (2nd ed.). Academic Press.
-</div>
-<div id="ref-Sinclair1998" class="csl-entry" role="listitem">
-Sinclair, T. R. (1998). Historical changes in harvest index and crop nitrogen accumulation. <em>Crop Science</em>, <em>38</em>(3), 638–643. <a href="https://doi.org/10.2135/cropsci1998.0011183X003800030002x">https://doi.org/10.2135/cropsci1998.0011183X003800030002x</a>
-</div>
-<div id="ref-Sparks2003Environmental" class="csl-entry" role="listitem">
-Sparks, D. L. (2003). <em>Environmental soil chemistry</em> (2nd ed.). Academic Press. <a href="https://doi.org/10.1016/B978-0-12-656446-4.50001-X">https://doi.org/10.1016/B978-0-12-656446-4.50001-X</a>
-</div>
 <div id="ref-Sposito2008Chemistry" class="csl-entry" role="listitem">
 Sposito, G. (2008). <em>The chemistry of soils</em> (2nd ed.). Oxford University Press.
-</div>
-<div id="ref-VanEs2002" class="csl-entry" role="listitem">
-Van Es, H. M., Van Kessel, C., &amp; Richter, D. D. (2002). Spatial analysis of agricultural field trials. <em>Agronomy Journal</em>, <em>94</em>(1), 283–296. <a href="https://doi.org/10.2134/agronj2002.2830">https://doi.org/10.2134/agronj2002.2830</a>
 </div>
 <div id="ref-VanVeldhoven1987Malachite" class="csl-entry" role="listitem">
 Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosphorus in the scheldt estuary. <em>Estuarine, Coastal and Shelf Science</em>, <em>25</em>(6), 755–765.
@@ -1622,10 +690,10 @@ Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosp
 <div style="page-break-after: always;"></div>
 <div style="page-break-after: always;"></div>
 </section>
-<section id="appendix-thermodynamic-correction-of-p_co_2-extractions" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Appendix: Thermodynamic Correction of <span class="math inline">\(P_{CO_2}\)</span> Extractions</h1>
-<section id="a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant"><span class="header-section-number">7.1</span> A.1. Intrinsic Ionic Strength of the <span class="math inline">\(P_{CO_2}\)</span> Extractant</h2>
+<section id="appendix-thermodynamic-correction-of-p_co_2-extractions" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Appendix: Thermodynamic Correction of <span class="math inline">\(P_{CO_2}\)</span> Extractions</h1>
+<section id="a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="a.1.-intrinsic-ionic-strength-of-the-p_co_2-extractant"><span class="header-section-number">4.1</span> A.1. Intrinsic Ionic Strength of the <span class="math inline">\(P_{CO_2}\)</span> Extractant</h2>
 <p>Standard static soil test methods rely on the operational extraction of phosphorus. Strong extractants (e.g., Olsen P, P-AAE10) possess inherently high ionic strengths that dominate the soil matrix, rendering absolute thermodynamic comparisons invalid without complex modeling. In contrast, the <span class="math inline">\(P_{CO_2}\)</span> method utilizes a very weak extractant: water saturated with carbon dioxide at atmospheric pressure (1 atm) and 25 °C.</p>
 <p>To demonstrate that the <span class="math inline">\(P_{CO_2}\)</span> extractant adopts the native ionic strength of the soil, we calculate the intrinsic ionic strength (<span class="math inline">\(I\)</span>) of the pure extractant.</p>
 <p>According to Henry’s Law, the concentration of dissolved <span class="math inline">\(CO_2\)</span> (denoted as <span class="math inline">\(H_2CO_3^*\)</span>) is: <span class="math display">\[[H_2CO_3^*] = K_H \times P_{CO_2}\]</span> Given Henry’s constant (<span class="math inline">\(K_H \approx 0.034 \text{ M atm}^{-1}\)</span>) and <span class="math inline">\(P_{CO_2} = 1 \text{ atm}\)</span>, the molarity of dissolved <span class="math inline">\(CO_2\)</span> is approximately <span class="math inline">\(0.034 \text{ M}\)</span>.</p>
@@ -1633,15 +701,15 @@ Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosp
 <p>The intrinsic ionic strength (<span class="math inline">\(I\)</span>) of the extractant is defined as: <span class="math display">\[I = \frac{1}{2} \sum (C_i z_i^2)\]</span> <span class="math display">\[I = \frac{1}{2} \left( (1.23 \times 10^{-4} \times (+1)^2) + (1.23 \times 10^{-4} \times (-1)^2) \right) \approx 0.00012 \text{ M}\]</span></p>
 <p>This intrinsic ionic strength (<span class="math inline">\(\approx 0.12 \text{ mM}\)</span>) is infinitesimally small compared to native agricultural soil solutions (which typically range from <span class="math inline">\(10\)</span> to <span class="math inline">\(50 \text{ mM}\)</span>). Therefore, the final ionic strength of the <span class="math inline">\(P_{CO_2}\)</span> extract is overwhelmingly dictated by the dissolved soluble salts of the specific soil being analyzed.</p>
 </section>
-<section id="a.2.-justification-for-the-davies-equation" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="a.2.-justification-for-the-davies-equation"><span class="header-section-number">7.2</span> A.2. Justification for the Davies Equation</h2>
+<section id="a.2.-justification-for-the-davies-equation" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="a.2.-justification-for-the-davies-equation"><span class="header-section-number">4.2</span> A.2. Justification for the Davies Equation</h2>
 <p>Because the <span class="math inline">\(P_{CO_2}\)</span> extract adopts the native ionic composition of the soil, reading the orthophosphate concentrations against an <span class="math inline">\(I=0\)</span> (distilled water) calibration curve introduces systematic error. The true thermodynamic driving force for P-availability is the chemical <strong>activity</strong>, not the stoichiometric concentration.</p>
 <p>To correct for this, an activity coefficient (<span class="math inline">\(\gamma\)</span>) must be applied. While the Pitzer equations are the gold standard for high-ionic-strength solutions (<span class="math inline">\(I &gt; 0.5 \text{ M}\)</span>, such as the P-AAE10 extractant), the ionic strength of native agricultural soil solutions is typically much lower (<span class="math inline">\(I &lt; 0.1 \text{ M}\)</span>).</p>
 <p>In this low-to-moderate ionic strength regime, the <strong>Davies equation</strong> (an empirical extension of the Debye-Hückel theory) is highly accurate and does not require complex, ion-specific interaction parameters.</p>
 <p>The Davies equation calculates the activity coefficient (<span class="math inline">\(\gamma\)</span>) as follows: <span class="math display">\[\log_{10}(\gamma) = -A z^2 \left( \frac{\sqrt{I}}{1 + \sqrt{I}} - 0.3 I \right)\]</span> Where: * <strong><span class="math inline">\(A\)</span></strong> is a temperature-dependent constant (<span class="math inline">\(\approx 0.509 \text{ L}^{0.5} \text{mol}^{-0.5}\)</span> for water at 25 °C). * <strong><span class="math inline">\(z\)</span></strong> is the charge of the ion in question (for orthophosphate, <span class="math inline">\(z\)</span> depends on pH, predominantly <span class="math inline">\(-1\)</span> for <span class="math inline">\(H_2PO_4^-\)</span> and <span class="math inline">\(-2\)</span> for <span class="math inline">\(HPO_4^{2-}\)</span>). * <strong><span class="math inline">\(I\)</span></strong> is the total ionic strength of the extracted solution, calculated from the measured concentrations of major cations (<span class="math inline">\(Ca^{2+}, Mg^{2+}, K^+\)</span>).</p>
 </section>
-<section id="a.3.-implementation-of-thermodynamic-correction" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="a.3.-implementation-of-thermodynamic-correction"><span class="header-section-number">7.3</span> A.3. Implementation of Thermodynamic Correction</h2>
+<section id="a.3.-implementation-of-thermodynamic-correction" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="a.3.-implementation-of-thermodynamic-correction"><span class="header-section-number">4.3</span> A.3. Implementation of Thermodynamic Correction</h2>
 <p>To assess the theoretical P-Intensity (<span class="math inline">\(I\)</span>) and formulate the Phosphorus Buffering Capacity (PBC), the operationally defined <span class="math inline">\(P_{CO_2}\)</span> concentrations are converted to thermodynamic activities using the following sequential steps:</p>
 <ol type="1">
 <li><strong>Determine Total Ionic Strength (<span class="math inline">\(I\)</span>):</strong> Using the measured cation concentrations from the extracts. <span class="math display">\[I = \frac{1}{2} \left( [K^+] + 4[Ca^{2+}] + 4[Mg^{2+}] + \dots \right)\]</span></li>
