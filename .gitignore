@@ -32,4 +32,4 @@
 # However, if you are using a GitHub Action to render automatically,
 # uncomment the next line to ignore local site builds:
 # /_site/
-# /docs/
+/docs/
