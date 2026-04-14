@@ -40,11 +40,12 @@ To address this, we define a novel dynamic predictor: the **Initial Activity Flu
 
 : Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
 
-
 ```{tikz}
-#| fig-cap: "Conceptual model of the rhizosphere phosphorus cycle."
-#| echo: false
-#| fig-align: center
+%| fig-cap: "Conceptual model of the rhizosphere phosphorus cycle."
+%| echo: false
+%| fig-align: center
+
+\usetikzlibrary{shapes, arrows.meta, positioning, decorations.pathmorphing}
 
 \begin{tikzpicture}[
     node distance=4.5cm,
@@ -88,7 +89,6 @@ To address this, we define a novel dynamic predictor: the **Initial Activity Flu
 \end{tikzpicture}
 
 ```
-
 
 ## Thesis Objectives and Analytical Strategy
 

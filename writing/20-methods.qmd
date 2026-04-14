@@ -13,6 +13,7 @@ The six experimental sites are located in the main crop-growing regions of Switz
 ```{r}
 #| label: tbl-sites-corrected
 #| tbl-cap: "Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al. (2021)."
+#| echo: false
 
 sites_df_corrected <- data.frame(
   Site = c("ALT", "CAD", "ELL", "GRA", "OEN", "REC"),
@@ -101,6 +102,7 @@ To test the core hypothesis, two competing sets of linear mixed-effects models (
 ```{r}
 #| label: tbl-variables-updated
 #| tbl-cap: "Description of key variables used in the thermodynamic and agronomic models."
+#| echo: false
 
 variables_df <- data.frame(
   Abbreviation = c("$Y_{rel\\_hist}$", "$Uptake_{rel}$", "$P_{bal}$", 

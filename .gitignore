@@ -3,6 +3,33 @@
 /_site/
 /_manuscript/
 /_freeze/
+**/*.quarto_ipynb
+# ---------------------------------------------------
+# R and RStudio specific files
+# ---------------------------------------------------
 .Rproj.user
 .Rhistory
-**/*.quarto_ipynb
+.RData
+.Ruserdata
+# ---------------------------------------------------
+# Quarto specific files & Caches
+# ---------------------------------------------------
+# Ignore the Quarto execution cache and internal state
+/.quarto/
+*_cache/
+*_files/
+# ---------------------------------------------------
+# Compiled Output Files
+# ---------------------------------------------------
+# Ignore standard compiled documents in the root folder
+*.html
+*.pdf
+*.docx
+*.tex
+# NOTE ON GITHUB PAGES:
+# If you are rendering your website locally into a 'docs/'
+# folder to publish to GitHub Pages, DO NOT ignore the docs folder!
+# However, if you are using a GitHub Action to render automatically,
+# uncomment the next line to ignore local site builds:
+# /_site/
+# /docs/
