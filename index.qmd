@@ -23,38 +23,38 @@ format:
 
 
 
-{{< include writing/15-intro.qmd >}}
+{{< include writing/_15-intro.qmd >}}
 
 \newpage
 
-{{< include writing/20-methods.qmd >}}
+{{< include writing/_20-methods.qmd >}}
 
 \newpage
 
-<!-- {{< include writing/25-results.qmd >}} -->
+<!-- {{< include writing/_25-results.qmd >}} -->
 
 \newpage
 
-<!-- {{< include writing/30-discussion.qmd >}} -->
+<!-- {{< include writing/_30-discussion.qmd >}} -->
 
 \newpage
 
-<!-- {{< include writing/35-conclusion.qmd >}} -->
+<!-- {{< include writing/_35-conclusion.qmd >}} -->
 
 \newpage
 
-<!-- {{< include writing/40-acknowledgments.qmd >}} -->
+<!-- {{< include writing/_40-acknowledgments.qmd >}} -->
 
 
 \newpage
 
-{{< include writing/50-references.qmd >}}
+{{< include writing/_50-references.qmd >}}
 
 \newpage
 
-{{< include writing/90-lists.qmd >}}
+{{< include writing/_90-lists.qmd >}}
 
 \newpage
 
-{{< include writing/55-appendix.qmd >}}
+{{< include writing/_55-appendix.qmd >}}
 
