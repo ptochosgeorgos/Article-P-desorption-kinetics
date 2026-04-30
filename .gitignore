@@ -33,3 +33,5 @@
 # uncomment the next line to ignore local site builds:
 # /_site/
 /docs/
+.positai
+data/results_coefficient_analysis

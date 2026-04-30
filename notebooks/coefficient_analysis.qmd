@@ -37,6 +37,39 @@ D <- RES$D2
 d <- RES$data
 ```
 
+
+
+```{r}
+D_thermo <- D |>
+  mutate(
+    # 1. Molarity for the 1:20 Kinetic Extraction
+    K_mol_L  = (soil_0_20_K_H2O10 / 10) / (39.10 * 1000),
+    Ca_mol_L = (soil_0_20_Ca_H2O10 / 10) / (40.08 * 1000),
+    Mg_mol_L = (soil_0_20_Mg_H2O10 / 10) / (24.30 * 1000),
+    
+    # 2. Cationic Ionic Strength
+    I_cations = 0.5 * ( (K_mol_L * 1^2) + (Ca_mol_L * 2^2) + (Mg_mol_L * 2^2) ),
+    
+    # 3. Calculate Total Positive Charge (Equivalents per Liter)
+    Charge_Cations = (K_mol_L * 1) + (Ca_mol_L * 2) + (Mg_mol_L * 2),
+    
+    # 4. Assume matching negative charge from Monovalent Anions (z=1)
+    # The I of monovalent ions is exactly 0.5 * concentration
+    I_anions = 0.5 * (Charge_Cations * 1^2),
+    
+    # 5. Total Ionic Strength!
+    Ionic_Strength = I_cations + I_anions,
+    
+    # 6. Davies Equation
+    log_gamma = -0.509 * (1^2) * ((sqrt(Ionic_Strength) / (1 + sqrt(Ionic_Strength))) - (0.3 * Ionic_Strength)),
+    gammma = 10^log_gamma,
+    
+    # 7. Apply to your already-fitted model parameters
+    a_max = PS * gammma, 
+    P_CO2_thermo = soil_0_20_P_CO2 * gammma
+  )
+```
+
 Model Agroscope
 $$Y_{rel}\sim A*(1-e^{rate*P_{CO_2}+Env})$$
 

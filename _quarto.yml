@@ -4,8 +4,9 @@ project:
   execute-dir: project
   render:
     - index.qmd
+    - "notebooks/qi_modelling1.qmd"  # Explicitly render this specific notebook
     - "!presentation/"
-    - "!notebooks/"       # This tells Quarto to ignore the notebooks!
+    - "!notebooks/"                  # Continue to ignore all other draft notebooks
 
 # --- Website Navigation ---
 website:
@@ -14,9 +15,13 @@ website:
     left:
       - href: index.html
         text: "Manuscript"
-  
-        
-        
+      
+      # Add a dropdown menu for your analyses
+      - text: "Supplementary Models"
+        menu:
+          - text: "Q/I & Thermodynamic Showdown"
+            href: notebooks/qi_modelling1.html
+
 # --- Top-level settings ---
 bibliography: references.bib
 csl: apa.csl
@@ -35,11 +40,10 @@ format:
       margin-width: 250px
 
   docx:
-    toc: false # Journals usually don't want TOCs in the Word manuscript
+    toc: false 
     number-sections: true
 
   pdf:
-    
     documentclass: article
     papersize: a4
     pdf-engine: lualatex
@@ -53,4 +57,3 @@ format:
       - left=25mm
       - right=25mm
       - bottom=25mm
-    # Clean, standard academic headers instead of the thesis title page

@@ -106,3 +106,60 @@ This thesis hypothesizes that integrating thermodynamic activity and desorption 
 1.  **Thermodynamic Framework Formulation:** Establish thermodynamic $Q(I)$ isotherms across highly diverse pedoclimatic sites to calculate the true PBC, demonstrating how long-term cumulative P-balances shift the soil's physical chemistry.
 2.  **Agronomic Prediction:** Statistically evaluate the predictive power of the kinetic Activity Flux ($J_0$) against relative crop yield and P-uptake. To rigorously isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected $J_0$ will significantly outperform standard static extractions.
 3.  **Mechanistic Validation:** Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.
+
+
+```{mermaid}
+graph TD
+    %% Styling definitions
+    classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
+    classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
+
+    %% Phase 1: Introduction
+    subgraph Phase 1: Introduction & Research Questions
+        A[Established Practice:<br>Static GRUD Pools P_CO2 & P_AAE10]:::intro
+        B[Chemical Reality:<br>Dynamic Plant P-Supply]:::intro
+        A --> C{Research Questions}:::intro
+        B --> C
+    end
+
+    %% Phase 2: Lab Modeling
+    subgraph Phase 2: Laboratory Derivations
+        C --> D[Quantity-Intensity Q/I Modeling]:::lab
+        C --> E[Desorption Kinetics I/t Modeling]:::lab
+        D --> F(Physical Buffer Power: b):::lab
+        E --> G(Desorption Rate Constant: k):::lab
+    end
+
+    %% Phase 3: The Crossing
+    subgraph Phase 3: The Thermodynamic Crossing
+        F --> H{Davies Equation Correction}:::thermo
+        G --> H
+        H --> I[True Thermodynamic Activities]:::thermo
+        H --> J[Raw Empirical Concentrations]:::thermo
+    end
+
+    %% Phase 4 & 5: Field Scaling and Uptake
+    subgraph Phase 4 & 5: Field Scaling & Plant Uptake Showdown
+        I --> K[Agronomic PTF 1990-2022]:::uptake
+        K --> L(Field Inverse Buffer Power: 1/b):::uptake
+        
+        L --> M
+        G --> M
+        J --> M
+        
+        M((Non-Linear Mixed Models<br>Plant P-Uptake)):::uptake
+        
+        M --> N[Model A: Instant Pool P_CO2<br>Limited purely by 1/b]:::uptake
+        M --> O[Model B: Bound Pool P_AAE10<br>Heavily bottlenecked by k]:::uptake
+    end
+
+    %% Phase 6: Conclusion
+    subgraph Phase 6: Agronomic Implication
+        N --> P([Conclusion:<br>The GRUD must incorporate kinetic k<br>to accurately predict long-term P-supply]):::conc
+        O --> P
+    end
+```
+
