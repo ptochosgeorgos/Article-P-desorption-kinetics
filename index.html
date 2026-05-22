@@ -9,7 +9,7 @@
 <meta name="author" content="Marc Jerónimo Pérez y Ropero">
 <meta name="author" content="Frank Liebisch">
 <meta name="author" content="Emmanuel Frossard">
-<meta name="dcterms.date" content="2026-04-16">
+<meta name="dcterms.date" content="2026-05-22">
 
 <title>P-release kinetics as a predictor for P-availability in Swiss cropping systems – STYCS P-Kinetics Manuscript</title>
 <style>
@@ -101,7 +101,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-a4b25f5ef8bf42551c34491f02c3422e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-c1bea336d52e3b4066ed1e60a219a4b8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -129,6 +129,9 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -183,6 +186,17 @@ window.Quarto = {
     <a class="nav-link active" href="./index.html" aria-current="page"> 
 <span class="menu-text">Manuscript</span></a>
   </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-supplementary-models" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Supplementary Models</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-supplementary-models">    
+        <li>
+    <a class="dropdown-item" href="./notebooks/qi_modelling1.html">
+ <span class="dropdown-text">Q/I &amp; Thermodynamic Showdown</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -280,7 +294,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 16, 2026</p>
+      <p class="date">May 22, 2026</p>
     </div>
   </div>
   
@@ -396,6 +410,69 @@ Disabled features: cairo, ghostscript, rsvg</code></pre>
 <li><strong>Agronomic Prediction:</strong> Statistically evaluate the predictive power of the kinetic Activity Flux (<span class="math inline">\(J_0\)</span>) against relative crop yield and P-uptake. To rigorously isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected <span class="math inline">\(J_0\)</span> will significantly outperform standard static extractions.</li>
 <li><strong>Mechanistic Validation:</strong> Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.</li>
 </ol>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph TD
+    %% Styling definitions
+    classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
+    classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+    classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
+
+    %% Phase 1: Introduction
+    subgraph Phase 1: Introduction &amp; Research Questions
+        A[Established Practice:&lt;br&gt;Static GRUD Pools P_CO2 &amp; P_AAE10]:::intro
+        B[Chemical Reality:&lt;br&gt;Dynamic Plant P-Supply]:::intro
+        A --&gt; C{Research Questions}:::intro
+        B --&gt; C
+    end
+
+    %% Phase 2: Lab Modeling
+    subgraph Phase 2: Laboratory Derivations
+        C --&gt; D[Quantity-Intensity Q/I Modeling]:::lab
+        C --&gt; E[Desorption Kinetics I/t Modeling]:::lab
+        D --&gt; F(Physical Buffer Power: b):::lab
+        E --&gt; G(Desorption Rate Constant: k):::lab
+    end
+
+    %% Phase 3: The Crossing
+    subgraph Phase 3: The Thermodynamic Crossing
+        F --&gt; H{Davies Equation Correction}:::thermo
+        G --&gt; H
+        H --&gt; I[True Thermodynamic Activities]:::thermo
+        H --&gt; J[Raw Empirical Concentrations]:::thermo
+    end
+
+    %% Phase 4 &amp; 5: Field Scaling and Uptake
+    subgraph Phase 4 &amp; 5: Field Scaling &amp; Plant Uptake Showdown
+        I --&gt; K[Agronomic PTF 1990-2022]:::uptake
+        K --&gt; L(Field Inverse Buffer Power: 1/b):::uptake
+        
+        L --&gt; M
+        G --&gt; M
+        J --&gt; M
+        
+        M((Non-Linear Mixed Models&lt;br&gt;Plant P-Uptake)):::uptake
+        
+        M --&gt; N[Model A: Instant Pool P_CO2&lt;br&gt;Limited purely by 1/b]:::uptake
+        M --&gt; O[Model B: Bound Pool P_AAE10&lt;br&gt;Heavily bottlenecked by k]:::uptake
+    end
+
+    %% Phase 6: Conclusion
+    subgraph Phase 6: Agronomic Implication
+        N --&gt; P([Conclusion:&lt;br&gt;The GRUD must incorporate kinetic k&lt;br&gt;to accurately predict long-term P-supply]):::conc
+        O --&gt; P
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
 <div style="page-break-after: always;"></div>
 </section>
 </section>
