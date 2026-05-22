@@ -6,7 +6,6 @@ project:
     - index.qmd
     - "notebooks/qi_modelling1.qmd"  # Explicitly render this specific notebook
     - "!presentation/"
-    - "!notebooks/"                  # Continue to ignore all other draft notebooks
 
 # --- Website Navigation ---
 website:
