@@ -2,7 +2,6 @@
 /cache/
 /_site/
 /_manuscript/
-/_freeze/
 **/*.quarto_ipynb
 # ---------------------------------------------------
 # R and RStudio specific files

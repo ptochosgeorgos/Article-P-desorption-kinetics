@@ -5,7 +5,9 @@ project:
   render:
     - index.qmd
     - "notebooks/qi_modelling1.qmd"  # Explicitly render this specific notebook
-    - "!presentation/"
+
+execute:
+  freeze: true
 
 # --- Website Navigation ---
 website:
