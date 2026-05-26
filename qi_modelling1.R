@@ -1,56 +1,38 @@
----
-title: "Quantity-Intensity (Q/I) Modeling and Thermodynamic Corrections"
-format:
-  html:
-    theme: cosmo
-    toc: true
-    code-fold: true
-execute:
-  warning: false
-  message: false
----
+## graph TD
+##     classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+##     classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+##     classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
+##     classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+##     classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
+## 
+##     subgraph Phase_1 ["Phase 1: Introduction & Problem"]
+##         A["Established Practice:<br>Static GRUD Pools P_CO2 & P_AAE10"]:::intro
+##         B["Chemical Activity:<br>Dynamic Plant P-Supply"]:::intro
+##         A --> C{"Research Questions"}:::intro
+##         B --> C
+##     end
+## 
+##     subgraph Phase_2 ["Phase 2: Laboratory Derivations"]
+##         C --> D["Quantity-Intensity Q/I Modeling"]:::lab
+##         C --> E["Desorption Kinetics I/t Modeling"]:::lab
+##         D --> F("Physical Buffer Power: b"):::lab
+##         E --> G("Desorption Rate Constant: k"):::lab
+##     end
+## 
+##     subgraph Phase_3 ["Phase 3: Thermodynamic Corrections"]
+##         F --> H{"Davies Equation"}:::thermo
+##         G --> H
+##         H --> I["Thermodynamic Activities"]:::thermo
+##         H --> J["Stochiometric Concentrations"]:::thermo
+##     end
+## 
+##     subgraph Phase_4 ["Phase 4: Field Scaling (PTF Showdown)"]
+##         I --> K["Agronomic vs Geochemical PTFs<br>1990-2022"]:::uptake
+##         J --> K
+##         K --> L("Selected Field Inverse Buffer Power: 1/b"):::uptake
+##     end
 
-## 1. Introduction & Conceptual Workflow
-
-```{mermaid}
-graph TD
-    classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-    classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
-
-    subgraph Phase_1 ["Phase 1: Introduction & Problem"]
-        A["Established Practice:<br>Static GRUD Pools P_CO2 & P_AAE10"]:::intro
-        B["Chemical Activity:<br>Dynamic Plant P-Supply"]:::intro
-        A --> C{"Research Questions"}:::intro
-        B --> C
-    end
-
-    subgraph Phase_2 ["Phase 2: Laboratory Derivations"]
-        C --> D["Quantity-Intensity Q/I Modeling"]:::lab
-        C --> E["Desorption Kinetics I/t Modeling"]:::lab
-        D --> F("Physical Buffer Power: b"):::lab
-        E --> G("Desorption Rate Constant: k"):::lab
-    end
-
-    subgraph Phase_3 ["Phase 3: Thermodynamic Corrections"]
-        F --> H{"Davies Equation"}:::thermo
-        G --> H
-        H --> I["Thermodynamic Activities"]:::thermo
-        H --> J["Stochiometric Concentrations"]:::thermo
-    end
-
-    subgraph Phase_4 ["Phase 4: Field Scaling (PTF Showdown)"]
-        I --> K["Agronomic vs Geochemical PTFs<br>1990-2022"]:::uptake
-        J --> K
-        K --> L("Selected Field Inverse Buffer Power: 1/b"):::uptake
-    end
-```
-
-## 2. Setup and Data Preparation
-
-```{r setup}
+## ----setup--------------------------------------------------------------------
 #| message: false
 #| warning: false
 
@@ -72,13 +54,9 @@ options(warn = -1)
 RES <- readRDS("data/RES.rds")
 D <- RES$D # 2015-2022 Subset 
 D2 <- readRDS("data/all_P.rds") # 40-Year Full Dataset
-```
 
-## 3. The Global Master Dataset & Thermodynamics (1990-2022)
 
-Here we extract the stable traits, patch the missing years, perform the Davies Equation thermodynamic correction on the $P_{CO2}$ pool, and prepare all scaled variables for the PTFs.
-
-```{r create-master-dataset}
+## ----create-master-dataset----------------------------------------------------
 # 1. Extract Stable Geochemistry & Kinetics
 site_geochemistry <- D |> group_by(site) |> summarise(feox_mean = mean(Feox, na.rm = TRUE), alox_mean = mean(Alox, na.rm = TRUE)) |> ungroup()
 kinetics_stable <- D |> dplyr::select(site, treatment_ID, rep, k, v0_kPS = kPS, Pmax_PS = PS) |> distinct(site, treatment_ID, rep, .keep_all = TRUE)
@@ -179,13 +157,9 @@ D_ready <- D_thermo |>
     z_ln_Alox = ifelse(is.na(z_ln_Alox), mean(z_ln_Alox, na.rm = TRUE), z_ln_Alox),
     z_ln_FineTexture = ifelse(is.na(z_ln_FineTexture), mean(z_ln_FineTexture, na.rm = TRUE), z_ln_FineTexture)
   ) |> ungroup()
-```
 
-## 4. Phase 4: Pedotransfer Function (PTF) Showdown
 
-We aim to predict the bound $P_{AAE10}$ pool using either the Agronomic or Geochemical traits. Furthermore, we test if applying the Davies equation to $P_{CO2}$ improves the prediction. We use `drop_na()` to ensure all models are compared on the exact same complete dataset.
-
-```{r ptf-showdown, fig.width=12, fig.height=8}
+## ----ptf-showdown, fig.width=12, fig.height=8---------------------------------
 #| fig-cap: "**Figure 1: Pedotransfer Function (PTF) Showdown.** The Geochemical models (bottom row) utilizing Amorphous Iron and Aluminum Oxides vastly outperform the standard Agronomic models (top row) in predicting the bound $P_{AAE10}$ legacy pool. Note that the raw mass $P_{CO2}$ slightly edges out the thermodynamic activity $a_{CO2}$ when predicting the aggressive laboratory EDTA extraction."
 
 # Safely filter complete cases
@@ -228,97 +202,21 @@ plot_ptf <- function(model, title) {
 (plot_ptf(ptf_agro_raw, "Agro Raw") | plot_ptf(ptf_agro_thm, "Agro Thermo")) /
 (plot_ptf(ptf_geo_raw, "Geo Raw") | plot_ptf(ptf_geo_thm, "Geo Thermo")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
 
-## 6. Practical Agronomic PTF (All Available Trials)
 
-While the showdown above proves the superiority of geochemical traits (Iron and Aluminum Oxides) for mechanistic modelling of the soil binding capacity, a **practical field tool** should maximize available data. Agronomists and farmers will often lack detailed `Feox` and `Alox` measurements. 
-
-By relying on median-imputed background cations (Ca, Mg, K) and intentionally removing the strict requirement for Fe/Al oxides, we can train a robust, generalized agronomic model across all available trials. This enables the inclusion of sites like **Reckenholz (REC)** and **Grignon (GRA)**, which were excluded from the rigorous geochemical showdown due to missing metal oxide data.
-
-This section presents the **"Final Practical Equations"**—a tool that accurately estimates the total bound legacy pool ($P_{AAE10}$) using only routinely measured agronomic parameters (Clay, Silt, pH) alongside standard $P_{CO2}$ or thermodynamic $a_{CO2}$. These practical equations can be reliably used in the field to obtain the Quantity/Intensity buffer slope ($\Delta Q / \Delta I$) as a proxy for the Phosphorus Buffer Capacity.
-
-```{r ptf-practical-agro, fig.width=10, fig.height=8}
-# Create maximized dataset without Feox/Alox constraints
-D_ptf_agro <- D_ready |> 
-  drop_na(ln_P_AAE, ln_P_CO2, ln_a_CO2, z_ln_FineTexture, z_pH, z_ln_Ca, z_ln_Mg, z_ln_K, z_ln_Corg, z_Temp_Anom, z_Prec_Anom, z_Temp_Mean) |> 
-  mutate(site = droplevels(factor(site)))
-
-cat("Total trials successfully included in Practical PTF:", length(unique(D_ptf_agro$site)), "\n")
-print(unique(D_ptf_agro$site))
-
-# Fit practical models
-ptf_practical_raw <- rlmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf_agro)
-ptf_practical_thm <- rlmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf_agro)
-
-# Present Performance
-prac_results <- bind_rows(
-  get_r2(ptf_practical_raw, "Practical Agro (Raw P_CO2)"), 
-  get_r2(ptf_practical_thm, "Practical Agro (Thermo a_CO2)")
-)
-
-prac_results |> 
-  kbl(caption = "**Table 2: Variance Explained by Practical Agronomic Models.** Trained on the maximum available long-term trials.") |> 
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
-
-# Extract and Present Fixed Effects
-cat("\n### Final Equation Coefficients (Practical Agro Thermo) ###\n")
-print(round(summary(ptf_practical_thm)$coefficients[, c("Estimate", "Std. Error", "t value")], 4))
-
-# Visualizations: Predicted vs Observed & Residuals
-plot_ptf_prac <- function(model, title) {
-  plot_data <- D_ptf_agro |> mutate(Fitted = predict(model))
-  ggplot(plot_data, aes(x = Fitted, y = ln_P_AAE, color = site)) +
-    geom_point(alpha = 0.5, size = 2) +
-    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
-    labs(title = title, x = "Predicted ln(P_AAE)", y = "Observed ln(P_AAE)", color = "Monitoring Site") +
-    theme_minimal(base_size = 11) +
-    theme(plot.title = element_text(face = "bold", size = 12))
-}
-
-plot_resid_prac <- function(model, title) {
-  plot_data <- D_ptf_agro |> mutate(Residuals = resid(model))
-  ggplot(plot_data, aes(x = site, y = Residuals, fill = site)) +
-    geom_boxplot(alpha = 0.7, outlier.shape = NA) +
-    geom_jitter(width = 0.2, alpha = 0.3, size = 1) +
-    geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-    labs(title = paste(title, "Residuals"), x = "", y = "Residuals (ln scale)", fill = "Site") +
-    theme_minimal(base_size = 11) +
-    theme(plot.title = element_text(face = "bold", size = 12))
-}
-
-(plot_ptf_prac(ptf_practical_raw, "Practical Agro Raw") | plot_ptf_prac(ptf_practical_thm, "Practical Agro Thermo")) /
-(plot_resid_prac(ptf_practical_raw, "Practical Agro Raw") | plot_resid_prac(ptf_practical_thm, "Practical Agro Thermo")) +
-  plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
-
-## 7. Phase 5: The Ultimate Plant Uptake Showdown
-
-We calculate the physical inverse buffer power ($1/b$) for all harvests from 2010 to 2022. Because our goal is a practical field tool, we calculate $1/b$ twice: once using the rigorous **Geochemical PTF** (which requires `Feox/Alox`), and once using our generalized **Practical Agronomic PTF** (which uses routinely available data). 
-
-We then evaluate how well the empirical ($P_{CO2}$), thermodynamic ($a_{CO2}$), and bound ($P_{AAE10}$) pools predict actual plant uptake when penalized by these two competing $1/b$ metrics (alongside the kinetic desorption rate $k$). This showdown will prove if the practical equations perform just as well as the strict geochemical ones when predicting actual agronomic outcomes.
-
-```{r plant-uptake-showdown, fig.width=12, fig.height=8}
+## ----plant-uptake-showdown, fig.width=10, fig.height=4------------------------
+# 1. Extract the Golden Coefficients from the Winning PTF
 library(nlme)
-
-# 1. Extract the Coefficients from Both PTFs
+# 1. Extract the Golden Coefficients from the Winning PTF
 coefs_geo <- fixef(ptf_geo_raw)
-coefs_agro <- fixef(ptf_practical_raw)
 
 # Safe Extractors
-C_geo <- function(name) { if(name %in% names(coefs_geo)) coefs_geo[[name]] else 0 }
-get_int_geo <- function(v1, v2) { 
-  n1 <- paste0(v1, ":", v2); n2 <- paste0(v2, ":", v1)
+C <- function(name) { if(name %in% names(coefs_geo)) coefs_geo[[name]] else 0 }
+get_int <- function(v1, v2) { 
+  n1 <- paste0(v1, ":", v2)
+  n2 <- paste0(v2, ":", v1)
   if(n1 %in% names(coefs_geo)) return(coefs_geo[[n1]])
   if(n2 %in% names(coefs_geo)) return(coefs_geo[[n2]])
-  return(0)
-}
-
-C_agro <- function(name) { if(name %in% names(coefs_agro)) coefs_agro[[name]] else 0 }
-get_int_agro <- function(v1, v2) { 
-  n1 <- paste0(v1, ":", v2); n2 <- paste0(v2, ":", v1)
-  if(n1 %in% names(coefs_agro)) return(coefs_agro[[n1]])
-  if(n2 %in% names(coefs_agro)) return(coefs_agro[[n2]])
   return(0)
 }
 
@@ -326,106 +224,61 @@ get_int_agro <- function(v1, v2) {
 D_Long <- D_ready |>
   filter(year >= 2010, annual_P_uptake > 0, !is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10)) |>
   
-  # Calculate Geochemical Physical Highway (1/b)
+  # Calculate the Physical Highway (1/b) safely using get_int()
   mutate(
-    n_pred_geo = C_geo("ln_P_CO2") + 
-             get_int_geo("ln_P_CO2", "z_ln_Feox") * z_ln_Feox + 
-             get_int_geo("ln_P_CO2", "z_ln_Alox") * z_ln_Alox + 
-             get_int_geo("ln_P_CO2", "z_pH") * z_pH + 
-             get_int_geo("ln_P_CO2", "z_ln_Ca") * z_ln_Ca + 
-             get_int_geo("ln_P_CO2", "z_ln_Mg") * z_ln_Mg + 
-             get_int_geo("ln_P_CO2", "z_ln_K") * z_ln_K + 
-             get_int_geo("ln_P_CO2", "z_ln_Corg") * z_ln_Corg + 
-             get_int_geo("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom + 
-             get_int_geo("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
+    n_pred = C("ln_P_CO2") + 
+             get_int("ln_P_CO2", "z_ln_Feox") * z_ln_Feox + 
+             get_int("ln_P_CO2", "z_ln_Alox") * z_ln_Alox + 
+             get_int("ln_P_CO2", "z_pH") * z_pH + 
+             get_int("ln_P_CO2", "z_ln_Ca") * z_ln_Ca + 
+             get_int("ln_P_CO2", "z_ln_Mg") * z_ln_Mg + 
+             get_int("ln_P_CO2", "z_ln_K") * z_ln_K + 
+             get_int("ln_P_CO2", "z_ln_Corg") * z_ln_Corg + 
+             get_int("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom + 
+             get_int("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
              
-    ln_K_pred_geo = C_geo("(Intercept)") + C_geo("z_ln_Feox") * z_ln_Feox + C_geo("z_ln_Alox") * z_ln_Alox + C_geo("z_pH") * z_pH + C_geo("z_ln_Ca") * z_ln_Ca + C_geo("z_ln_Mg") * z_ln_Mg + C_geo("z_ln_K") * z_ln_K + C_geo("z_ln_Corg") * z_ln_Corg + C_geo("z_Temp_Anom") * z_Temp_Anom + C_geo("z_Prec_Anom") * z_Prec_Anom + C_geo("z_Temp_Mean") * z_Temp_Mean,
+    ln_K_pred = C("(Intercept)") + C("z_ln_Feox") * z_ln_Feox + C("z_ln_Alox") * z_ln_Alox + C("z_pH") * z_pH + C("z_ln_Ca") * z_ln_Ca + C("z_ln_Mg") * z_ln_Mg + C("z_ln_K") * z_ln_K + C("z_ln_Corg") * z_ln_Corg + C("z_Temp_Anom") * z_Temp_Anom + C("z_Prec_Anom") * z_Prec_Anom + C("z_Temp_Mean") * z_Temp_Mean,
                 
-    b_power_geo = n_pred_geo * exp(ln_K_pred_geo) * (soil_0_20_P_CO2^(n_pred_geo - 1)),
-    inv_b_geo = 1 / b_power_geo
+    b_power = n_pred * exp(ln_K_pred) * (soil_0_20_P_CO2^(n_pred - 1)),
+    inv_b = 1 / b_power
   ) |>
   
-  # Calculate Practical Agronomic Physical Highway (1/b)
-  mutate(
-    n_pred_agro = C_agro("ln_P_CO2") + 
-             get_int_agro("ln_P_CO2", "z_ln_FineTexture") * z_ln_FineTexture + 
-             get_int_agro("ln_P_CO2", "z_pH") * z_pH + 
-             get_int_agro("ln_P_CO2", "z_ln_Ca") * z_ln_Ca + 
-             get_int_agro("ln_P_CO2", "z_ln_Mg") * z_ln_Mg + 
-             get_int_agro("ln_P_CO2", "z_ln_K") * z_ln_K + 
-             get_int_agro("ln_P_CO2", "z_ln_Corg") * z_ln_Corg + 
-             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom + 
-             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
-             
-    ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
-                
-    b_power_agro = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
-    inv_b_agro = 1 / b_power_agro
-  ) |>
-
   # Normalize Uptake & Scale Bottlenecks
-  group_by(site) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
-  filter(is.finite(Relative_Uptake)) |>
-  mutate(
-    z_inv_b_geo = as.numeric(scale(inv_b_geo)), 
-    z_inv_b_agro = as.numeric(scale(inv_b_agro)),
-    site = as.factor(site)
-  )
+  group_by(site, crop) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
+  filter(is.finite(inv_b), is.finite(Relative_Uptake)) |>
+  mutate(z_inv_b = as.numeric(scale(inv_b)), site = as.factor(site))
+  
+
+cat("Total Harvest Years Evaluated (2010-2022):", nrow(D_Long), "\n\n")
 
 # ---------------------------------------------------------
-# GEOCHEMICAL PBC PENALTY MODELS
+# MODEL 1: RAW P_CO2 (The Empirical Soluble Pool)
 # ---------------------------------------------------------
-# Note: For Geo models, we filter down to rows where Geo inv_b is finite (excludes REC).
-D_Long_Geo <- D_Long |> filter(is.finite(z_inv_b_geo))
-cat("Trials included in Geo Uptake Models:", length(unique(D_Long_Geo$site)), "(", paste(unique(D_Long_Geo$site), collapse=", "), ")\n")
-
-mod_raw_co2_geo <- nlme(
+mod_raw_co2 <- nlme(
   Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * soil_0_20_P_CO2) / 
-                    ( (K_base * exp(beta_invb * z_inv_b_geo + beta_k * z_k)) + soil_0_20_P_CO2 ),
-  data = D_Long_Geo, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long_Geo$soil_0_20_P_CO2), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
-)
-
-mod_thm_co2_geo <- nlme(
-  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * a_CO2_total_mg_L) / 
-                    ( (K_base * exp(beta_invb * z_inv_b_geo + beta_k * z_k)) + a_CO2_total_mg_L ),
-  data = D_Long_Geo, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long_Geo$a_CO2_total_mg_L), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
-)
-
-mod_raw_aae_geo <- nlme(
-  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * soil_0_20_P_AAE10) / 
-                    ( (K_base * exp(beta_invb * z_inv_b_geo + beta_k * z_k)) + soil_0_20_P_AAE10 ),
-  data = D_Long_Geo, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long_Geo$soil_0_20_P_AAE10), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
+                    ( (K_base * exp(beta_invb * z_inv_b + beta_k * z_k)) + soil_0_20_P_CO2 ),
+  data = D_Long, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long$soil_0_20_P_CO2), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
 )
 
 # ---------------------------------------------------------
-# PRACTICAL AGRONOMIC PBC PENALTY MODELS
+# MODEL 2: THERMODYNAMIC a_CO2 (The Biophysical Soluble Pool)
 # ---------------------------------------------------------
-# Note: For Agro models, REC is successfully included!
-D_Long_Agro <- D_Long |> filter(is.finite(z_inv_b_agro))
-cat("Trials included in Agro Uptake Models:", length(unique(D_Long_Agro$site)), "(", paste(unique(D_Long_Agro$site), collapse=", "), ")\n\n")
-
-mod_raw_co2_agro <- nlme(
-  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * soil_0_20_P_CO2) / 
-                    ( (K_base * exp(beta_invb * z_inv_b_agro + beta_k * z_k)) + soil_0_20_P_CO2 ),
-  data = D_Long_Agro, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long_Agro$soil_0_20_P_CO2), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
-)
-
-mod_thm_co2_agro <- nlme(
+mod_thm_co2 <- nlme(
   Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * a_CO2_total_mg_L) / 
-                    ( (K_base * exp(beta_invb * z_inv_b_agro + beta_k * z_k)) + a_CO2_total_mg_L ),
-  data = D_Long_Agro, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long_Agro$a_CO2_total_mg_L), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
+                    ( (K_base * exp(beta_invb * z_inv_b + beta_k * z_k)) + a_CO2_total_mg_L ),
+  data = D_Long, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long$a_CO2_total_mg_L), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
 )
 
-mod_raw_aae_agro <- nlme(
+# ---------------------------------------------------------
+# MODEL 3: RAW P_AAE10 (The Bound Legacy Pool)
+# ---------------------------------------------------------
+mod_raw_aae <- nlme(
   Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * soil_0_20_P_AAE10) / 
-                    ( (K_base * exp(beta_invb * z_inv_b_agro + beta_k * z_k)) + soil_0_20_P_AAE10 ),
-  data = D_Long_Agro, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long_Agro$soil_0_20_P_AAE10), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
+                    ( (K_base * exp(beta_invb * z_inv_b + beta_k * z_k)) + soil_0_20_P_AAE10 ),
+  data = D_Long, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long$soil_0_20_P_AAE10), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
 )
 
 # --- Extract Performance and Plot ---
@@ -435,9 +288,9 @@ validate_nlme <- function(model, data, y_var, title) {
   plot_data <- data |> mutate(Predicted = preds, Residuals = residuals(model))
   
   ggplot(plot_data, aes(x = Predicted, y = .data[[y_var]], color = site)) +
-    geom_point(size = 3, alpha = 0.7) + geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
+    geom_point(size = 3, alpha = 0.7) + geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
     labs(title = paste(title, "\nConditional R2:", r2), x = "Predicted Relative Uptake", y = "Observed Relative Uptake", color = "Monitoring Site") +
-    theme_minimal(base_size = 11) + theme(plot.title = element_text(face = "bold", size = 11))
+    theme_minimal()
 }
 
 extract_perf <- function(mod, name, y) {
@@ -450,34 +303,23 @@ extract_perf <- function(mod, name, y) {
 }
 
 res_table <- bind_rows(
-  extract_perf(mod_raw_co2_geo, "1. Geo PBC - Raw P_CO2", D_Long_Geo$Relative_Uptake),
-  extract_perf(mod_raw_co2_agro, "1. Agro PBC - Raw P_CO2", D_Long_Agro$Relative_Uptake),
-  extract_perf(mod_thm_co2_geo, "2. Geo PBC - Thermo a_CO2", D_Long_Geo$Relative_Uptake),
-  extract_perf(mod_thm_co2_agro, "2. Agro PBC - Thermo a_CO2", D_Long_Agro$Relative_Uptake),
-  extract_perf(mod_raw_aae_geo, "3. Geo PBC - Legacy P_AAE10", D_Long_Geo$Relative_Uptake),
-  extract_perf(mod_raw_aae_agro, "3. Agro PBC - Legacy P_AAE10", D_Long_Agro$Relative_Uptake)
+  extract_perf(mod_raw_co2, "1. Raw Empirical (P_CO2)", D_Long$Relative_Uptake),
+  extract_perf(mod_thm_co2, "2. Thermodynamic (a_CO2)", D_Long$Relative_Uptake),
+  extract_perf(mod_raw_aae, "3. Bound Legacy (P_AAE10)", D_Long$Relative_Uptake)
 )
 
 res_table |> 
-  kbl(caption = "**Table 3: Dual PBC Plant Uptake Showdown.** Models penalized by the Practical Agronomic Buffer Power ($1/b$) vs the Geochemical Buffer Power. Notice that the practical model accurately retains its predictive power and significance.") |> 
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = F) |>
-  pack_rows("Raw Empirical (P_CO2)", 1, 2) |>
-  pack_rows("Thermodynamic (a_CO2)", 3, 4) |>
-  pack_rows("Bound Legacy (P_AAE10)", 5, 6)
+  kbl(caption = "**Table 2: Michaelis-Menten Plant Uptake Showdown.** The physical diffusion highway (1/b) is highly significant across all models (p < 0.001). Because the buffer power was derived mechanically via the Geochemical PTF, it mathematically absorbs the kinetic desorption rate (k), rendering the latter insignificant (p = 0.45).") |> 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 
 # Showdown Graphs with unified legend
-((validate_nlme(mod_raw_co2_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Raw P_CO2") | 
- validate_nlme(mod_thm_co2_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Thermo a_CO2") | 
- validate_nlme(mod_raw_aae_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Legacy P_AAE10")) /
- (validate_nlme(mod_raw_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Raw P_CO2") | 
- validate_nlme(mod_thm_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Thermo a_CO2") | 
- validate_nlme(mod_raw_aae_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Legacy P_AAE10"))) +
+(validate_nlme(mod_raw_co2, D_Long, "Relative_Uptake", "Model 1: Raw P_CO2") | 
+ validate_nlme(mod_thm_co2, D_Long, "Relative_Uptake", "Model 2: Thermo a_CO2") | 
+ validate_nlme(mod_raw_aae, D_Long, "Relative_Uptake", "Model 3: Legacy P_AAE10")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
 
-### Residual Diagnostics per Site (Uptake Models)
 
-```{r residual-diagnostics-uptake, fig.width=10, fig.height=4}
+## ----residual-diagnostics-uptake, fig.width=10, fig.height=4------------------
 # Helper to plot boxplots of residuals per site
 plot_residuals_boxplot <- function(model, data, title) {
   plot_data <- data |> mutate(Residuals = residuals(model))
@@ -494,15 +336,12 @@ plot_residuals_boxplot <- function(model, data, title) {
     theme(legend.position = "none")
 }
 
-(plot_residuals_boxplot(mod_raw_co2_geo, D_Long_Geo, "Geo: Raw P_CO2") |
- plot_residuals_boxplot(mod_thm_co2_geo, D_Long_Geo, "Geo: Thermo a_CO2") |
- plot_residuals_boxplot(mod_raw_aae_geo, D_Long_Geo, "Geo: Legacy P_AAE10")) /
-(plot_residuals_boxplot(mod_raw_co2_agro, D_Long_Agro, "Agro: Raw P_CO2") |
- plot_residuals_boxplot(mod_thm_co2_agro, D_Long_Agro, "Agro: Thermo a_CO2") |
- plot_residuals_boxplot(mod_raw_aae_agro, D_Long_Agro, "Agro: Legacy P_AAE10"))
-```
+(plot_residuals_boxplot(mod_raw_co2, D_Long, "Model 1: Raw P_CO2") |
+ plot_residuals_boxplot(mod_thm_co2, D_Long, "Model 2: Thermo a_CO2") |
+ plot_residuals_boxplot(mod_raw_aae, D_Long, "Model 3: Legacy P_AAE10"))
 
-```{r}
+
+## -----------------------------------------------------------------------------
 library(broom.mixed)
 
 # Helper function to generate a clean effects table
@@ -517,21 +356,15 @@ get_effects <- function(mod, model_name) {
 
 # Bind them together and print
 all_effects <- bind_rows(
-  get_effects(mod_raw_co2_geo, "1. Geo PBC - Raw P_CO2"),
-  get_effects(mod_raw_co2_agro, "1. Agro PBC - Raw P_CO2"),
-  get_effects(mod_thm_co2_geo, "2. Geo PBC - Thermo a_CO2"),
-  get_effects(mod_thm_co2_agro, "2. Agro PBC - Thermo a_CO2"),
-  get_effects(mod_raw_aae_geo, "3. Geo PBC - Legacy P_AAE10"),
-  get_effects(mod_raw_aae_agro, "3. Agro PBC - Legacy P_AAE10")
+  get_effects(mod_raw_co2, "1. Raw P_CO2"),
+  get_effects(mod_thm_co2, "2. Thermo a_CO2"),
+  get_effects(mod_raw_aae, "3. Legacy P_AAE10")
 )
 
 print(as.data.frame(all_effects), row.names = FALSE)
-```
 
 
-## 7. The Yield-STP Showdown (Mitscherlich)
-
-```{r mitscherlich-yield-models, fig.width=10, fig.height=4, eval=FALSE}
+## ----mitscherlich-yield-models, fig.width=10, fig.height=4--------------------
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 D_Yield <- D_ready |>
@@ -683,12 +516,10 @@ p_curves <- ggplot() +
 
 # Combine the plots
 (p_forest | p_curves) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
 
-### Residual Diagnostics per Site (Yield Models)
 
-```{r residual-diagnostics-yield, fig.width=10, fig.height=4, eval=FALSE}
+## ----residual-diagnostics-yield, fig.width=10, fig.height=4-------------------
 (plot_residuals_boxplot(m_yield_co2, D_Yield, "Yield Model 1: Raw P_CO2") |
  plot_residuals_boxplot(m_yield_thm, D_Yield, "Yield Model 2: Thermo a_CO2") |
  plot_residuals_boxplot(m_yield_aae, D_Yield, "Yield Model 3: Legacy P_AAE10"))
-```
+

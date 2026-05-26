@@ -196,7 +196,7 @@ for (lvl in levels(d$ui)){
   fixef <- model4$coefficients$fixed
   ranefs <- ranef(model4)
   colnames(ranefs) <- paste0("ranef_",colnames(ranefs))
-  nlme.coef[[lvl]]  <- cbind(coef(model4), ranefs, Rep=1:nrow(ranef(model4)), ui=lvl, Site=d.tmp[1, "Site"], Treatment=d.tmp[1, "Treatment"], uid = rownames(coef(model4)))
+  nlme.coef[[lvl]]  <- cbind(coef(model4), ranefs, Rep=as.numeric(sub(".*_", "", rownames(coef(model4)))), ui=lvl, Site=d.tmp[1, "Site"], Treatment=d.tmp[1, "Treatment"], uid = rownames(coef(model4)))
   nlme.coef.avg[[lvl]] <- data.frame(PS=fixef["PS"], k=fixef["k"], ui=lvl, Site=d.tmp[1, "Site"], Treatment=d.tmp[1, "Treatment"], uid = d.tmp$uid)
 }
 
@@ -265,9 +265,11 @@ allP$uid <- paste(allP$location,allP$treatment_ID,as.character(allP$rep),sep = "
 ```{r}
 # 1. merge this with nlme.coef
 soil_data_2022 <- allP %>%
-  filter(year == 2022) %>%
-  select(soil_0_20_P_AAE10, soil_0_20_P_CO2,uid) %>%
-  # Wir benennen die Spalten um, um später Konflikte zu vermeiden.
+  filter(!is.na(soil_0_20_P_CO2) & !is.na(soil_0_20_P_AAE10)) %>%
+  group_by(uid) %>%
+  slice_min(abs(year - 2022), n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(soil_0_20_P_AAE10, soil_0_20_P_CO2, uid) %>%
   rename(
     soil_AAE10_from_2022 = soil_0_20_P_AAE10,
     soil_CO2_from_2022 = soil_0_20_P_CO2

@@ -1,36 +1,61 @@
+# ===================================================
+# Quarto specific files & Caches
+# ===================================================
+# Ignore the Quarto execution cache, site directory, and internal state
 /.quarto/
 /cache/
 /_site/
 /_manuscript/
 **/*.quarto_ipynb
-# ---------------------------------------------------
+*_cache/
+*_files/
+
+# ===================================================
 # R and RStudio specific files
-# ---------------------------------------------------
+# ===================================================
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-# ---------------------------------------------------
-# Quarto specific files & Caches
-# ---------------------------------------------------
-# Ignore the Quarto execution cache and internal state
-/.quarto/
-*_cache/
-*_files/
-# ---------------------------------------------------
+
+# ===================================================
+# LaTeX/TeX temporary and auxiliary files
+# ===================================================
+# LaTeX compilation generates many auxiliary and log files
+*.aux
+*.log
+*.toc
+*.out
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.pdfsync
+*.bbl
+*.blg
+*.run.xml
+*-blx.bib
+
+# ===================================================
 # Compiled Output Files
-# ---------------------------------------------------
-# Ignore standard compiled documents in the root folder
+# ===================================================
+# Ignore standard compiled documents (uncomment/comment as needed)
 *.html
 *.pdf
 *.docx
 *.tex
-# NOTE ON GITHUB PAGES:
-# If you are rendering your website locally into a 'docs/'
-# folder to publish to GitHub Pages, DO NOT ignore the docs folder!
-# However, if you are using a GitHub Action to render automatically,
-# uncomment the next line to ignore local site builds:
-# /_site/
+
+# ===================================================
+# OS/System specific files
+# ===================================================
+.DS_Store
+Thumbs.db
+
+# ===================================================
+# Project specific ignored files
+# ===================================================
 /docs/
 .positai
 data/results_coefficient_analysis
+

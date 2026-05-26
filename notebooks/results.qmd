@@ -545,7 +545,7 @@ for (lvl in levels(d$ui)){
   fixef <- model4$coefficients$fixed
   ranefs <- ranef(model4)
   colnames(ranefs) <- paste0("ranef_",colnames(ranefs))
-  nlme.coef[[lvl]]  <- cbind(coef(model4), ranefs, Rep=1:nrow(ranef(model4)), ui=lvl, Site=d.tmp[1, "Site"], Treatment=d.tmp[1, "Treatment"], uid = rownames(coef(model4)))
+  nlme.coef[[lvl]]  <- cbind(coef(model4), ranefs, Rep=as.numeric(sub(".*_", "", rownames(coef(model4)))), ui=lvl, Site=d.tmp[1, "Site"], Treatment=d.tmp[1, "Treatment"], uid = rownames(coef(model4)))
   nlme.coef.avg[[lvl]] <- data.frame(PS=fixef["PS"], k=fixef["k"], ui=lvl, Site=d.tmp[1, "Site"], Treatment=d.tmp[1, "Treatment"], uid = d.tmp$uid)
 }
 
