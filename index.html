@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Marc Jerónimo Pérez y Ropero">
 <meta name="author" content="Frank Liebisch">
 <meta name="author" content="Emmanuel Frossard">
-<meta name="dcterms.date" content="2026-05-22">
+<meta name="dcterms.date" content="2026-05-26">
 
 <title>P-release kinetics as a predictor for P-availability in Swiss cropping systems – STYCS P-Kinetics Manuscript</title>
 <style>
@@ -26,41 +26,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 /* CSS for citations */
 div.csl-bib-body { }
@@ -98,10 +63,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c1bea336d52e3b4066ed1e60a219a4b8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5bae98d893b4cf6bded746534a57bb19.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -294,7 +259,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 22, 2026</p>
+      <p class="date">May 26, 2026</p>
     </div>
   </div>
   
@@ -316,13 +281,13 @@ window.Quarto = {
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
 <section id="the-agronomic-dilemma-of-phosphorus" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="the-agronomic-dilemma-of-phosphorus"><span class="header-section-number">1.1</span> The Agronomic Dilemma of Phosphorus</h2>
-<p>Phosphorus (P) is an essential macronutrient for all life, yet its management in agricultural systems presents a profound dilemma. In the soil solution, P exists almost exclusively as highly reactive orthophosphate anions (<span class="math inline">\(HPO_4^{2-}\)</span> or <span class="math inline">\(H_2PO_4^{-}\)</span>). These dissolved species are rapidly immobilized—either adsorbed onto the surfaces of clays and metal oxides or precipitated with cations like calcium, iron, and aluminum to form minerals of low solubility <span class="citation" data-cites="Brady2016Soils Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref">Sposito, 2008</a>)</span>. Consequently, the total soil P stock is vast, but the infinitesimally small fraction dissolved in the soil solution—the only form directly available to plant roots—is highly transient.</p>
+<p>Phosphorus (P) is an essential macronutrient for all life, yet its management in agricultural systems presents a profound dilemma. In the soil solution, P exists almost exclusively as highly reactive orthophosphate anions (<span class="math inline">\(HPO_4^{2-}\)</span> or <span class="math inline">\(H_2PO_4^{-}\)</span>). These dissolved species are rapidly immobilized—either adsorbed onto the surfaces of clays and metal oxides or precipitated with cations like calcium, iron, and aluminum to form minerals of low solubility <span class="citation" data-cites="Brady2016Soils Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref"><strong>Brady2016Soils?</strong></a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref"><strong>Sposito2008Chemistry?</strong></a>)</span>. Consequently, the total soil P stock is vast, but the infinitesimally small fraction dissolved in the soil solution—the only form directly available to plant roots—is highly transient.</p>
 </section>
 <section id="conceptual-frameworks-vs.-operational-definitions" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</h2>
-<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (</strong><span class="math inline">\(I\)</span>): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (</strong><span class="math inline">\(Q\)</span>): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
+<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref"><strong>Frossard2000Processes?</strong></a>)</span>: 1. <strong>P-Intensity (</strong><span class="math inline">\(I\)</span>): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (</strong><span class="math inline">\(Q\)</span>): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
 <p>While these concepts are theoretically elegant, measuring them in natural soils is notoriously difficult. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
-<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
+<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref"><strong>FAL1996Methodenbuch?</strong></a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
 </section>
 <section id="the-thermodynamic-flaw-ionic-strength-and-activity" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</h2>
@@ -334,11 +299,16 @@ window.Quarto = {
 <section id="unifying-quantity-intensity-and-the-kinetic-bottleneck" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</h2>
 <p>Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction (<span class="math inline">\(Q\)</span>, such as <span class="math inline">\(P_{AAE10}\)</span>) to construct a purely thermodynamic <span class="math inline">\(Q(I)\)</span> framework. By parameterizing this relationship using a Freundlich isotherm (<span class="math inline">\(Q = K_f \cdot I^{1/n}\)</span>), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative (<span class="math inline">\(\frac{dQ}{dI}\)</span>).</p>
-<p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
+<p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref"><strong>Nye2000Solute?</strong></a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
 <p>To address this, we define a novel dynamic predictor: the <strong>Initial Activity Flux (</strong><span class="math inline">\(J_0\)</span>). This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant (<span class="math inline">\(k\)</span>) by the maximum thermodynamic activity (<span class="math inline">\(a_{max}\)</span>): <span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
-<p><strong>?@tbl-terminology</strong> maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.</p>
+<p><a href="#tbl-terminology" class="quarto-xref">Table&nbsp;1</a> maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.</p>
+<div id="tbl-terminology" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-terminology-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
+</figcaption>
+<div aria-describedby="tbl-terminology-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<caption>Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.</caption>
 <colgroup>
 <col style="width: 25%">
 <col style="width: 25%">
@@ -355,7 +325,7 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">Frossard et al. (<a href="#ref-Frossard2000Processes" role="doc-biblioref">2000</a>)</span>)</strong></td>
+<td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref"><strong>Frossard2000Processes?</strong></a>)</span>)</strong></td>
 <td style="text-align: left;">Chemical activity of P in the soil solution</td>
 <td style="text-align: left;">Pool of solid-phase P that can replenish the solution</td>
 <td style="text-align: left;">Rate of P transfer from the solid to the liquid phase</td>
@@ -374,28 +344,14 @@ window.Quarto = {
 </tr>
 </tbody>
 </table>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#|echo: false</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magick)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Linking to ImageMagick 6.9.12.98
-Enabled features: fontconfig, freetype, fftw, heic, lcms, pango, raw, webp, x11
-Disabled features: cairo, ghostscript, rsvg</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Using 4 threads</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdftools)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Using poppler version 24.02.0</code></pre>
-</div>
+</figure>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
 <figcaption>Conceptual model of the rhizosphere phosphorus cycle.</figcaption>
 </figure>
 </div>
@@ -490,7 +446,7 @@ Disabled features: cairo, ghostscript, rsvg</code></pre>
 <div id="tbl-sites-corrected" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al.&nbsp;(2021).
+Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al.&nbsp;(2021).
 </figcaption>
 <div aria-describedby="tbl-sites-corrected-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -580,7 +536,7 @@ Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data
 <ol type="1">
 <li><strong>Pre-washing to Remove Soluble P</strong>: 10 g of air-dried soil was suspended in 200 ml of deionized water and shaken for 60 minutes at 120 Hz. The suspension was centrifuged for 15 minutes at 4000 rpm, and the supernatant containing the readily soluble P was discarded.</li>
 <li><strong>Kinetic Extraction</strong>: The remaining soil pellet was resuspended in 200 ml of fresh deionized water. The suspension was shaken continuously, and subsamples were taken at eight time points: 2, 4, 10, 15, 20, 30, 45, and 60 minutes.</li>
-<li><strong>Analysis</strong>: Subsamples were immediately filtered, and the stoichiometric concentration of orthophosphate (<span class="math inline">\(c_i\)</span>) was determined colorimetrically using the malachite green method <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref">Van Veldhoven &amp; Mannaerts, 1987</a>)</span>.</li>
+<li><strong>Analysis</strong>: Subsamples were immediately filtered, and the stoichiometric concentration of orthophosphate (<span class="math inline">\(c_i\)</span>) was determined colorimetrically using the malachite green method <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref"><strong>VanVeldhoven1987Malachite?</strong></a>)</span>.</li>
 </ol>
 </section>
 <section id="sec-thermodynamic-correction" class="level3" data-number="2.3.2">
@@ -595,7 +551,7 @@ Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data
 </section>
 <section id="sec-statistical-analysis" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="sec-statistical-analysis"><span class="header-section-number">2.4</span> Statistical Analysis and Modeling</h2>
-<p>All data processing, mathematical modeling, and visualization were conducted using the R programming language (v. 4.3.1) <span class="citation" data-cites="R-base">(<a href="#ref-R-base" role="doc-biblioref">R Core Team, 2022</a>)</span>. Primary packages included <code>nlme</code> <span class="citation" data-cites="R-nlme">(<a href="#ref-R-nlme" role="doc-biblioref">Pinheiro et al., 2022</a>)</span> for non-linear kinetic modeling, <code>lme4</code> <span class="citation" data-cites="R-lme4">(<a href="#ref-R-lme4" role="doc-biblioref">Bates et al., 2015</a>)</span> for linear mixed-effects modeling, and <code>deSolve</code> and <code>ReacTran</code> for partial differential equation solving.</p>
+<p>All data processing, mathematical modeling, and visualization were conducted using the R programming language (v. 4.3.1) <span class="citation" data-cites="R-base">(<a href="#ref-R-base" role="doc-biblioref">R Core Team, 2026</a>)</span>. Primary packages included <code>nlme</code> <span class="citation" data-cites="R-nlme">(<a href="#ref-R-nlme" role="doc-biblioref">Pinheiro et al., 2026</a>)</span> for non-linear kinetic modeling, <code>lme4</code> <span class="citation" data-cites="R-lme4">(<a href="#ref-R-lme4" role="doc-biblioref">Bates et al., 2026</a>)</span> for linear mixed-effects modeling, and <code>deSolve</code> and <code>ReacTran</code> for partial differential equation solving.</p>
 <section id="modeling-of-desorption-kinetics-and-the-activity-flux-j_0" class="level3" data-number="2.4.1">
 <h3 data-number="2.4.1" class="anchored" data-anchor-id="modeling-of-desorption-kinetics-and-the-activity-flux-j_0"><span class="header-section-number">2.4.1</span> 1. Modeling of Desorption Kinetics and the Activity Flux (<span class="math inline">\(J_0\)</span>)</h3>
 <p>To derive the kinetic parameters, a non-linear mixed-effects model (<code>nlme</code>) was fitted to the exact solution of the first-order rate equation, utilizing the thermodynamically corrected activities:</p>
@@ -629,7 +585,7 @@ Table&nbsp;1: Soil characteristics of the six long-term experimental sites. Data
 <div id="tbl-variables-updated" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2: Description of key variables used in the thermodynamic and agronomic models.
+Table&nbsp;3: Description of key variables used in the thermodynamic and agronomic models.
 </figcaption>
 <div aria-describedby="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -731,37 +687,19 @@ Table&nbsp;2: Description of key variables used in the thermodynamic and agronom
 <h1 data-number="3"><span class="header-section-number">3</span> References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
 <div id="ref-R-lme4" class="csl-entry" role="listitem">
-Bates, D., Mächler, M., Bolker, B., &amp; Walker, S. (2015). Fitting linear mixed-effects models using <span class="nocase">lme4</span>. <em>Journal of Statistical Software</em>, <em>67</em>(1), 1–48. <a href="https://doi.org/10.18637/jss.v067.i01">https://doi.org/10.18637/jss.v067.i01</a>
-</div>
-<div id="ref-Brady2016Soils" class="csl-entry" role="listitem">
-Brady, N. C., &amp; Weil, R. R. (2016). <em>The nature and properties of soils</em> (15th ed.). Pearson.
+Bates, D., Maechler, M., Bolker, B., Walker, S., Jagan, M., &amp; Ly, A. (2026). <em>lme4: Linear mixed-effects models using eigen and S4</em>. <a href="https://github.com/lme4/lme4/">https://github.com/lme4/lme4/</a>
 </div>
 <div id="ref-flossmannExtractionMethodCharacterizing1982" class="csl-entry" role="listitem">
 Flossmann, R., &amp; Richter, D. (1982). <em>Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution.</em>
 </div>
-<div id="ref-FAL1996Methodenbuch" class="csl-entry" role="listitem">
-Forschungsanstalt für Agrarökologie und Landbau (FAL). (1996). <em>Methodenbuch für boden-, pflanzen- und nährstoffanalysen</em>. FAL.
-</div>
-<div id="ref-Frossard2000Processes" class="csl-entry" role="listitem">
-Frossard, E., Condron, L. M., Oberson, A., Sinaj, S., &amp; Fardeau, J. C. (2000). Processes governing phosphorus availability in temperate soils. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 15–23. <a href="https://doi.org/10.2134/jeq2000.00472425002900010003x">https://doi.org/10.2134/jeq2000.00472425002900010003x</a>
-</div>
 <div id="ref-hirteYieldResponseSoil2021" class="csl-entry" role="listitem">
 Hirte, J., Richner, W., Orth, B., Liebisch, F., &amp; Flisch, R. (2021). Yield response to soil test phosphorus in <span>Switzerland</span>: <span>Pedoclimatic</span> drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Science of The Total Environment</em>, <em>755</em>, 143453. <a href="https://doi.org/10.1016/j.scitotenv.2020.143453">https://doi.org/10.1016/j.scitotenv.2020.143453</a>
 </div>
-<div id="ref-Nye2000Solute" class="csl-entry" role="listitem">
-Nye, P. H., &amp; Tinker, P. B. (2000). <em>Solute movement in the rhizosphere</em>. Oxford University Press.
-</div>
 <div id="ref-R-nlme" class="csl-entry" role="listitem">
-Pinheiro, J., Bates, D., DebRoy, S., Sarkar, D., &amp; R Core Team. (2022). <em>Nlme: Linear and nonlinear mixed effects models</em>. <a href="https://CRAN.R-project.org/package=nlme">https://CRAN.R-project.org/package=nlme</a>
+Pinheiro, J., Bates, D., &amp; R Core Team. (2026). <em>Nlme: Linear and nonlinear mixed effects models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>
 </div>
 <div id="ref-R-base" class="csl-entry" role="listitem">
-R Core Team. (2022). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>
-</div>
-<div id="ref-Sposito2008Chemistry" class="csl-entry" role="listitem">
-Sposito, G. (2008). <em>The chemistry of soils</em> (2nd ed.). Oxford University Press.
-</div>
-<div id="ref-VanVeldhoven1987Malachite" class="csl-entry" role="listitem">
-Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosphorus in the scheldt estuary. <em>Estuarine, Coastal and Shelf Science</em>, <em>25</em>(6), 755–765.
+R Core Team. (2026). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals">https://doi.org/10.32614/R.manuals</a>
 </div>
 </div>
 <div style="page-break-after: always;"></div>
