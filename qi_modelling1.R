@@ -51,9 +51,27 @@ suppressPackageStartupMessages({
 options(warn = -1)
 
 # Load raw data
+library(readxl)
 RES <- readRDS("data/RES.rds")
 D <- RES$D # 2015-2022 Subset 
-D2 <- readRDS("data/all_P.rds") # 40-Year Full Dataset
+
+# Extract climate data from legacy file to patch the missing columns in STYCS
+climate_data <- readRDS("data/all_P.rds") |>
+  dplyr::select(site, year, anavg_temp, ansum_prec, juvdev_temp, juvdev_prec) |>
+  dplyr::distinct()
+
+# Load comprehensive STYCS dataset and merge climate
+D2 <- read_excel("data/STYCS_data_2023_260511.xlsx") |>
+  rename(rep = replicate) |>
+  mutate(site = gsub("STYCS_", "", LtE_name)) |>
+  left_join(climate_data, by = c("site", "year")) |>
+  mutate(
+    soil_0_20_P_CO2 = soil_0_20_P_test * 0.155,
+    crop = crop_abr,
+    annual_P_uptake = rowSums(across(starts_with("P_harv")), na.rm = TRUE),
+    annual_yield_mp_DM = rowSums(across(matches("^harv.*mp_yield_DM$")), na.rm = TRUE),
+    annual_yield_bp_DM = rowSums(across(matches("^harv.*bp[1-2]_yield_DM$")), na.rm = TRUE)
+  ) # 40-Year Full Dataset (All Treatments)
 
 
 ## ----create-master-dataset----------------------------------------------------
@@ -67,8 +85,7 @@ D_master <- D2 |>
   group_by(site) |>
   mutate(
     site_juv_temp_mean = mean(juvdev_temp, na.rm = TRUE), site_juv_prec_mean = mean(juvdev_prec, na.rm = TRUE),
-    temp_anomaly = juvdev_temp - site_juv_temp_mean, prec_anomaly = juvdev_prec - site_juv_prec_mean,
-    rep = as.numeric(as.roman(rep))
+    temp_anomaly = juvdev_temp - site_juv_temp_mean, prec_anomaly = juvdev_prec - site_juv_prec_mean
   ) |> ungroup() |>
   left_join(site_geochemistry, by = "site") |>
   left_join(kinetics_stable, by = c("site", "treatment_ID", "rep"))
@@ -168,10 +185,10 @@ D_ptf <- D_ready |>
   mutate(site = droplevels(factor(site)))
 
 # Models
-ptf_agro_raw <- rlmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
-ptf_agro_thm <- rlmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
-ptf_geo_raw <- rlmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
-ptf_geo_thm <- rlmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
+ptf_agro_raw <- lmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
+ptf_agro_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
+ptf_geo_raw <- lmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
+ptf_geo_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
 
 # Performance Extraction
 get_r2 <- function(model, name) {
@@ -220,9 +237,9 @@ get_int <- function(v1, v2) {
   return(0)
 }
 
-# 2. Prepare the Longitudinal Dataset (2010-2022, Drop 0-uptake)
+# 2. Prepare the Longitudinal Dataset (All years, Drop 0-uptake)
 D_Long <- D_ready |>
-  filter(year >= 2010, annual_P_uptake > 0, !is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10)) |>
+  filter(annual_P_uptake > 0, !is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
   
   # Calculate the Physical Highway (1/b) safely using get_int()
   mutate(
@@ -246,7 +263,12 @@ D_Long <- D_ready |>
   # Normalize Uptake & Scale Bottlenecks
   group_by(site, crop) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
   filter(is.finite(inv_b), is.finite(Relative_Uptake)) |>
-  mutate(z_inv_b = as.numeric(scale(inv_b)), site = as.factor(site))
+  mutate(
+    z_inv_b = as.numeric(scale(inv_b)), 
+    z_k = as.numeric(scale(k)),
+    z_fert_N = as.numeric(scale(fert_N_tot)),
+    site = as.factor(site)
+  )
   
 
 cat("Total Harvest Years Evaluated (2010-2022):", nrow(D_Long), "\n\n")
@@ -255,30 +277,30 @@ cat("Total Harvest Years Evaluated (2010-2022):", nrow(D_Long), "\n\n")
 # MODEL 1: RAW P_CO2 (The Empirical Soluble Pool)
 # ---------------------------------------------------------
 mod_raw_co2 <- nlme(
-  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * soil_0_20_P_CO2) / 
+  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_CO2) / 
                     ( (K_base * exp(beta_invb * z_inv_b + beta_k * z_k)) + soil_0_20_P_CO2 ),
-  data = D_Long, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long$soil_0_20_P_CO2), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
+  data = D_Long, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = 0.07, beta_N = 0.1, K_base = median(D_Long$soil_0_20_P_CO2), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
 )
 
 # ---------------------------------------------------------
 # MODEL 2: THERMODYNAMIC a_CO2 (The Biophysical Soluble Pool)
 # ---------------------------------------------------------
 mod_thm_co2 <- nlme(
-  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * a_CO2_total_mg_L) / 
+  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * a_CO2_total_mg_L) / 
                     ( (K_base * exp(beta_invb * z_inv_b + beta_k * z_k)) + a_CO2_total_mg_L ),
-  data = D_Long, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long$a_CO2_total_mg_L), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
+  data = D_Long, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = 0.07, beta_N = 0.1, K_base = median(D_Long$a_CO2_total_mg_L), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
 )
 
 # ---------------------------------------------------------
 # MODEL 3: RAW P_AAE10 (The Bound Legacy Pool)
 # ---------------------------------------------------------
 mod_raw_aae <- nlme(
-  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_prec * z_Prec_Anom) * soil_0_20_P_AAE10) / 
+  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_AAE10) / 
                     ( (K_base * exp(beta_invb * z_inv_b + beta_k * z_k)) + soil_0_20_P_AAE10 ),
-  data = D_Long, fixed = U_base + beta_temp + beta_prec + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
-  start = c(U_base = 0.68, beta_temp = 0.07, beta_prec = 0.05, K_base = median(D_Long$soil_0_20_P_AAE10), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
+  data = D_Long, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_k ~ 1, random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = 0.07, beta_N = 0.1, K_base = median(D_Long$soil_0_20_P_AAE10), beta_invb = 0, beta_k = 0), control = nlmeControl(maxIter = 1000)
 )
 
 # --- Extract Performance and Plot ---
@@ -318,6 +340,44 @@ res_table |>
  validate_nlme(mod_raw_aae, D_Long, "Relative_Uptake", "Model 3: Legacy P_AAE10")) +
   plot_layout(guides = "collect") & theme(legend.position = "bottom")
 
+
+## 7.1 Full Dataset Uptake Model (No Kinetics)
+D_Long_Full <- D_ready |>
+  filter(annual_P_uptake > 0, !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
+  mutate(
+    n_pred_agro = C_agro("ln_P_CO2") + 
+             get_int_agro("ln_P_CO2", "z_ln_FineTexture") * z_ln_FineTexture + 
+             get_int_agro("ln_P_CO2", "z_pH") * z_pH + 
+             get_int_agro("ln_P_CO2", "z_ln_Ca") * z_ln_Ca + 
+             get_int_agro("ln_P_CO2", "z_ln_Mg") * z_ln_Mg + 
+             get_int_agro("ln_P_CO2", "z_ln_K") * z_ln_K + 
+             get_int_agro("ln_P_CO2", "z_ln_Corg") * z_ln_Corg + 
+             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom + 
+             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
+             
+    ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
+                
+    b_power_agro = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
+    inv_b_agro = 1 / b_power_agro
+  ) |>
+  group_by(site, crop) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
+  filter(is.finite(Relative_Uptake), is.finite(inv_b_agro)) |>
+  mutate(
+    z_inv_b_agro = as.numeric(scale(inv_b_agro)),
+    z_fert_N = as.numeric(scale(fert_N_tot)),
+    site = as.factor(site)
+  )
+
+uptake_full_nlme <- nlme(
+  Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_CO2) / 
+                    ( (K_base * exp(beta_invb * z_inv_b_agro)) + soil_0_20_P_CO2 ),
+  data = D_Long_Full, 
+  fixed = U_base + beta_temp + beta_N + K_base + beta_invb ~ 1, 
+  random = U_base ~ 1 | site,
+  start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Full$soil_0_20_P_CO2), beta_invb = 0), 
+  control = nlmeControl(maxIter = 1000)
+)
+print(round(summary(uptake_full_nlme)$tTable, 4))
 
 ## ----residual-diagnostics-uptake, fig.width=10, fig.height=4------------------
 # Helper to plot boxplots of residuals per site
@@ -368,7 +428,7 @@ print(as.data.frame(all_effects), row.names = FALSE)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 D_Yield <- D_ready |>
-  filter(year >= 2010, !is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10)) |>
+  filter(!is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10)) |>
   
   # Calculate the Physical Highway (1/b) safely using get_int()
   mutate(
