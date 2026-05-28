@@ -726,7 +726,6 @@ D_Yield |>
 ### From Mitscherlich to $P_{\text{crit}}$
 
 Hirte et al. (2021) extended the Mitscherlich framework by deriving a **critical STP** ($P_{\text{crit}}$) — the soil test P concentration at which yield reaches 95% of its maximum — and then modelling $P_{\text{crit}}$ as a function of pedoclimatic site conditions. We apply the same two-step approach here.
-
 **Derivation.** Setting $Y = 0.95$ in the Mitscherlich equation and solving for $P$:
 $$0.95 = 1 - \exp(-c_{\text{eff}} \cdot P_{\text{crit}}) \implies P_{\text{crit}} = \frac{\ln(20)}{c_{\text{eff}}}$$
 

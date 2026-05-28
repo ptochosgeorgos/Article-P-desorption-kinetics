@@ -38,15 +38,9 @@ To address this, we define a novel dynamic predictor: the **Initial Activity Flu
 | **Traditional / Static Proxy (GRUD)** | $P_{CO_2}$ (Raw Water-soluble Concentration) | $P_{AAE10}$ (Chelate-extractable Mass) | *Not Measured* |
 | **Dynamic / Thermodynamic Proxy (This Study)** | Maximum Thermodynamic Activity ($a_{max}$) | $P_{AAE10}$ | Initial Activity Flux ($J_0 = k \cdot a_{max}$) |
 
-: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies.
+: Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies. {#tbl-terminology}
 
-```{r}
-#|echo: false
 
-library(magick)
-library(pdftools)
-
-```
 
 
 ```{tikz}

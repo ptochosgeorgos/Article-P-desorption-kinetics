@@ -1,0 +1,5 @@
+{
+    // --- PandocCiter: point to this project's bibliography ---
+    "PandocCiter.RootFile": "${workspaceFolder}/references.bib",
+    "PandocCiter.DefaultBib": "${workspaceFolder}/references.bib"
+}
