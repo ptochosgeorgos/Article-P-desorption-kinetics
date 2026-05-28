@@ -1,0 +1,267 @@
+---
+title: "Data Sanity Checks"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readxl)
+library(ggpmisc)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# 1. Load legacy kinetics and climate data
+RES <- readRDS("../data/RES.rds")
+D_legacy <- RES$D
+climate_data <- readRDS("../data/all_P.rds") |>
+    dplyr::select(site, year, anavg_temp, ansum_prec, juvdev_temp, juvdev_prec) |>
+    dplyr::distinct()
+
+site_geochemistry <- D_legacy |>
+    group_by(site) |>
+    summarise(feox_mean = mean(Feox, na.rm = TRUE), alox_mean = mean(Alox, na.rm = TRUE)) |>
+    ungroup()
+
+kinetics_stable <- D_legacy |>
+    dplyr::select(site, treatment_ID, rep, k, v0_kPS = kPS, Pmax_PS = PS) |>
+    distinct(site, treatment_ID, rep, .keep_all = TRUE)
+
+# 2. Load accurate raw STYCS dataset and construct D_master
+D_master <- read_excel("../data/STYCS_data_2023_260511.xlsx", guess_max = 20000) |>
+    rename(rep = replicate) |>
+    mutate(site = gsub("STYCS_", "", LtE_name)) |>
+    left_join(climate_data, by = c("site", "year")) |>
+    mutate(
+        soil_0_20_P_CO2 = soil_0_20_P_test * 0.155,
+        crop = crop_abr,
+        fert_P_tot = fert_P2O5_tot / 2.291,
+        annual_P_uptake = rowSums(across(starts_with("P_harv")), na.rm = TRUE),
+        annual_yield_mp_DM = rowSums(across(matches("^harv.*mp_yield_DM$")), na.rm = TRUE),
+        annual_yield_bp_DM = rowSums(across(matches("^harv.*bp[1-2]_yield_DM$")), na.rm = TRUE),
+        annual_P_balance = fert_P_tot - annual_P_uptake
+    ) |>
+    filter(year >= 1990) |>
+    left_join(site_geochemistry, by = "site") |>
+    left_join(kinetics_stable, by = c("site", "treatment_ID", "rep")) |>
+    # Focus only on the plots where we have stable kinetics (the main P treatments)
+    filter(!is.na(Pmax_PS)) |>
+    # Just to map Treatment to treatment_ID for plotting aesthetics
+    mutate(Treatment = factor(treatment_ID, levels = c("P0", "P100", "P166")))
+```
+
+## Introduction
+
+This notebook contains sanity checks for the agronomic data using the **newly constructed `D_master`**, which merges the correct, uncorrupted field measurements from the raw Excel file with the stable kinetic laboratory measurements from the legacy `RES.rds` dataset. 
+
+## Summary Table
+
+Let's look at the average applied P fertilizer (`fert_P_tot`) and yield for each treatment at each site.
+
+```{r}
+summary_table <- D_master %>%
+    group_by(site, Treatment) %>%
+    summarise(
+        mean_yield = mean(annual_yield_mp_DM, na.rm = TRUE),
+        mean_Fert_P = mean(fert_P_tot, na.rm = TRUE),
+        .groups = "drop"
+    )
+
+knitr::kable(summary_table, digits = 2)
+```
+
+**Observation:** The anomaly is now entirely resolved! For Cadenazzo, `P0` correctly shows the lowest yield and 0 applied fertilizer, whereas `P166` correctly shows the highest yield and highest fertilizer applied.
+
+## Visualizations
+
+### 1. Yield by Treatment and Site
+
+```{r fig.width=10, fig.height=8}
+ggplot(D_master, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
+    geom_boxplot(alpha = 0.7) +
+    facet_wrap(~site, scales = "free_y") +
+    labs(
+        title = "Annual Dry Matter Yield by Treatment and Site",
+        x = "Treatment",
+        y = "Annual Yield (kg DM / ha)"
+    ) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### 2. Applied P Fertilizer by Treatment and Site
+
+```{r fig.width=10, fig.height=8}
+ggplot(D_master, aes(x = Treatment, y = fert_P_tot, fill = Treatment)) +
+    geom_boxplot(alpha = 0.7) +
+    facet_wrap(~site, scales = "free_y") +
+    labs(
+        title = "Total Applied P Fertilizer (fert_P_tot) by Treatment and Site",
+        x = "Treatment",
+        y = "Applied P Fertilizer (kg P / ha)"
+    ) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### 3. Yield vs. Applied P Fertilizer
+
+```{r fig.width=10, fig.height=8}
+ggplot(D_master, aes(x = fert_P_tot, y = annual_yield_mp_DM, color = Treatment)) +
+    geom_point(alpha = 0.7, size = 2) +
+    geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
+    facet_wrap(~site, scales = "free") +
+    labs(
+        title = "Yield vs. Actual Applied P Fertilizer",
+        x = "Total Applied P Fertilizer (fert_P_tot)",
+        y = "Annual Yield (kg DM / ha)"
+    ) +
+    theme_bw()
+```
+
+### 4. Soil P vs. Treatment
+
+```{r fig.width=10, fig.height=8}
+ggplot(D_master, aes(x = Treatment, y = soil_0_20_P_CO2, fill = Treatment)) +
+    geom_boxplot(alpha = 0.7) +
+    facet_wrap(~site, scales = "free_y") +
+    labs(
+        title = "Soil P (CO2 extractable) by Treatment and Site",
+        x = "Treatment",
+        y = "P_CO2 (mg/kg)"
+    ) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### 5. P Uptake vs. Applied Fertilizer
+
+```{r fig.width=10, fig.height=8}
+ggplot(D_master, aes(x = fert_P_tot, y = annual_P_uptake, color = Treatment)) +
+    geom_point(alpha = 0.7, size = 2) +
+    geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
+    facet_wrap(~site, scales = "free") +
+    labs(
+        title = "Annual P Uptake vs. Applied P Fertilizer",
+        x = "Total Applied P Fertilizer (fert_P_tot)",
+        y = "Annual P Uptake (kg P / ha)"
+    ) +
+    theme_bw()
+```
+
+### 6. Cumulated P Balance vs. Soil P Indicators
+
+Here we calculate the cumulated `P_balance` across the entire trial duration (1990-2022) for each plot, and compare it against the mean soil test indicators ($P_{CO2}$, $P_{AAE10}$, and $P_{desorb} / PS$).
+
+```{r fig.width=12, fig.height=15}
+# Calculate cumulative P balance per plot
+D_cum <- D_master %>%
+    group_by(site, Treatment, rep) %>%
+    summarise(
+        Cumulated_P_Balance = sum(annual_P_balance, na.rm = TRUE),
+        mean_P_CO2 = mean(soil_0_20_P_CO2, na.rm = TRUE),
+        mean_P_AAE10 = mean(soil_0_20_P_AAE10, na.rm = TRUE),
+        mean_PS = mean(Pmax_PS, na.rm = TRUE),
+        .groups = "drop"
+    )
+
+# Pivot the dataset to long format for faceting by indicator
+D_indicators <- D_cum %>%
+    pivot_longer(
+        cols = c(mean_P_CO2, mean_P_AAE10, mean_PS),
+        names_to = "Indicator",
+        values_to = "Indicator_Value"
+    ) %>%
+    # Make the facet labels nicer
+    mutate(Indicator = recode(Indicator,
+        mean_P_CO2 = "P_CO2 (Water Soluble)",
+        mean_P_AAE10 = "P_AAE10 (Chelate Extractable)",
+        mean_PS = "PS (Desorbable P / Capacity)"))
+
+ggplot(D_indicators, aes(x = Indicator_Value, y = Cumulated_P_Balance, color = site)) +
+    geom_point(alpha = 0.8, size = 2) +
+    geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
+    facet_grid(site ~ Indicator, scales = "free") +
+    labs(
+        title = "Cumulated P Balance (1990-2022) vs. Soil P Indicators",
+        x = "Measured Soil P Indicator Value",
+        y = "Cumulated P Balance (kg P / ha)",
+        color = "Site"
+    ) +
+    theme_bw()
+```
+
+### 7. Annual P Uptake vs. Soil P Indicators
+
+To compare the predictive power of the soil tests against the annual P-uptake, we plot linear regressions faceted by the indicator. We include the linear regression equation and the $R^2$ to assess meaningful differences.
+
+```{r fig.width=12, fig.height=15}
+# Pivot the dataset to long format for faceting by indicator
+D_uptake_annual <- D_master %>%
+    pivot_longer(
+        cols = c(soil_0_20_P_CO2, soil_0_20_P_AAE10, Pmax_PS),
+        names_to = "Indicator",
+        values_to = "Indicator_Value"
+    ) %>%
+    mutate(Indicator = recode(Indicator,
+        soil_0_20_P_CO2 = "P_CO2 (Water Soluble)",
+        soil_0_20_P_AAE10 = "P_AAE10 (Chelate Extractable)",
+        Pmax_PS = "PS (Desorbable P / Capacity)")) %>%
+    # Filter missing to avoid plotting warnings
+    filter(!is.na(Indicator_Value) & !is.na(annual_P_uptake))
+
+ggplot(D_uptake_annual, aes(x = Indicator_Value, y = annual_P_uptake)) +
+    geom_point(aes(color = site), alpha = 0.6) +
+    geom_smooth(method = "lm", color = "black", se = FALSE) +
+    stat_poly_eq(use_label(c("eq", "R2"))) +
+    facet_grid(site ~ Indicator, scales = "free") +
+    labs(
+        title = "Annual P Uptake vs. Soil P Indicators",
+        x = "Measured Soil P Indicator Value",
+        y = "Annual P Uptake (kg P / ha)",
+        color = "Site"
+    ) +
+    theme_bw()
+```
+
+### 8. Cumulated P Uptake vs. Soil P Indicators
+
+Here we evaluate the long-term predictive power. We sum the `annual_P_uptake` over the 1990-2022 period for each plot, and regress it against the soil test indicators.
+
+```{r fig.width=12, fig.height=15}
+# Calculate cumulative P uptake per plot
+D_cum_uptake <- D_master %>%
+    group_by(site, Treatment, rep) %>%
+    summarise(
+        Cumulated_P_Uptake = sum(annual_P_uptake, na.rm = TRUE),
+        mean_P_CO2 = mean(soil_0_20_P_CO2, na.rm = TRUE),
+        mean_P_AAE10 = mean(soil_0_20_P_AAE10, na.rm = TRUE),
+        mean_PS = mean(Pmax_PS, na.rm = TRUE),
+        .groups = "drop"
+    ) %>%
+    # Pivot for faceting
+    pivot_longer(
+        cols = c(mean_P_CO2, mean_P_AAE10, mean_PS),
+        names_to = "Indicator",
+        values_to = "Indicator_Value"
+    ) %>%
+    mutate(Indicator = recode(Indicator,
+        mean_P_CO2 = "P_CO2 (Water Soluble)",
+        mean_P_AAE10 = "P_AAE10 (Chelate Extractable)",
+        mean_PS = "PS (Desorbable P / Capacity)")) %>%
+    filter(!is.na(Indicator_Value) & !is.na(Cumulated_P_Uptake))
+
+ggplot(D_cum_uptake, aes(x = Indicator_Value, y = Cumulated_P_Uptake)) +
+    geom_point(aes(color = site), alpha = 0.8, size = 2) +
+    geom_smooth(method = "lm", color = "black", se = FALSE) +
+    stat_poly_eq(use_label(c("eq", "R2")), label.y = 0.95) +
+    facet_grid(site ~ Indicator, scales = "free") +
+    labs(
+        title = "Cumulated P Uptake (1990-2022) vs. Soil P Indicators",
+        x = "Measured Soil P Indicator Value",
+        y = "Cumulated P Uptake (kg P / ha)",
+        color = "Site"
+    ) +
+    theme_bw()
+```
