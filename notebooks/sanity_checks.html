@@ -1,0 +1,2987 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Data Sanity Checks – STYCS P-Kinetics Manuscript</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5bae98d893b4cf6bded746534a57bb19.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STYCS P-Kinetics Manuscript</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Manuscript</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-supplementary-models" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Supplementary Models</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-supplementary-models">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/qi_modelling1.html">
+ <span class="dropdown-text">Q/I &amp; Thermodynamic Showdown</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/sanity_checks.html">
+ <span class="dropdown-text">Data Sanity Checks</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#summary-table" id="toc-summary-table" class="nav-link" data-scroll-target="#summary-table"><span class="header-section-number">2</span> Summary Table</a></li>
+  <li><a href="#visualizations" id="toc-visualizations" class="nav-link" data-scroll-target="#visualizations"><span class="header-section-number">3</span> Visualizations</a>
+  <ul class="collapse">
+  <li><a href="#yield-by-treatment-and-site" id="toc-yield-by-treatment-and-site" class="nav-link" data-scroll-target="#yield-by-treatment-and-site"><span class="header-section-number">3.1</span> 1. Yield by Treatment and Site</a></li>
+  <li><a href="#applied-p-fertilizer-by-treatment-and-site" id="toc-applied-p-fertilizer-by-treatment-and-site" class="nav-link" data-scroll-target="#applied-p-fertilizer-by-treatment-and-site"><span class="header-section-number">3.2</span> 2. Applied P Fertilizer by Treatment and Site</a></li>
+  <li><a href="#yield-vs.-applied-p-fertilizer" id="toc-yield-vs.-applied-p-fertilizer" class="nav-link" data-scroll-target="#yield-vs.-applied-p-fertilizer"><span class="header-section-number">3.3</span> 3. Yield vs.&nbsp;Applied P Fertilizer</a></li>
+  <li><a href="#soil-p-vs.-treatment" id="toc-soil-p-vs.-treatment" class="nav-link" data-scroll-target="#soil-p-vs.-treatment"><span class="header-section-number">3.4</span> 4. Soil P vs.&nbsp;Treatment</a></li>
+  <li><a href="#p-uptake-vs.-applied-fertilizer" id="toc-p-uptake-vs.-applied-fertilizer" class="nav-link" data-scroll-target="#p-uptake-vs.-applied-fertilizer"><span class="header-section-number">3.5</span> 5. P Uptake vs.&nbsp;Applied Fertilizer</a></li>
+  <li><a href="#cumulated-p-balance-vs.-soil-p-indicators" id="toc-cumulated-p-balance-vs.-soil-p-indicators" class="nav-link" data-scroll-target="#cumulated-p-balance-vs.-soil-p-indicators"><span class="header-section-number">3.6</span> 6. Cumulated P Balance vs.&nbsp;Soil P Indicators</a></li>
+  <li><a href="#cumulated-p-balance-vs.-pedo-climatic-site-drivers" id="toc-cumulated-p-balance-vs.-pedo-climatic-site-drivers" class="nav-link" data-scroll-target="#cumulated-p-balance-vs.-pedo-climatic-site-drivers"><span class="header-section-number">3.7</span> 6.5 Cumulated P Balance vs.&nbsp;Pedo-Climatic Site Drivers</a></li>
+  <li><a href="#annual-p-uptake-vs.-soil-p-indicators" id="toc-annual-p-uptake-vs.-soil-p-indicators" class="nav-link" data-scroll-target="#annual-p-uptake-vs.-soil-p-indicators"><span class="header-section-number">3.8</span> 7. Annual P Uptake vs.&nbsp;Soil P Indicators</a></li>
+  <li><a href="#cumulated-p-uptake-vs.-soil-p-indicators" id="toc-cumulated-p-uptake-vs.-soil-p-indicators" class="nav-link" data-scroll-target="#cumulated-p-uptake-vs.-soil-p-indicators"><span class="header-section-number">3.9</span> 8. Cumulated P Uptake vs.&nbsp;Soil P Indicators</a></li>
+  </ul></li>
+  <li><a href="#site-dependency-of-environmental-covariates-variance-decomposition" id="toc-site-dependency-of-environmental-covariates-variance-decomposition" class="nav-link" data-scroll-target="#site-dependency-of-environmental-covariates-variance-decomposition"><span class="header-section-number">4</span> 9. Site-Dependency of Environmental Covariates (Variance Decomposition)</a>
+  <ul class="collapse">
+  <li><a href="#the-mixed-effects-variance-decomposition" id="toc-the-mixed-effects-variance-decomposition" class="nav-link" data-scroll-target="#the-mixed-effects-variance-decomposition"><span class="header-section-number">4.1</span> The Mixed-Effects Variance Decomposition</a></li>
+  <li><a href="#covariate-permutation-identifying-the-best-pedoclimatic-drivers" id="toc-covariate-permutation-identifying-the-best-pedoclimatic-drivers" class="nav-link" data-scroll-target="#covariate-permutation-identifying-the-best-pedoclimatic-drivers"><span class="header-section-number">4.2</span> 10. Covariate Permutation: Identifying the Best Pedoclimatic Drivers</a></li>
+  </ul></li>
+  <li><a href="#final-task-sanity-graphs-yield-and-uptake-distributions" id="toc-final-task-sanity-graphs-yield-and-uptake-distributions" class="nav-link" data-scroll-target="#final-task-sanity-graphs-yield-and-uptake-distributions"><span class="header-section-number">5</span> 11. Final Task Sanity Graphs: Yield and Uptake Distributions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Sanity Checks</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>This notebook contains sanity checks for the agronomic data using the <strong>newly constructed <code>D_main</code></strong>, which merges the correct, uncorrupted field measurements from the raw Excel file with the stable kinetic laboratory measurements from the legacy <code>RES.rds</code> dataset.</p>
+</section>
+<section id="summary-table" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="summary-table"><span class="header-section-number">2</span> Summary Table</h2>
+<p>Let’s look at the average applied P fertilizer (<code>fert_P_tot</code>) and yield for each treatment at each site.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>summary_table <span class="ot">&lt;-</span> D_main <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, Treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_yield =</span> <span class="fu">mean</span>(annual_yield_mp_DM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Fert_P =</span> <span class="fu">mean</span>(fert_P_tot, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(summary_table, <span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">site</th>
+<th style="text-align: left;">Treatment</th>
+<th style="text-align: right;">mean_yield</th>
+<th style="text-align: right;">mean_Fert_P</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">ALT</td>
+<td style="text-align: left;">P0</td>
+<td style="text-align: right;">51.50</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ALT</td>
+<td style="text-align: left;">P100</td>
+<td style="text-align: right;">63.06</td>
+<td style="text-align: right;">35.54</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ALT</td>
+<td style="text-align: left;">P166</td>
+<td style="text-align: right;">64.62</td>
+<td style="text-align: right;">59.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CAD</td>
+<td style="text-align: left;">P0</td>
+<td style="text-align: right;">64.56</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CAD</td>
+<td style="text-align: left;">P100</td>
+<td style="text-align: right;">69.26</td>
+<td style="text-align: right;">37.36</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CAD</td>
+<td style="text-align: left;">P166</td>
+<td style="text-align: right;">70.64</td>
+<td style="text-align: right;">62.30</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ELL</td>
+<td style="text-align: left;">P0</td>
+<td style="text-align: right;">71.89</td>
+<td style="text-align: right;">0.61</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ELL</td>
+<td style="text-align: left;">P100</td>
+<td style="text-align: right;">76.93</td>
+<td style="text-align: right;">35.88</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ELL</td>
+<td style="text-align: left;">P166</td>
+<td style="text-align: right;">79.05</td>
+<td style="text-align: right;">59.80</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OEN</td>
+<td style="text-align: left;">P0</td>
+<td style="text-align: right;">73.72</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OEN</td>
+<td style="text-align: left;">P100</td>
+<td style="text-align: right;">75.90</td>
+<td style="text-align: right;">36.50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OEN</td>
+<td style="text-align: left;">P166</td>
+<td style="text-align: right;">79.45</td>
+<td style="text-align: right;">60.85</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Observation:</strong> The anomaly is now entirely resolved! For Cadenazzo, <code>P0</code> correctly shows the lowest yield and 0 applied fertilizer, whereas <code>P166</code> correctly shows the highest yield and highest fertilizer applied.</p>
+</section>
+<section id="visualizations" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="visualizations"><span class="header-section-number">3</span> Visualizations</h2>
+<section id="yield-by-treatment-and-site" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="yield-by-treatment-and-site"><span class="header-section-number">3.1</span> 1. Yield by Treatment and Site</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_main, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> annual_yield_mp_DM, <span class="at">fill =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>site, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Annual Dry Matter Yield by Treatment and Site"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Annual Yield (kg DM / ha)"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="applied-p-fertilizer-by-treatment-and-site" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="applied-p-fertilizer-by-treatment-and-site"><span class="header-section-number">3.2</span> 2. Applied P Fertilizer by Treatment and Site</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_main, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> fert_P_tot, <span class="at">fill =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>site, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Total Applied P Fertilizer (fert_P_tot) by Treatment and Site"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Applied P Fertilizer (kg P / ha)"</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="yield-vs.-applied-p-fertilizer" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="yield-vs.-applied-p-fertilizer"><span class="header-section-number">3.3</span> 3. Yield vs.&nbsp;Applied P Fertilizer</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_main, <span class="fu">aes</span>(<span class="at">x =</span> fert_P_tot, <span class="at">y =</span> annual_yield_mp_DM, <span class="at">color =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>site, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Yield vs. Actual Applied P Fertilizer"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Total Applied P Fertilizer (fert_P_tot)"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Annual Yield (kg DM / ha)"</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="soil-p-vs.-treatment" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="soil-p-vs.-treatment"><span class="header-section-number">3.4</span> 4. Soil P vs.&nbsp;Treatment</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_main, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> soil_0_20_P_CO2, <span class="at">fill =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>site, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Soil P (CO2 extractable) by Treatment and Site"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"P_CO2 (mg/kg)"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="p-uptake-vs.-applied-fertilizer" class="level3" data-number="3.5">
+<h3 data-number="3.5" class="anchored" data-anchor-id="p-uptake-vs.-applied-fertilizer"><span class="header-section-number">3.5</span> 5. P Uptake vs.&nbsp;Applied Fertilizer</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_main, <span class="fu">aes</span>(<span class="at">x =</span> fert_P_tot, <span class="at">y =</span> annual_P_uptake, <span class="at">color =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>site, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Annual P Uptake vs. Applied P Fertilizer"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Total Applied P Fertilizer (fert_P_tot)"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Annual P Uptake (kg P / ha)"</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="cumulated-p-balance-vs.-soil-p-indicators" class="level3" data-number="3.6">
+<h3 data-number="3.6" class="anchored" data-anchor-id="cumulated-p-balance-vs.-soil-p-indicators"><span class="header-section-number">3.6</span> 6. Cumulated P Balance vs.&nbsp;Soil P Indicators</h3>
+<p>Here we calculate the cumulated <code>P_balance</code> across the entire trial duration (1990-2022) for each plot, and compare it against the mean soil test indicators (<span class="math inline">\(P_{CO2}\)</span>, <span class="math inline">\(P_{AAE10}\)</span>, and <span class="math inline">\(P_{desorb} / PS\)</span>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate cumulative P balance per plot</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>D_cum <span class="ot">&lt;-</span> D_main <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, Treatment, rep) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">Cumulated_P_Balance =</span> <span class="fu">sum</span>(annual_P_balance, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_CO2 =</span> <span class="fu">mean</span>(soil_0_20_P_CO2, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_AAE10 =</span> <span class="fu">mean</span>(soil_0_20_P_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_PS =</span> <span class="fu">mean</span>(Pmax_PS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">v0_kPS =</span> <span class="fu">mean</span>(v0_kPS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Clay =</span> <span class="fu">mean</span>(soil_0_20_clay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Silt =</span> <span class="fu">mean</span>(soil_0_20_silt, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_pH =</span> <span class="fu">mean</span>(soil_0_20_pH_H2O, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Corg =</span> <span class="fu">mean</span>(soil_0_20_Corg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Prec =</span> <span class="fu">mean</span>(ansum_prec, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Temp =</span> <span class="fu">mean</span>(anavg_temp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_K =</span> <span class="fu">mean</span>(soil_0_20_K_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Mg =</span> <span class="fu">mean</span>(soil_0_20_Mg_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Lime =</span> <span class="fu">mean</span>(soil_0_20_presample_lime, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot the dataset to long format for faceting by indicator</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>D_indicators <span class="ot">&lt;-</span> D_cum <span class="sc">%&gt;%</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> <span class="fu">c</span>(mean_P_CO2, mean_P_AAE10, mean_PS),</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_to =</span> <span class="st">"Indicator"</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_to =</span> <span class="st">"Indicator_Value"</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make the facet labels nicer</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Indicator =</span> <span class="fu">recode</span>(Indicator,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_CO2 =</span> <span class="st">"P_CO2 (Water Soluble)"</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_AAE10 =</span> <span class="st">"P_AAE10 (Chelate Extractable)"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_PS =</span> <span class="st">"PS (Desorbable P / Capacity)"</span>))</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_indicators, <span class="fu">aes</span>(<span class="at">x =</span> Indicator_Value, <span class="at">y =</span> Cumulated_P_Balance, <span class="at">color =</span> site)) <span class="sc">+</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_grid</span>(site <span class="sc">~</span> Indicator, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Cumulated P Balance (1990-2022) vs. Soil P Indicators"</span>,</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Measured Soil P Indicator Value"</span>,</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Cumulated P Balance (kg P / ha)"</span>,</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"Site"</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="cumulated-p-balance-vs.-pedo-climatic-site-drivers" class="level3" data-number="3.7">
+<h3 data-number="3.7" class="anchored" data-anchor-id="cumulated-p-balance-vs.-pedo-climatic-site-drivers"><span class="header-section-number">3.7</span> 6.5 Cumulated P Balance vs.&nbsp;Pedo-Climatic Site Drivers</h3>
+<p>Following the variance decomposition (ICC), we want to map the cumulative P balance directly against the highly site-distinguishing variables.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>D_pedo <span class="ot">&lt;-</span> D_cum <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> <span class="fu">c</span>(mean_Clay, mean_Silt, mean_pH, mean_Corg, mean_Prec, mean_Temp, mean_K, mean_Mg, mean_Lime),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_to =</span> <span class="st">"Pedo_Driver"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_to =</span> <span class="st">"Driver_Value"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_pedo, <span class="fu">aes</span>(<span class="at">x =</span> Driver_Value, <span class="at">y =</span> Cumulated_P_Balance, <span class="at">color =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span> Pedo_Driver, <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Cumulated P Balance (1990-2022) Driven by Pedoclimatic Traits"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Pedoclimatic Driver Value (Site Average)"</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Cumulated P Balance (kg P / ha)"</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"P Treatment"</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="annual-p-uptake-vs.-soil-p-indicators" class="level3" data-number="3.8">
+<h3 data-number="3.8" class="anchored" data-anchor-id="annual-p-uptake-vs.-soil-p-indicators"><span class="header-section-number">3.8</span> 7. Annual P Uptake vs.&nbsp;Soil P Indicators</h3>
+<p>To compare the predictive power of the soil tests against the annual P-uptake, we plot linear regressions faceted by the indicator. We include the linear regression equation and the <span class="math inline">\(R^2\)</span> to assess meaningful differences.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pivot the dataset to long format for faceting by indicator</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>D_uptake_annual <span class="ot">&lt;-</span> D_main <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> <span class="fu">c</span>(soil_0_20_P_CO2, soil_0_20_P_AAE10, Pmax_PS),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_to =</span> <span class="st">"Indicator"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_to =</span> <span class="st">"Indicator_Value"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Indicator =</span> <span class="fu">recode</span>(Indicator,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">soil_0_20_P_CO2 =</span> <span class="st">"P_CO2 (Water Soluble)"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">soil_0_20_P_AAE10 =</span> <span class="st">"P_AAE10 (Chelate Extractable)"</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">Pmax_PS =</span> <span class="st">"PS (Desorbable P / Capacity)"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter missing to avoid plotting warnings</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Indicator_Value) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(annual_P_uptake))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_uptake_annual, <span class="fu">aes</span>(<span class="at">x =</span> Indicator_Value, <span class="at">y =</span> annual_P_uptake)) <span class="sc">+</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> site), <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_poly_eq</span>(<span class="fu">use_label</span>(<span class="fu">c</span>(<span class="st">"eq"</span>, <span class="st">"R2"</span>))) <span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_grid</span>(site <span class="sc">~</span> Indicator, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Annual P Uptake vs. Soil P Indicators"</span>,</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Measured Soil P Indicator Value"</span>,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Annual P Uptake (kg P / ha)"</span>,</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"Site"</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="cumulated-p-uptake-vs.-soil-p-indicators" class="level3" data-number="3.9">
+<h3 data-number="3.9" class="anchored" data-anchor-id="cumulated-p-uptake-vs.-soil-p-indicators"><span class="header-section-number">3.9</span> 8. Cumulated P Uptake vs.&nbsp;Soil P Indicators</h3>
+<p>Here we evaluate the long-term predictive power. We sum the <code>annual_P_uptake</code> over the 1990-2022 period for each plot, and regress it against the soil test indicators.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate cumulative P uptake per plot</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>D_cum_uptake <span class="ot">&lt;-</span> D_main <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, Treatment, rep) <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">Cumulated_P_Uptake =</span> <span class="fu">sum</span>(annual_P_uptake, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_CO2 =</span> <span class="fu">mean</span>(soil_0_20_P_CO2, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_AAE10 =</span> <span class="fu">mean</span>(soil_0_20_P_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_PS =</span> <span class="fu">mean</span>(Pmax_PS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Pivot for faceting</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">cols =</span> <span class="fu">c</span>(mean_P_CO2, mean_P_AAE10, mean_PS),</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">names_to =</span> <span class="st">"Indicator"</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">values_to =</span> <span class="st">"Indicator_Value"</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Indicator =</span> <span class="fu">recode</span>(Indicator,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_CO2 =</span> <span class="st">"P_CO2 (Water Soluble)"</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_AAE10 =</span> <span class="st">"P_AAE10 (Chelate Extractable)"</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_PS =</span> <span class="st">"PS (Desorbable P / Capacity)"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Indicator_Value) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(Cumulated_P_Uptake))</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(D_cum_uptake, <span class="fu">aes</span>(<span class="at">x =</span> Indicator_Value, <span class="at">y =</span> Cumulated_P_Uptake)) <span class="sc">+</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> site), <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_poly_eq</span>(<span class="fu">use_label</span>(<span class="fu">c</span>(<span class="st">"eq"</span>, <span class="st">"R2"</span>)), <span class="at">label.y =</span> <span class="fl">0.95</span>) <span class="sc">+</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_grid</span>(site <span class="sc">~</span> Indicator, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Cumulated P Uptake (1990-2022) vs. Soil P Indicators"</span>,</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Measured Soil P Indicator Value"</span>,</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Cumulated P Uptake (kg P / ha)"</span>,</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"Site"</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="site-dependency-of-environmental-covariates-variance-decomposition" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="site-dependency-of-environmental-covariates-variance-decomposition"><span class="header-section-number">4</span> 9. Site-Dependency of Environmental Covariates (Variance Decomposition)</h2>
+<p>As observed above, metrics like the cumulative P balance and yield responses appear highly site-dependent. To formally quantify how strictly a covariate is grouped by its site (e.g.&nbsp;soil geology) versus how much it varies independently across plots and years (e.g.&nbsp;fertilizer, weather), we can compute the <strong>Intra-Class Correlation Coefficient (ICC)</strong>.</p>
+<section id="the-mixed-effects-variance-decomposition" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="the-mixed-effects-variance-decomposition"><span class="header-section-number">4.1</span> The Mixed-Effects Variance Decomposition</h3>
+<p>To formally quantify how strictly a covariate is grouped by its site (e.g.&nbsp;soil geology) versus how much it varies independently across plots and years (e.g.&nbsp;fertilizer, weather), we compute the <strong>Intra-Class Correlation Coefficient (ICC)</strong>.</p>
+<p>For every numeric parameter in the dataset, we fit a random intercept mixed-effects model with no fixed effects (<code>lmer(scale(variable) ~ 1 + (1 | site))</code>). This forces the model to decompose the total variance of the parameter into exactly two variance fractions: 1. <strong>Between-Site Variance (</strong><span class="math inline">\(\sigma^2_{site}\)</span>): Variance driven purely by moving from one geographical location to another (geology and macro-climate). 2. <strong>Residual Variance (</strong><span class="math inline">\(\sigma^2_{residual}\)</span>): “Noise” happening <em>within</em> the site—such as plot-to-plot differences (caused by P, K, Mg fertilizer treatments) and year-to-year differences (weather anomalies, crop rotations).</p>
+<p>The ICC is then calculated as the ratio of site-driven variance to total variance: <span class="math display">\[ ICC = \frac{\sigma^2_{site}}{\sigma^2_{site} + \sigma^2_{residual}} \]</span></p>
+<ul>
+<li><strong>ICC &gt; 0.80</strong>: The variable is almost entirely dictated by the geographical site (e.g.&nbsp;<code>pH</code> or soil texture). These parameters act as excellent, stable candidates for modeling the physical pedoclimatic baseline (the <span class="math inline">\(1/b\)</span> physical highway).</li>
+<li><strong>ICC &lt; 0.30</strong>: The variable fluctuates completely independently of the site. Its variance is heavily driven by local experimental treatments (e.g., <code>fert_N</code>, <code>P_CO2</code>) or local weather (<code>Temp_Anom</code>). Nesting these into the models (like the Mitscherlich rate constant <span class="math inline">\(c_{eff}\)</span>) helps capture critical plot-level nutritional variance that the rigid site-level variables are blind to.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the variables we want to decompose</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># We select all numeric variables from D_main, excluding kinetics and identifiers</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>num_cols <span class="ot">&lt;-</span> <span class="fu">names</span>(D_main)[<span class="fu">sapply</span>(D_main, is.numeric)]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(num_cols, <span class="fu">c</span>(</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"year"</span>, <span class="st">"rep"</span>, <span class="st">"k"</span>, <span class="st">"Pmax_PS"</span>, <span class="st">"v0_kPS"</span>, <span class="st">"soil_0_20_P_test"</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper function to compute ICC for a single variable</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>get_icc <span class="ot">&lt;-</span> <span class="cf">function</span>(var_name, data) {</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We use a tryCatch just in case a variable is missing or singular</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    res <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Drop NAs for this specific variable to fit the lmer</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        d_clean <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(.data[[var_name]]))</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Build formula explicitly because lmer doesn't support the dplyr .data pronoun</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        fmla <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste0</span>(<span class="st">"scale(`"</span>, var_name, <span class="st">"`) ~ 1 + (1 | site)"</span>))</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(fmla, <span class="at">data =</span> d_clean, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">calc.derivs =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Explicitly extract variance components</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        vc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">VarCorr</span>(mod))</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        var_site <span class="ot">&lt;-</span> vc<span class="sc">$</span>vcov[vc<span class="sc">$</span>grp <span class="sc">==</span> <span class="st">"site"</span>]</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        var_resid <span class="ot">&lt;-</span> vc<span class="sc">$</span>vcov[vc<span class="sc">$</span>grp <span class="sc">==</span> <span class="st">"Residual"</span>]</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        icc_val <span class="ot">&lt;-</span> var_site <span class="sc">/</span> (var_site <span class="sc">+</span> var_resid)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(icc_val)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    }, <span class="at">error =</span> <span class="cf">function</span>(e) <span class="fu">return</span>(<span class="cn">NA</span>))</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(res)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate ICC for all covariates</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>icc_results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">Variable =</span> covariates,</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">ICC =</span> <span class="fu">sapply</span>(covariates, get_icc, <span class="at">data =</span> D_main)</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(ICC)) <span class="sc">|&gt;</span> <span class="co"># Drop variables that failed to compute</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(ICC)) <span class="sc">|&gt;</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">Category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>            ICC <span class="sc">&gt;</span> <span class="fl">0.8</span> <span class="sc">~</span> <span class="st">"Highly Site-Dependent (Geology/Climate Baseline)"</span>,</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>            ICC <span class="sc">&gt;</span> <span class="fl">0.3</span> <span class="sc">~</span> <span class="st">"Mixed (Site + Plot/Temporal Effects)"</span>,</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>            <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Highly Local/Temporal (Treatments/Weather)"</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Print nice table</span></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(icc_results, <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">caption =</span> <span class="st">"**Table: Intra-Class Correlation (ICC) by Site.** Quantifies the proportion of variance driven strictly by pedo-climatic site differences."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption><strong>Table: Intra-Class Correlation (ICC) by Site.</strong> Quantifies the proportion of variance driven strictly by pedo-climatic site differences.</caption>
+<colgroup>
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 4%">
+<col style="width: 39%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Variable</th>
+<th style="text-align: right;">ICC</th>
+<th style="text-align: left;">Category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">harv1_mp_length</td>
+<td style="text-align: left;">harv1_mp_length</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">location_abb</td>
+<td style="text-align: left;">location_abb</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">plot_area</td>
+<td style="text-align: left;">plot_area</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_presample_lime</td>
+<td style="text-align: left;">rollMean_soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.994</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rollMean_soil_0_20_silt</td>
+<td style="text-align: left;">rollMean_soil_0_20_silt</td>
+<td style="text-align: right;">0.982</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_silt</td>
+<td style="text-align: left;">soil_0_20_silt</td>
+<td style="text-align: right;">0.982</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_clay</td>
+<td style="text-align: left;">soil_0_20_clay</td>
+<td style="text-align: right;">0.948</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_clay</td>
+<td style="text-align: left;">rollMean_soil_0_20_clay</td>
+<td style="text-align: right;">0.948</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_30_50_pH_H2O</td>
+<td style="text-align: left;">soil_30_50_pH_H2O</td>
+<td style="text-align: right;">0.918</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">plot_range</td>
+<td style="text-align: left;">plot_range</td>
+<td style="text-align: right;">0.912</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">plot_nr</td>
+<td style="text-align: left;">plot_nr</td>
+<td style="text-align: right;">0.902</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_K_AAE10</td>
+<td style="text-align: left;">rollMean_soil_0_20_K_AAE10</td>
+<td style="text-align: right;">0.899</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_20_30_pH_H2O</td>
+<td style="text-align: left;">soil_20_30_pH_H2O</td>
+<td style="text-align: right;">0.890</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_Mg_AAE10</td>
+<td style="text-align: left;">rollMean_soil_0_20_Mg_AAE10</td>
+<td style="text-align: right;">0.888</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv2_mp_area</td>
+<td style="text-align: left;">harv2_mp_area</td>
+<td style="text-align: right;">0.873</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_pH_H2O</td>
+<td style="text-align: left;">rollMean_soil_0_20_pH_H2O</td>
+<td style="text-align: right;">0.861</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_30_50_K_AAE10</td>
+<td style="text-align: left;">soil_30_50_K_AAE10</td>
+<td style="text-align: right;">0.861</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_30_50_K_test</td>
+<td style="text-align: left;">soil_30_50_K_test</td>
+<td style="text-align: right;">0.858</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_30_50_Mg_AAE10</td>
+<td style="text-align: left;">soil_30_50_Mg_AAE10</td>
+<td style="text-align: right;">0.858</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_20_30_Mg_AAE10</td>
+<td style="text-align: left;">soil_20_30_Mg_AAE10</td>
+<td style="text-align: right;">0.857</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv5_mp_area</td>
+<td style="text-align: left;">harv5_mp_area</td>
+<td style="text-align: right;">0.857</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv4_mp_area</td>
+<td style="text-align: left;">harv4_mp_area</td>
+<td style="text-align: right;">0.856</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv3_mp_area</td>
+<td style="text-align: left;">harv3_mp_area</td>
+<td style="text-align: right;">0.853</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_Mg_AAE10</td>
+<td style="text-align: left;">soil_0_20_Mg_AAE10</td>
+<td style="text-align: right;">0.843</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_pH_H2O</td>
+<td style="text-align: left;">soil_0_20_pH_H2O</td>
+<td style="text-align: right;">0.839</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_K_AAE10</td>
+<td style="text-align: left;">soil_0_20_K_AAE10</td>
+<td style="text-align: right;">0.837</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_20_30_presample_lime</td>
+<td style="text-align: left;">soil_20_30_presample_lime</td>
+<td style="text-align: right;">0.833</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_30_50_presample_lime</td>
+<td style="text-align: left;">soil_30_50_presample_lime</td>
+<td style="text-align: right;">0.833</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_20_30_K_AAE10</td>
+<td style="text-align: left;">soil_20_30_K_AAE10</td>
+<td style="text-align: right;">0.817</td>
+<td style="text-align: left;">Highly Site-Dependent (Geology/Climate Baseline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_Mg_H2O10</td>
+<td style="text-align: left;">rollMean_soil_0_20_Mg_H2O10</td>
+<td style="text-align: right;">0.783</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_20_30_K_test</td>
+<td style="text-align: left;">soil_20_30_K_test</td>
+<td style="text-align: right;">0.780</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_Corg</td>
+<td style="text-align: left;">rollMean_soil_0_20_Corg</td>
+<td style="text-align: right;">0.769</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.766</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">K_harv5_mp</td>
+<td style="text-align: left;">K_harv5_mp</td>
+<td style="text-align: right;">0.761</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">anavg_temp</td>
+<td style="text-align: left;">anavg_temp</td>
+<td style="text-align: right;">0.740</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sick_pototoes_FM</td>
+<td style="text-align: left;">sick_pototoes_FM</td>
+<td style="text-align: right;">0.738</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv5_mp_FM</td>
+<td style="text-align: left;">harv5_mp_FM</td>
+<td style="text-align: right;">0.731</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_K_H2O10</td>
+<td style="text-align: left;">rollMean_soil_0_20_K_H2O10</td>
+<td style="text-align: right;">0.722</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ansum_prec</td>
+<td style="text-align: left;">ansum_prec</td>
+<td style="text-align: right;">0.712</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_Corg</td>
+<td style="text-align: left;">soil_0_20_Corg</td>
+<td style="text-align: right;">0.709</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rollMean_soil_0_20_Ca_H2O10</td>
+<td style="text-align: left;">rollMean_soil_0_20_Ca_H2O10</td>
+<td style="text-align: right;">0.691</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_Mg_test</td>
+<td style="text-align: left;">rollMean_soil_0_20_Mg_test</td>
+<td style="text-align: right;">0.685</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">corFactor_Mg</td>
+<td style="text-align: left;">corFactor_Mg</td>
+<td style="text-align: right;">0.684</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_humus</td>
+<td style="text-align: left;">soil_0_20_humus</td>
+<td style="text-align: right;">0.682</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Na_harv1_bp2</td>
+<td style="text-align: left;">Na_harv1_bp2</td>
+<td style="text-align: right;">0.678</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_30_50_Mg_test</td>
+<td style="text-align: left;">soil_30_50_Mg_test</td>
+<td style="text-align: right;">0.674</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_Mg_test</td>
+<td style="text-align: left;">soil_0_20_Mg_test</td>
+<td style="text-align: right;">0.664</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_30_50_Ca_AAE10</td>
+<td style="text-align: left;">soil_30_50_Ca_AAE10</td>
+<td style="text-align: right;">0.663</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Na_harv2_mp</td>
+<td style="text-align: left;">Na_harv2_mp</td>
+<td style="text-align: right;">0.645</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">corFactor_K</td>
+<td style="text-align: left;">corFactor_K</td>
+<td style="text-align: right;">0.634</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rollMean_soil_0_20_K_test</td>
+<td style="text-align: left;">rollMean_soil_0_20_K_test</td>
+<td style="text-align: right;">0.624</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_20_30_Corg</td>
+<td style="text-align: left;">soil_20_30_Corg</td>
+<td style="text-align: right;">0.616</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_bp2_yield_DM</td>
+<td style="text-align: left;">harv1_bp2_yield_DM</td>
+<td style="text-align: right;">0.610</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_20_30_Mg_test</td>
+<td style="text-align: left;">soil_20_30_Mg_test</td>
+<td style="text-align: right;">0.608</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ca_harv5_mp</td>
+<td style="text-align: left;">Ca_harv5_mp</td>
+<td style="text-align: right;">0.595</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_Mg_H2O10</td>
+<td style="text-align: left;">soil_0_20_Mg_H2O10</td>
+<td style="text-align: right;">0.575</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">K_harv4_mp</td>
+<td style="text-align: left;">K_harv4_mp</td>
+<td style="text-align: right;">0.560</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_30_50_P_AAE10</td>
+<td style="text-align: left;">soil_30_50_P_AAE10</td>
+<td style="text-align: right;">0.560</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert5_minN</td>
+<td style="text-align: left;">fert5_minN</td>
+<td style="text-align: right;">0.550</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C_harv1_bp1</td>
+<td style="text-align: left;">C_harv1_bp1</td>
+<td style="text-align: right;">0.545</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_20_30_Ca_AAE10</td>
+<td style="text-align: left;">soil_20_30_Ca_AAE10</td>
+<td style="text-align: right;">0.536</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RF_harv2_mp</td>
+<td style="text-align: left;">RF_harv2_mp</td>
+<td style="text-align: right;">0.536</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_K_test</td>
+<td style="text-align: left;">soil_0_20_K_test</td>
+<td style="text-align: right;">0.532</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg_harv5_mp</td>
+<td style="text-align: left;">Mg_harv5_mp</td>
+<td style="text-align: right;">0.530</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Na_harv4_mp</td>
+<td style="text-align: left;">Na_harv4_mp</td>
+<td style="text-align: right;">0.519</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg_harv4_mp</td>
+<td style="text-align: left;">Mg_harv4_mp</td>
+<td style="text-align: right;">0.513</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_Ca_H2O10</td>
+<td style="text-align: left;">soil_0_20_Ca_H2O10</td>
+<td style="text-align: right;">0.511</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv4_mp_FM</td>
+<td style="text-align: left;">harv4_mp_FM</td>
+<td style="text-align: right;">0.510</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">special_weight_potatos</td>
+<td style="text-align: left;">special_weight_potatos</td>
+<td style="text-align: right;">0.508</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg_harv3_mp</td>
+<td style="text-align: left;">Mg_harv3_mp</td>
+<td style="text-align: right;">0.498</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rollMean_soil_0_20_Ca_AAE10</td>
+<td style="text-align: left;">rollMean_soil_0_20_Ca_AAE10</td>
+<td style="text-align: right;">0.496</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Na_harv3_mp</td>
+<td style="text-align: left;">Na_harv3_mp</td>
+<td style="text-align: right;">0.491</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_UWW</td>
+<td style="text-align: left;">harv1_UWW</td>
+<td style="text-align: right;">0.491</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_K_H2O10</td>
+<td style="text-align: left;">soil_0_20_K_H2O10</td>
+<td style="text-align: right;">0.486</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_Ca_AAE10</td>
+<td style="text-align: left;">soil_0_20_Ca_AAE10</td>
+<td style="text-align: right;">0.486</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hlm1_plant_nr</td>
+<td style="text-align: left;">hlm1_plant_nr</td>
+<td style="text-align: right;">0.486</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ca_harv2_mp</td>
+<td style="text-align: left;">Ca_harv2_mp</td>
+<td style="text-align: right;">0.482</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_30_50_humus</td>
+<td style="text-align: left;">soil_30_50_humus</td>
+<td style="text-align: right;">0.474</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_30_50_Corg</td>
+<td style="text-align: left;">soil_30_50_Corg</td>
+<td style="text-align: right;">0.471</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RF_harv4_mp</td>
+<td style="text-align: left;">RF_harv4_mp</td>
+<td style="text-align: right;">0.465</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ca_harv4_mp</td>
+<td style="text-align: left;">Ca_harv4_mp</td>
+<td style="text-align: right;">0.447</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv5_mp_yield_DM</td>
+<td style="text-align: left;">harv5_mp_yield_DM</td>
+<td style="text-align: right;">0.445</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ca_harv3_mp</td>
+<td style="text-align: left;">Ca_harv3_mp</td>
+<td style="text-align: right;">0.441</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C_harv4_mp</td>
+<td style="text-align: left;">C_harv4_mp</td>
+<td style="text-align: right;">0.436</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RP_harv5_mp</td>
+<td style="text-align: left;">RP_harv5_mp</td>
+<td style="text-align: right;">0.434</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N_harv5_mp</td>
+<td style="text-align: left;">N_harv5_mp</td>
+<td style="text-align: right;">0.429</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mg_harv1_bp2</td>
+<td style="text-align: left;">Mg_harv1_bp2</td>
+<td style="text-align: right;">0.427</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv5_mp_DM</td>
+<td style="text-align: left;">harv5_mp_DM</td>
+<td style="text-align: right;">0.422</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_plant_nr</td>
+<td style="text-align: left;">harv1_plant_nr</td>
+<td style="text-align: right;">0.420</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">K_harv2_mp</td>
+<td style="text-align: left;">K_harv2_mp</td>
+<td style="text-align: right;">0.413</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert4_minN</td>
+<td style="text-align: left;">fert4_minN</td>
+<td style="text-align: right;">0.410</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_TKW_DM</td>
+<td style="text-align: left;">harv1_TKW_DM</td>
+<td style="text-align: right;">0.400</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mg_harv2_mp</td>
+<td style="text-align: left;">Mg_harv2_mp</td>
+<td style="text-align: right;">0.393</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tubers_42</td>
+<td style="text-align: left;">tubers_42</td>
+<td style="text-align: right;">0.370</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">K_harv3_mp</td>
+<td style="text-align: left;">K_harv3_mp</td>
+<td style="text-align: right;">0.354</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RF_harv3_mp</td>
+<td style="text-align: left;">RF_harv3_mp</td>
+<td style="text-align: right;">0.351</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RP_harv3_mp</td>
+<td style="text-align: left;">RP_harv3_mp</td>
+<td style="text-align: right;">0.348</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv4_mp_yield_DM</td>
+<td style="text-align: left;">harv4_mp_yield_DM</td>
+<td style="text-align: right;">0.346</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">strach_content</td>
+<td style="text-align: left;">strach_content</td>
+<td style="text-align: right;">0.345</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv2_mp_yield_DM</td>
+<td style="text-align: left;">harv2_mp_yield_DM</td>
+<td style="text-align: right;">0.339</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert2_minN</td>
+<td style="text-align: left;">fert2_minN</td>
+<td style="text-align: right;">0.336</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N_harv2_mp</td>
+<td style="text-align: left;">N_harv2_mp</td>
+<td style="text-align: right;">0.331</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv3_mp_yield_DM</td>
+<td style="text-align: left;">harv3_mp_yield_DM</td>
+<td style="text-align: right;">0.324</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RP_harv2_mp</td>
+<td style="text-align: left;">RP_harv2_mp</td>
+<td style="text-align: right;">0.322</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N_harv3_mp</td>
+<td style="text-align: left;">N_harv3_mp</td>
+<td style="text-align: right;">0.321</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_TKW_FM</td>
+<td style="text-align: left;">harv1_TKW_FM</td>
+<td style="text-align: right;">0.321</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sick_potatoes_nr</td>
+<td style="text-align: left;">sick_potatoes_nr</td>
+<td style="text-align: right;">0.302</td>
+<td style="text-align: left;">Mixed (Site + Plot/Temporal Effects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv2_mp_FM</td>
+<td style="text-align: left;">harv2_mp_FM</td>
+<td style="text-align: right;">0.300</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv3_mp_FM</td>
+<td style="text-align: left;">harv3_mp_FM</td>
+<td style="text-align: right;">0.299</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_mp_raw_FM</td>
+<td style="text-align: left;">harv1_mp_raw_FM</td>
+<td style="text-align: right;">0.290</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_20_30_P_AAE10</td>
+<td style="text-align: left;">soil_20_30_P_AAE10</td>
+<td style="text-align: right;">0.287</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hlm1_total_FM</td>
+<td style="text-align: left;">hlm1_total_FM</td>
+<td style="text-align: right;">0.279</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_30_50_P_test</td>
+<td style="text-align: left;">soil_30_50_P_test</td>
+<td style="text-align: right;">0.278</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nmin_0_90</td>
+<td style="text-align: left;">Nmin_0_90</td>
+<td style="text-align: right;">0.270</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tubers_4270_deformed</td>
+<td style="text-align: left;">tubers_4270_deformed</td>
+<td style="text-align: right;">0.268</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RF_harv1_mp</td>
+<td style="text-align: left;">RF_harv1_mp</td>
+<td style="text-align: right;">0.266</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C_harv3_mp</td>
+<td style="text-align: left;">C_harv3_mp</td>
+<td style="text-align: right;">0.261</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">row_dist</td>
+<td style="text-align: left;">row_dist</td>
+<td style="text-align: right;">0.258</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C_harv1_mp</td>
+<td style="text-align: left;">C_harv1_mp</td>
+<td style="text-align: right;">0.258</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tot_yield_potatos_FM</td>
+<td style="text-align: left;">tot_yield_potatos_FM</td>
+<td style="text-align: right;">0.256</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hlm1_ear_nr</td>
+<td style="text-align: left;">hlm1_ear_nr</td>
+<td style="text-align: right;">0.242</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rollMean_soil_0_20_P_H2O10</td>
+<td style="text-align: left;">rollMean_soil_0_20_P_H2O10</td>
+<td style="text-align: right;">0.238</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hlm1_grain_FM</td>
+<td style="text-align: left;">hlm1_grain_FM</td>
+<td style="text-align: right;">0.236</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tubers_4270_mark</td>
+<td style="text-align: left;">tubers_4270_mark</td>
+<td style="text-align: right;">0.223</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_mp_width</td>
+<td style="text-align: left;">harv1_mp_width</td>
+<td style="text-align: right;">0.212</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fert1_minMg</td>
+<td style="text-align: left;">fert1_minMg</td>
+<td style="text-align: right;">0.208</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_bp2_FM</td>
+<td style="text-align: left;">harv1_bp2_FM</td>
+<td style="text-align: right;">0.198</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_harv5_mp</td>
+<td style="text-align: left;">P_harv5_mp</td>
+<td style="text-align: right;">0.198</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rollMean_soil_0_20_P_AAE10</td>
+<td style="text-align: left;">rollMean_soil_0_20_P_AAE10</td>
+<td style="text-align: right;">0.198</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hlm1_TKW_FM</td>
+<td style="text-align: left;">hlm1_TKW_FM</td>
+<td style="text-align: right;">0.197</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: right;">0.173</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">K_harv1_bp1</td>
+<td style="text-align: left;">K_harv1_bp1</td>
+<td style="text-align: right;">0.165</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert_Mg_tot</td>
+<td style="text-align: left;">fert_Mg_tot</td>
+<td style="text-align: right;">0.164</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_harv3_mp</td>
+<td style="text-align: left;">P_harv3_mp</td>
+<td style="text-align: right;">0.162</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">K_harv1_bp2</td>
+<td style="text-align: left;">K_harv1_bp2</td>
+<td style="text-align: right;">0.158</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">crop_residue_K2O</td>
+<td style="text-align: left;">crop_residue_K2O</td>
+<td style="text-align: right;">0.151</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sow_density</td>
+<td style="text-align: left;">sow_density</td>
+<td style="text-align: right;">0.143</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv3_mp_DM</td>
+<td style="text-align: left;">harv3_mp_DM</td>
+<td style="text-align: right;">0.140</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_H2O10</td>
+<td style="text-align: left;">soil_0_20_P_H2O10</td>
+<td style="text-align: right;">0.136</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hlm1_straw_FM</td>
+<td style="text-align: left;">hlm1_straw_FM</td>
+<td style="text-align: right;">0.133</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">juvdev_prec</td>
+<td style="text-align: left;">juvdev_prec</td>
+<td style="text-align: right;">0.132</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">crop_residue_P2O5</td>
+<td style="text-align: left;">crop_residue_P2O5</td>
+<td style="text-align: right;">0.132</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rollMean_soil_0_20_P_test</td>
+<td style="text-align: left;">rollMean_soil_0_20_P_test</td>
+<td style="text-align: right;">0.125</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ca_harv1_bp2</td>
+<td style="text-align: left;">Ca_harv1_bp2</td>
+<td style="text-align: right;">0.122</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_CO2</td>
+<td style="text-align: left;">soil_0_20_P_CO2</td>
+<td style="text-align: right;">0.112</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_mp_area</td>
+<td style="text-align: left;">harv1_mp_area</td>
+<td style="text-align: right;">0.105</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mg_harv1_bp1</td>
+<td style="text-align: left;">Mg_harv1_bp1</td>
+<td style="text-align: right;">0.095</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv4_mp_DM</td>
+<td style="text-align: left;">harv4_mp_DM</td>
+<td style="text-align: right;">0.095</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">plot_column</td>
+<td style="text-align: left;">plot_column</td>
+<td style="text-align: right;">0.095</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_harv4_mp</td>
+<td style="text-align: left;">P_harv4_mp</td>
+<td style="text-align: right;">0.093</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sugar_content</td>
+<td style="text-align: left;">sugar_content</td>
+<td style="text-align: right;">0.093</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv2_mp_DM</td>
+<td style="text-align: left;">harv2_mp_DM</td>
+<td style="text-align: right;">0.087</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P_harv2_mp</td>
+<td style="text-align: left;">P_harv2_mp</td>
+<td style="text-align: right;">0.084</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_bp1_DM</td>
+<td style="text-align: left;">harv1_bp1_DM</td>
+<td style="text-align: right;">0.083</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N_harv4_mp</td>
+<td style="text-align: left;">N_harv4_mp</td>
+<td style="text-align: right;">0.082</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RP_harv4_mp</td>
+<td style="text-align: left;">RP_harv4_mp</td>
+<td style="text-align: right;">0.082</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert1_minK2O</td>
+<td style="text-align: left;">fert1_minK2O</td>
+<td style="text-align: right;">0.080</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_harv1_bp2</td>
+<td style="text-align: left;">P_harv1_bp2</td>
+<td style="text-align: right;">0.079</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P_harv1_bp1</td>
+<td style="text-align: left;">P_harv1_bp1</td>
+<td style="text-align: right;">0.077</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fert_K2O_tot</td>
+<td style="text-align: left;">fert_K2O_tot</td>
+<td style="text-align: right;">0.076</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C_harv2_mp</td>
+<td style="text-align: left;">C_harv2_mp</td>
+<td style="text-align: right;">0.069</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RA_harv5_mp</td>
+<td style="text-align: left;">RA_harv5_mp</td>
+<td style="text-align: right;">0.067</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OM_harv5_mp</td>
+<td style="text-align: left;">OM_harv5_mp</td>
+<td style="text-align: right;">0.066</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_bp1_FM</td>
+<td style="text-align: left;">harv1_bp1_FM</td>
+<td style="text-align: right;">0.066</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert_K_tot</td>
+<td style="text-align: left;">fert_K_tot</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ca_harv1_bp1</td>
+<td style="text-align: left;">Ca_harv1_bp1</td>
+<td style="text-align: right;">0.065</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Na_harv1_mp</td>
+<td style="text-align: left;">Na_harv1_mp</td>
+<td style="text-align: right;">0.064</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OM_harv3_mp</td>
+<td style="text-align: left;">OM_harv3_mp</td>
+<td style="text-align: right;">0.062</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RA_harv3_mp</td>
+<td style="text-align: left;">RA_harv3_mp</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RA_harv2_mp</td>
+<td style="text-align: left;">RA_harv2_mp</td>
+<td style="text-align: right;">0.055</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OM_harv2_mp</td>
+<td style="text-align: left;">OM_harv2_mp</td>
+<td style="text-align: right;">0.054</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N_harv1_mp</td>
+<td style="text-align: left;">N_harv1_mp</td>
+<td style="text-align: right;">0.054</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Na_harv1_bp1</td>
+<td style="text-align: left;">Na_harv1_bp1</td>
+<td style="text-align: right;">0.051</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_HLW_FM</td>
+<td style="text-align: left;">harv1_HLW_FM</td>
+<td style="text-align: right;">0.051</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">crop_residue_Mg</td>
+<td style="text-align: left;">crop_residue_Mg</td>
+<td style="text-align: right;">0.047</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hlm1_grain_DM</td>
+<td style="text-align: left;">hlm1_grain_DM</td>
+<td style="text-align: right;">0.045</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hlm_area</td>
+<td style="text-align: left;">hlm_area</td>
+<td style="text-align: right;">0.034</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mg_harv1_mp</td>
+<td style="text-align: left;">Mg_harv1_mp</td>
+<td style="text-align: right;">0.034</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">K_harv1_mp</td>
+<td style="text-align: left;">K_harv1_mp</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_mp_yield_DM</td>
+<td style="text-align: left;">harv1_mp_yield_DM</td>
+<td style="text-align: right;">0.032</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert1_minN</td>
+<td style="text-align: left;">fert1_minN</td>
+<td style="text-align: right;">0.031</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RA_harv4_mp</td>
+<td style="text-align: left;">RA_harv4_mp</td>
+<td style="text-align: right;">0.030</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">tubers_70</td>
+<td style="text-align: left;">tubers_70</td>
+<td style="text-align: right;">0.029</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N_harv1_bp1</td>
+<td style="text-align: left;">N_harv1_bp1</td>
+<td style="text-align: right;">0.029</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_bp2_DM</td>
+<td style="text-align: left;">harv1_bp2_DM</td>
+<td style="text-align: right;">0.027</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RA_harv1_bp2</td>
+<td style="text-align: left;">RA_harv1_bp2</td>
+<td style="text-align: right;">0.025</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OM_harv1_bp2</td>
+<td style="text-align: left;">OM_harv1_bp2</td>
+<td style="text-align: right;">0.025</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">harv1_mp_FM</td>
+<td style="text-align: left;">harv1_mp_FM</td>
+<td style="text-align: right;">0.024</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hlm1_straw_yield_DM</td>
+<td style="text-align: left;">hlm1_straw_yield_DM</td>
+<td style="text-align: right;">0.023</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RP_harv1_mp</td>
+<td style="text-align: left;">RP_harv1_mp</td>
+<td style="text-align: right;">0.023</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RP_harv1_bp1</td>
+<td style="text-align: left;">RP_harv1_bp1</td>
+<td style="text-align: right;">0.021</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">annual_yield_mp_DM</td>
+<td style="text-align: left;">annual_yield_mp_DM</td>
+<td style="text-align: right;">0.021</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RP_harv1_bp2</td>
+<td style="text-align: left;">RP_harv1_bp2</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N_harv1_bp2</td>
+<td style="text-align: left;">N_harv1_bp2</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert_Mg_NORM</td>
+<td style="text-align: left;">fert_Mg_NORM</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_harv1_mp</td>
+<td style="text-align: left;">P_harv1_mp</td>
+<td style="text-align: right;">0.018</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OM_harv1_mp</td>
+<td style="text-align: left;">OM_harv1_mp</td>
+<td style="text-align: right;">0.015</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RA_harv1_mp</td>
+<td style="text-align: left;">RA_harv1_mp</td>
+<td style="text-align: right;">0.015</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">juvdev_temp</td>
+<td style="text-align: left;">juvdev_temp</td>
+<td style="text-align: right;">0.014</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_20_30_P_test</td>
+<td style="text-align: left;">soil_20_30_P_test</td>
+<td style="text-align: right;">0.013</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hlm1_straw_DM</td>
+<td style="text-align: left;">hlm1_straw_DM</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ca_harv1_mp</td>
+<td style="text-align: left;">Ca_harv1_mp</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">hlm1_grain_yield_DM</td>
+<td style="text-align: left;">hlm1_grain_yield_DM</td>
+<td style="text-align: right;">0.011</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sow_quantity</td>
+<td style="text-align: left;">sow_quantity</td>
+<td style="text-align: right;">0.010</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_UWW_in</td>
+<td style="text-align: left;">harv1_UWW_in</td>
+<td style="text-align: right;">0.009</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hlm1_total_yield_DM</td>
+<td style="text-align: left;">hlm1_total_yield_DM</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_bp1_yield_DM</td>
+<td style="text-align: left;">harv1_bp1_yield_DM</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">annual_yield_bp_DM</td>
+<td style="text-align: left;">annual_yield_bp_DM</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert_P2O5_NORM</td>
+<td style="text-align: left;">fert_P2O5_NORM</td>
+<td style="text-align: right;">0.007</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fert_N_tot</td>
+<td style="text-align: left;">fert_N_tot</td>
+<td style="text-align: right;">0.005</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OM_harv1_bp1</td>
+<td style="text-align: left;">OM_harv1_bp1</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RA_harv1_bp1</td>
+<td style="text-align: left;">RA_harv1_bp1</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">annual_P_uptake</td>
+<td style="text-align: left;">annual_P_uptake</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fert1_minP2O5</td>
+<td style="text-align: left;">fert1_minP2O5</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert_P_tot</td>
+<td style="text-align: left;">fert_P_tot</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fert_P2O5_tot</td>
+<td style="text-align: left;">fert_P2O5_tot</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">treatment</td>
+<td style="text-align: left;">treatment</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">treatment_Nr</td>
+<td style="text-align: left;">treatment_Nr</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">treatment_serie</td>
+<td style="text-align: left;">treatment_serie</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">annual_P_balance</td>
+<td style="text-align: left;">annual_P_balance</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OM_harv4_mp</td>
+<td style="text-align: left;">OM_harv4_mp</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">plot_nr_serie</td>
+<td style="text-align: left;">plot_nr_serie</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">harv1_mp_DM</td>
+<td style="text-align: left;">harv1_mp_DM</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">fert_K2O_NORM</td>
+<td style="text-align: left;">fert_K2O_NORM</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert3_minMg</td>
+<td style="text-align: left;">fert3_minMg</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_20_30_humus</td>
+<td style="text-align: left;">soil_20_30_humus</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">fert3_minN</td>
+<td style="text-align: left;">fert3_minN</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: left;">Highly Local/Temporal (Treatments/Weather)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(icc_results, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(Variable, ICC), <span class="at">y =</span> ICC, <span class="at">fill =</span> Category)) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1.05</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Variance Explained by Site (Intra-Class Correlation)"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">subtitle =</span> <span class="st">"1.0 = Purely site-driven | 0.0 = Purely plot/year-driven"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Covariate"</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Intra-Class Correlation (ICC)"</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>, <span class="at">legend.direction =</span> <span class="st">"vertical"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/site-icc-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="covariate-permutation-identifying-the-best-pedoclimatic-drivers" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="covariate-permutation-identifying-the-best-pedoclimatic-drivers"><span class="header-section-number">4.2</span> 10. Covariate Permutation: Identifying the Best Pedoclimatic Drivers</h3>
+<p>To rigorously test which combination of pedoclimatic traits best explains the variance across our 7 sites, we fit a series of Mixed-Effects models. For each of our 3 main soil indicators (<span class="math inline">\(P_{CO2}\)</span>, <span class="math inline">\(P_{AAE10}\)</span>, <span class="math inline">\(PS\)</span>), we fit a baseline model: <code>annual_P_balance ~ scale(Indicator) + (1 | site)</code></p>
+<p>Then, we systematically loop through every 2-variable combination of our 6 pedoclimatic drivers (<code>pH</code>, <code>Corg</code>, <code>Clay</code>, <code>Lime</code>, <code>Temp</code>, <code>Prec</code>) and fit: <code>annual_P_balance ~ scale(Indicator) + scale(Var1) + scale(Var2) + (1 | site)</code></p>
+<p>If the two physical variables successfully explain the site-to-site differences, the Random Intercept variance (<code>1 | site</code>) should shrink substantially towards 0.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Define variables for Annual data (D_main)</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>cova_ann <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ansum_prec"</span>, <span class="st">"anavg_temp"</span>, <span class="st">"soil_0_20_pH_H2O"</span>, <span class="st">"soil_0_20_Corg"</span>, <span class="st">"soil_0_20_clay"</span>, <span class="st">"soil_0_20_presample_lime"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>inds_ann <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"soil_0_20_P_CO2"</span>, <span class="st">"soil_0_20_P_AAE10"</span>, <span class="st">"Pmax_PS"</span>, <span class="st">"v0_kPS"</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Define variables for Cumulated data (D_cum)</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>cova_cum <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"mean_Prec"</span>, <span class="st">"mean_Temp"</span>, <span class="st">"mean_pH"</span>, <span class="st">"mean_Corg"</span>, <span class="st">"mean_Clay"</span>, <span class="st">"mean_Lime"</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>inds_cum <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"mean_P_CO2"</span>, <span class="st">"mean_P_AAE10"</span>, <span class="st">"mean_PS"</span>, <span class="st">"v0_kPS"</span>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to run permutations</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>run_perms <span class="ot">&lt;-</span> <span class="cf">function</span>(target, inds, covs, dat) {</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    d_clean <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(target, <span class="st">"site"</span>, covs, inds)))</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    combos <span class="ot">&lt;-</span> <span class="fu">combn</span>(covs, <span class="dv">2</span>, <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(ind <span class="cf">in</span> inds) {</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Baseline model</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>        f_base <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste0</span>(<span class="st">"scale("</span>, target, <span class="st">") ~ scale(`"</span>, ind, <span class="st">"`) + (1 | site)"</span>))</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>        mod_base <span class="ot">&lt;-</span> <span class="fu">lmer</span>(f_base, <span class="at">data =</span> d_clean, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">calc.derivs =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        base_vc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">VarCorr</span>(mod_base))</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        base_site_var <span class="ot">&lt;-</span> base_vc<span class="sc">$</span>vcov[base_vc<span class="sc">$</span>grp <span class="sc">==</span> <span class="st">"site"</span>]</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span>(cb <span class="cf">in</span> combos) {</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>            v1 <span class="ot">&lt;-</span> cb[<span class="dv">1</span>]; v2 <span class="ot">&lt;-</span> cb[<span class="dv">2</span>]</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>            f_mod <span class="ot">&lt;-</span> <span class="fu">as.formula</span>(<span class="fu">paste0</span>(<span class="st">"scale("</span>, target, <span class="st">") ~ scale(`"</span>, ind, <span class="st">"`) + scale(`"</span>, v1, <span class="st">"`) + scale(`"</span>, v2, <span class="st">"`) + (1 | site)"</span>))</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>            mod <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">tryCatch</span>({</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>                <span class="fu">lmer</span>(f_mod, <span class="at">data =</span> d_clean, <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">calc.derivs =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>            }, <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NULL</span>))</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span>(<span class="fu">is.null</span>(mod)) <span class="cf">next</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>            vc <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">VarCorr</span>(mod))</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>            site_var <span class="ot">&lt;-</span> vc<span class="sc">$</span>vcov[vc<span class="sc">$</span>grp <span class="sc">==</span> <span class="st">"site"</span>]</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Safely calculate Marginal R2</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>            r2m <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">tryCatch</span>(<span class="fu">as.numeric</span>(performance<span class="sc">::</span><span class="fu">r2</span>(mod)<span class="sc">$</span>R2_marginal), <span class="at">error=</span><span class="cf">function</span>(e) <span class="cn">NA</span>))</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>            results[[<span class="fu">length</span>(results)<span class="sc">+</span><span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">Soil_Indicator =</span> ind,</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">Pedo_Var_1 =</span> v1,</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>                <span class="at">Pedo_Var_2 =</span> v2,</span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>                <span class="at">R2_Marginal =</span> r2m,</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>                <span class="at">AIC =</span> <span class="fu">AIC</span>(mod),</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>                <span class="at">Site_Var_Reduction_Pct =</span> (base_site_var <span class="sc">-</span> site_var) <span class="sc">/</span> base_site_var <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(results) <span class="sc">|&gt;</span> </span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">Stability =</span> <span class="fu">ifelse</span>(Site_Var_Reduction_Pct <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="st">"Unstable (Collinear)"</span>, <span class="st">"Stable"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(Stability <span class="sc">==</span> <span class="st">"Stable"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(</span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>            <span class="at">R2_Marginal =</span> <span class="fu">round</span>(R2_Marginal, <span class="dv">3</span>),</span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>            <span class="at">Site_Var_Reduction_Pct =</span> <span class="fu">round</span>(Site_Var_Reduction_Pct, <span class="dv">1</span>),</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>            <span class="at">AIC =</span> <span class="fu">round</span>(AIC, <span class="dv">1</span>)</span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(<span class="fu">desc</span>(R2_Marginal)) <span class="sc">|&gt;</span></span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(<span class="sc">-</span>Stability)</span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a><span class="co"># Run for Annual P-Balance</span></span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>res_ann <span class="ot">&lt;-</span> <span class="fu">run_perms</span>(<span class="st">"annual_P_balance"</span>, inds_ann, cova_ann, D_main)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(res_ann, <span class="dv">10</span>), <span class="at">caption =</span> <span class="st">"**Top 10 Stable Models: ANNUAL P-Balance (Sorted by Marginal $R^2$)**"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption><strong>Top 10 Stable Models: ANNUAL P-Balance (Sorted by Marginal <span class="math inline">\(R^2\)</span>)</strong></caption>
+<colgroup>
+<col style="width: 17%">
+<col style="width: 16%">
+<col style="width: 24%">
+<col style="width: 11%">
+<col style="width: 5%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Soil_Indicator</th>
+<th style="text-align: left;">Pedo_Var_1</th>
+<th style="text-align: left;">Pedo_Var_2</th>
+<th style="text-align: right;">R2_Marginal</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">Site_Var_Reduction_Pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">ansum_prec</td>
+<td style="text-align: left;">soil_0_20_pH_H2O</td>
+<td style="text-align: right;">0.643</td>
+<td style="text-align: right;">149.0</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">anavg_temp</td>
+<td style="text-align: left;">soil_0_20_pH_H2O</td>
+<td style="text-align: right;">0.643</td>
+<td style="text-align: right;">149.0</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">soil_0_20_pH_H2O</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.638</td>
+<td style="text-align: right;">148.6</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">soil_0_20_pH_H2O</td>
+<td style="text-align: left;">soil_0_20_Corg</td>
+<td style="text-align: right;">0.637</td>
+<td style="text-align: right;">150.1</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">anavg_temp</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.631</td>
+<td style="text-align: right;">151.4</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">ansum_prec</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.630</td>
+<td style="text-align: right;">151.6</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">soil_0_20_P_AAE10</td>
+<td style="text-align: left;">soil_0_20_Corg</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.629</td>
+<td style="text-align: right;">151.8</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">soil_0_20_P_CO2</td>
+<td style="text-align: left;">ansum_prec</td>
+<td style="text-align: left;">anavg_temp</td>
+<td style="text-align: right;">0.609</td>
+<td style="text-align: right;">154.5</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pmax_PS</td>
+<td style="text-align: left;">anavg_temp</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.567</td>
+<td style="text-align: right;">156.7</td>
+<td style="text-align: right;">35.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pmax_PS</td>
+<td style="text-align: left;">ansum_prec</td>
+<td style="text-align: left;">soil_0_20_presample_lime</td>
+<td style="text-align: right;">0.562</td>
+<td style="text-align: right;">156.2</td>
+<td style="text-align: right;">27.6</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run for Cumulated P-Balance</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure D_cum exists in the environment identically to how we generated it</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>D_cum <span class="ot">&lt;-</span> D_main <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, Treatment, rep) <span class="sc">|&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Cumulated_P_Balance =</span> <span class="fu">sum</span>(annual_P_balance, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_CO2 =</span> <span class="fu">mean</span>(soil_0_20_P_CO2, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_P_AAE10 =</span> <span class="fu">mean</span>(soil_0_20_P_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_PS =</span> <span class="fu">mean</span>(Pmax_PS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">v0_kPS =</span> <span class="fu">mean</span>(v0_kPS, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Clay =</span> <span class="fu">mean</span>(soil_0_20_clay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Silt =</span> <span class="fu">mean</span>(soil_0_20_silt, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_pH =</span> <span class="fu">mean</span>(soil_0_20_pH_H2O, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Corg =</span> <span class="fu">mean</span>(soil_0_20_Corg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Prec =</span> <span class="fu">mean</span>(ansum_prec, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Temp =</span> <span class="fu">mean</span>(anavg_temp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_K =</span> <span class="fu">mean</span>(soil_0_20_K_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Mg =</span> <span class="fu">mean</span>(soil_0_20_Mg_AAE10, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">mean_Lime =</span> <span class="fu">mean</span>(soil_0_20_presample_lime, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>res_cum <span class="ot">&lt;-</span> <span class="fu">run_perms</span>(<span class="st">"Cumulated_P_Balance"</span>, inds_cum, cova_cum, D_cum)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Random effect variances not available. Returned R2 does not account for random effects.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(res_cum, <span class="dv">10</span>), <span class="at">caption =</span> <span class="st">"**Top 10 Stable Models: CUMULATED P-Balance (Sorted by Marginal $R^2$)**"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption><strong>Top 10 Stable Models: CUMULATED P-Balance (Sorted by Marginal <span class="math inline">\(R^2\)</span>)</strong></caption>
+<colgroup>
+<col style="width: 19%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 7%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Soil_Indicator</th>
+<th style="text-align: left;">Pedo_Var_1</th>
+<th style="text-align: left;">Pedo_Var_2</th>
+<th style="text-align: right;">R2_Marginal</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">Site_Var_Reduction_Pct</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">mean_PS</td>
+<td style="text-align: left;">mean_Temp</td>
+<td style="text-align: left;">mean_Corg</td>
+<td style="text-align: right;">0.704</td>
+<td style="text-align: right;">94.3</td>
+<td style="text-align: right;">33.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean_P_AAE10</td>
+<td style="text-align: left;">mean_Temp</td>
+<td style="text-align: left;">mean_Lime</td>
+<td style="text-align: right;">0.690</td>
+<td style="text-align: right;">99.4</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mean_P_AAE10</td>
+<td style="text-align: left;">mean_Temp</td>
+<td style="text-align: left;">mean_pH</td>
+<td style="text-align: right;">0.679</td>
+<td style="text-align: right;">100.2</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean_P_AAE10</td>
+<td style="text-align: left;">mean_Prec</td>
+<td style="text-align: left;">mean_Lime</td>
+<td style="text-align: right;">0.659</td>
+<td style="text-align: right;">101.6</td>
+<td style="text-align: right;">74.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mean_PS</td>
+<td style="text-align: left;">mean_pH</td>
+<td style="text-align: left;">mean_Lime</td>
+<td style="text-align: right;">0.659</td>
+<td style="text-align: right;">101.9</td>
+<td style="text-align: right;">71.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean_PS</td>
+<td style="text-align: left;">mean_Prec</td>
+<td style="text-align: left;">mean_Temp</td>
+<td style="text-align: right;">0.658</td>
+<td style="text-align: right;">99.3</td>
+<td style="text-align: right;">46.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mean_P_AAE10</td>
+<td style="text-align: left;">mean_Clay</td>
+<td style="text-align: left;">mean_Lime</td>
+<td style="text-align: right;">0.656</td>
+<td style="text-align: right;">104.2</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean_PS</td>
+<td style="text-align: left;">mean_Temp</td>
+<td style="text-align: left;">mean_pH</td>
+<td style="text-align: right;">0.652</td>
+<td style="text-align: right;">102.2</td>
+<td style="text-align: right;">42.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">mean_P_CO2</td>
+<td style="text-align: left;">mean_Prec</td>
+<td style="text-align: left;">mean_Temp</td>
+<td style="text-align: right;">0.648</td>
+<td style="text-align: right;">103.0</td>
+<td style="text-align: right;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean_PS</td>
+<td style="text-align: left;">mean_Prec</td>
+<td style="text-align: left;">mean_pH</td>
+<td style="text-align: right;">0.647</td>
+<td style="text-align: right;">102.7</td>
+<td style="text-align: right;">42.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="final-task-sanity-graphs-yield-and-uptake-distributions" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="final-task-sanity-graphs-yield-and-uptake-distributions"><span class="header-section-number">5</span> 11. Final Task Sanity Graphs: Yield and Uptake Distributions</h2>
+<p>To verify the overall distributions and responses of Yield and P Uptake across the sites, treatments, years, and specific fertilizers, we plot the requested sanity checks below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate cumulative P uptake</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>D_graphs <span class="ot">&lt;-</span> D_main <span class="sc">|&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, plot_nr) <span class="sc">|&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">cumulative_P_up =</span> <span class="fu">cumsum</span>(<span class="fu">replace_na</span>(annual_P_uptake, <span class="dv">0</span>))</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(annual_yield_mp_DM))</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper to plot across the 3 metrics</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>plot_sanity <span class="ot">&lt;-</span> <span class="cf">function</span>(metric_y, title_y) {</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Y ~ Treatment faceted by trial</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(D_graphs, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> .data[[metric_y]], <span class="at">fill =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">outlier.alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="sc">~</span> site, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>() <span class="sc">+</span> </span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(title_y, <span class="st">"~ Treatment by Site"</span>), <span class="at">x =</span> <span class="st">"Treatment"</span>, <span class="at">y =</span> title_y)</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Y ~ year faceted by crop and site</span></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(D_graphs, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> .data[[metric_y]], <span class="at">color =</span> crop)) <span class="sc">+</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_grid</span>(crop <span class="sc">~</span> site, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">strip.text.y =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>), <span class="at">legend.position =</span> <span class="st">"none"</span>, <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(title_y, <span class="st">"~ Year faceted by Crop and Site"</span>), <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> title_y)</span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Y ~ fert_X for X in {P, K, Mg, N}</span></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>    D_fert <span class="ot">&lt;-</span> D_graphs <span class="sc">|&gt;</span></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(site, Treatment, <span class="fu">all_of</span>(metric_y), fert_P_tot, fert_K_tot, fert_Mg_tot, fert_N_tot) <span class="sc">|&gt;</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>        <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"fert_"</span>), <span class="at">names_to =</span> <span class="st">"Fertilizer"</span>, <span class="at">values_to =</span> <span class="st">"Amount"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">Fertilizer =</span> <span class="fu">factor</span>(Fertilizer, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"fert_P_tot"</span>, <span class="st">"fert_K_tot"</span>, <span class="st">"fert_Mg_tot"</span>, <span class="st">"fert_N_tot"</span>),</span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"P Applied"</span>, <span class="st">"K Applied"</span>, <span class="st">"Mg Applied"</span>, <span class="st">"N Applied"</span>)))</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>    p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(D_fert, <span class="fu">aes</span>(<span class="at">x =</span> Amount, <span class="at">y =</span> .data[[metric_y]], <span class="at">color =</span> site)) <span class="sc">+</span></span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="sc">~</span> Fertilizer, <span class="at">scales =</span> <span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb32-44"><a href="#cb32-44" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb32-45"><a href="#cb32-45" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(title_y, <span class="st">"~ Fertilizer Applied"</span>), <span class="at">x =</span> <span class="st">"Fertilizer Amount (kg/ha)"</span>, <span class="at">y =</span> title_y)</span>
+<span id="cb32-46"><a href="#cb32-46" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-47"><a href="#cb32-47" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(p1)</span>
+<span id="cb32-48"><a href="#cb32-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(p2)</span>
+<span id="cb32-49"><a href="#cb32-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(p3)</span>
+<span id="cb32-50"><a href="#cb32-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-51"><a href="#cb32-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-52"><a href="#cb32-52" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_sanity</span>(<span class="st">"annual_yield_mp_DM"</span>, <span class="st">"Annual Dry Yield (kg/ha)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-2.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-3.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_sanity</span>(<span class="st">"annual_P_uptake"</span>, <span class="st">"Annual P Uptake (kg P/ha)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-4.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-5.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-6.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_sanity</span>(<span class="st">"cumulative_P_up"</span>, <span class="st">"Cumulative P Uptake (kg P/ha)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-7.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-8.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="sanity_checks_files/figure-html/final-sanity-graphs-9.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/ptochosgeorgos\.github\.io\/Article-P-desorption-kinetics\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
