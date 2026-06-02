@@ -2,7 +2,7 @@
 
 ## A.1. Intrinsic Ionic Strength of the $P_{CO_2}$ Extractant
 
-Standard static soil test methods rely on the operational extraction of phosphorus. Strong extractants (e.g., Olsen P, P-AAE10) possess inherently high ionic strengths that dominate the soil matrix, rendering absolute thermodynamic comparisons invalid without complex modeling. In contrast, the $P_{CO_2}$ method utilizes a very weak extractant: water saturated with carbon dioxide at atmospheric pressure (1 atm) and 25 °C. 
+Standard static soil test methods rely on the operational extraction of phosphorus. Strong extractants (e.g., Olsen P, P-AAE10) possess inherently high ionic strengths that dominate the soil matrix, complicating absolute thermodynamic comparisons without complex modeling. In contrast, the $P_{CO_2}$ method utilizes a very weak extractant: water saturated with carbon dioxide at atmospheric pressure (1 atm) and 25 °C. 
 
 To demonstrate that the $P_{CO_2}$ extractant adopts the native ionic strength of the soil, we calculate the intrinsic ionic strength ($I$) of the pure extractant. 
 
@@ -21,13 +21,13 @@ The intrinsic ionic strength ($I$) of the extractant is defined as:
 $$I = \frac{1}{2} \sum (C_i z_i^2)$$
 $$I = \frac{1}{2} \left( (1.23 \times 10^{-4} \times (+1)^2) + (1.23 \times 10^{-4} \times (-1)^2) \right) \approx 0.00012 \text{ M}$$
 
-This intrinsic ionic strength ($\approx 0.12 \text{ mM}$) is infinitesimally small compared to native agricultural soil solutions (which typically range from $10$ to $50 \text{ mM}$). Therefore, the final ionic strength of the $P_{CO_2}$ extract is overwhelmingly dictated by the dissolved soluble salts of the specific soil being analyzed.
+This intrinsic ionic strength ($\approx 0.12 \text{ mM}$) is negligible compared to native agricultural soil solutions (which typically range from $10$ to $50 \text{ mM}$). Therefore, the final ionic strength of the $P_{CO_2}$ extract is primarily dictated by the dissolved soluble salts of the specific soil being analyzed.
 
 ## A.2. Justification for the Davies Equation
 
 Because the $P_{CO_2}$ extract adopts the native ionic composition of the soil, reading the orthophosphate concentrations against an $I=0$ (distilled water) calibration curve introduces systematic error. The true thermodynamic driving force for P-availability is the chemical **activity**, not the stoichiometric concentration. 
 
-To correct for this, an activity coefficient ($\gamma$) must be applied. While the Pitzer equations are the gold standard for high-ionic-strength solutions ($I > 0.5 \text{ M}$, such as the P-AAE10 extractant), the ionic strength of native agricultural soil solutions is typically much lower ($I < 0.1 \text{ M}$). 
+To correct for this, an activity coefficient ($\gamma$) must be applied. While the Pitzer equations are the standard method for high-ionic-strength solutions ($I > 0.5 \text{ M}$, such as the P-AAE10 extractant), the ionic strength of native agricultural soil solutions is typically much lower ($I < 0.1 \text{ M}$). 
 
 In this low-to-moderate ionic strength regime, the **Davies equation** (an empirical extension of the Debye-Hückel theory) is highly accurate and does not require complex, ion-specific interaction parameters. 
 

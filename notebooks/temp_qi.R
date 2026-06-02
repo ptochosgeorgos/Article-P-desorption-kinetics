@@ -1,75 +1,38 @@
----
-title: "Quantity-Intensity (Q/I) Modeling and Thermodynamic Corrections"
-format:
-  html:
-    theme: cosmo
-    toc: true
-    code-fold: true
-execute:
-  warning: false
-  message: false
----
+## graph TD
+##     classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+##     classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+##     classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
+##     classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+##     classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
+## 
+##     subgraph Phase_1 ["Phase 1: Introduction & Problem"]
+##         A["Established Practice:<br>Static GRUD Pools P_CO2 & P_AAE10"]:::intro
+##         B["Chemical Activity:<br>Dynamic Plant P-Supply"]:::intro
+##         A --> C{"Research Questions"}:::intro
+##         B --> C
+##     end
+## 
+##     subgraph Phase_2 ["Phase 2: Laboratory Derivations"]
+##         C --> D["Quantity-Intensity Q/I Modeling"]:::lab
+##         C --> E["Desorption Kinetics I/t Modeling"]:::lab
+##         D --> F("Physical Buffer Power: b"):::lab
+##         E --> G("Desorption Rate Constant: k"):::lab
+##     end
+## 
+##     subgraph Phase_3 ["Phase 3: Thermodynamic Corrections"]
+##         F --> H{"Davies Equation"}:::thermo
+##         G --> H
+##         H --> I["Thermodynamic Activities"]:::thermo
+##         H --> J["Stochiometric Concentrations"]:::thermo
+##     end
+## 
+##     subgraph Phase_4 ["Phase 4: Field Scaling (PTF Comparison)"]
+##         I --> K["Agronomic vs Geochemical PTFs<br>1990-2022"]:::uptake
+##         J --> K
+##         K --> L("Selected Field Inverse Buffer Power: 1/b"):::uptake
+##     end
 
-## 1. Introduction & Conceptual Workflow
-
-```{mermaid}
-graph TD
-    classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-    classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
-
-    subgraph Phase_1 ["Phase 1: Introduction & Problem"]
-        A["Established Practice:<br>Static GRUD Pools P_CO2 & P_AAE10"]:::intro
-        B["Chemical Activity:<br>Dynamic Plant P-Supply"]:::intro
-        A --> C{"Research Questions"}:::intro
-        B --> C
-    end
-
-    subgraph Phase_2 ["Phase 2: Laboratory Derivations"]
-        C --> D["Quantity-Intensity Q/I Modeling"]:::lab
-        C --> E["Desorption Kinetics I/t Modeling"]:::lab
-        D --> F("Physical Buffer Power: b"):::lab
-        E --> G("Desorption Rate Constant: k"):::lab
-    end
-
-    subgraph Phase_3 ["Phase 3: Thermodynamic Corrections"]
-        F --> H{"Davies Equation"}:::thermo
-        G --> H
-        H --> I["Thermodynamic Activities"]:::thermo
-        H --> J["Stochiometric Concentrations"]:::thermo
-    end
-
-    subgraph Phase_4 ["Phase 4: Field Scaling (PTF Comparison)"]
-        I --> K["Agronomic vs Geochemical PTFs<br>1990-2022"]:::uptake
-        J --> K
-        K --> L("Selected Field Inverse Buffer Power: 1/b"):::uptake
-    end
-```
-
-## 1.1 Data Structure & Methodological Rationale
-
-In this study, we leverage the comprehensive 40-year STYCS long-term field trial (1990-2022) to evaluate phosphorus (P) availability and plant uptake dynamics across diverse Swiss agricultural soils. By modeling Quantity-Intensity (Q/I) relationships, desorption kinetics, and thermodynamic equilibria, we seek to replace the static interpretation of soil tests (e.g., $P_{CO2}$ extractions) with a mechanistically grounded **Dynamic Plant P-Supply Model**.
-
-The dataset integrates three distinct analytical scales:
-
-### 1. The Comprehensive Global Dataset (44 Treatments)
-We employ the full STYCS dataset, consisting of over 22,000 observations across 44 fertilization treatments (including varying combinations of P, K, Mg, Ca, and rock apatite). This scale provides the high statistical power necessary to train our **Pedotransfer Functions (PTFs)**.
-
-- **Geochemical Consistency via Site Means:** Amorphous Aluminum ($Alox$) and Iron ($Feox$) oxides are primarily pedogenetic properties, dictated by regional geology rather than fertilizer inputs. To prevent data fragmentation, we extract the *site-mean* values for $Alox$ and $Feox$ and apply them across all 44 treatments. This anchors our predictive PTFs to a robust geological baseline, allowing them to generalize reliably across heterogeneous plots.
-
-### 2. High-Resolution Kinetic Sub-Trial (P-Treatments)
-To capture the temporal release of soil phosphorus, high-resolution isotopic desorption kinetics—including the desorption rate constant ($k$) and total desorbable P ($PS$)—were precisely measured in the laboratory on a controlled subset of plots (`P0`, `P100`, `P166`).
-
-- **Kinetic Integrity in the Mechanistic Model:** Our merging script casts `NA` values for $k$ and $PS$ on any treatment lacking these empirical measurements. Crucially, our Michaelis-Menten plant uptake models naturally filter out these `NA` cases. This structural subsetting ensures that the highly sensitive kinetic equations are trained *strictly* on scientifically validated P-plots, preventing cross-contamination from unmeasured K or Mg treatments.
-
-### 3. Thermodynamic State Corrections
-To translate laboratory-derived parameters to field conditions, we apply the Davies Equation to the observed soil solution parameters (pH, organic carbon, moisture). This computes the thermodynamic activities of $H^+$ and $H_2PO_4^-$, allowing us to accurately approximate the **Physical Buffer Power ($b$)** and the true stochiometric concentrations driving root uptake in the field.
-
-## 2. Setup and Data Preparation
-
-```{r setup}
+## ----setup--------------------------------------------------------------------
 #| message: false
 #| warning: false
 
@@ -112,20 +75,9 @@ D2 <- read_excel("data/STYCS_data_2023_260511.xlsx") |>
         annual_yield_mp_DM = rowSums(across(matches("^harv.*mp_yield_DM$")), na.rm = TRUE),
         annual_yield_bp_DM = rowSums(across(matches("^harv.*bp[1-2]_yield_DM$")), na.rm = TRUE)
     ) # 40-Year Full Dataset (All Treatments)
-```
 
-## 3. The Comprehensive Global Dataset & Thermodynamics (1990-2022)
 
-### Replacing the Legacy Dataset with the Complete STYCS Trial
-This analysis transitions from the legacy `all_P` subset (which only evaluated 6 P-treatments) to the comprehensive `STYCS_data_2023_260511.xlsx` dataset, containing all 44 treatments (including K, Mg, Ca, HP, and PxK combinations) across all sites.
-
-> **Geochemical Consistency:** Amorphous Iron (`Feox`) and Aluminum (`Alox`) oxides are highly dependent on pedogenesis rather than fertilizer treatments. By extracting their **site means**, we can anchor the entire 44-treatment dataset to the pedogenetic baseline of each site. This allows us to increase the statistical power of the Pedotransfer Functions (PTFs) by training them across all treatments.
-
-> **Kinetic Integrity:** Desorption kinetics ($k$, $PS$) were only measured precisely on the `P0`, `P100`, and `P166` plots. The merging script automatically assigns `NA` to treatments missing these measurements. Later, our Michaelis-Menten plant uptake models strictly filter out `NA` kinetics—ensuring the models are only evaluated on the scientifically validated P-plots without cross-contamination.
-
-Here we extract the stable traits, patch the missing years, perform the Davies Equation thermodynamic correction on the $P_{CO2}$ pool, and prepare all scaled variables for the PTFs.
-
-```{r create-comprehensive-dataset}
+## ----create-comprehensive-dataset---------------------------------------------
 # 1. Extract Stable Geochemistry & Kinetics
 site_geochemistry <- D |> group_by(site) |> summarise(feox_mean = mean(Feox, na.rm = TRUE), alox_mean = mean(Alox, na.rm = TRUE)) |> ungroup()
 kinetics_stable <- D |> dplyr::select(site, treatment_ID, rep, k, v0_kPS = kPS, Pmax_PS = PS) |> distinct(site, treatment_ID, rep, .keep_all = TRUE)
@@ -225,13 +177,9 @@ D_ready <- D_thermo |>
         z_ln_Alox = ifelse(is.na(z_ln_Alox), mean(z_ln_Alox, na.rm = TRUE), z_ln_Alox),
         z_ln_FineTexture = ifelse(is.na(z_ln_FineTexture), mean(z_ln_FineTexture, na.rm = TRUE), z_ln_FineTexture)
     ) |> ungroup()
-```
 
-## 4. Phase 4: Pedotransfer Function (PTF) Comparison
 
-We aim to predict the bound $P_{AAE10}$ pool using either the Agronomic or Geochemical traits. Furthermore, we test if applying the Davies equation to $P_{CO2}$ improves the prediction. We use `drop_na()` to ensure all models are compared on the exact same complete dataset.
-
-```{r ptf-showdown, fig.width=12, fig.height=8}
+## ----ptf-showdown, fig.width=12, fig.height=8---------------------------------
 #| fig-cap: "**Figure 1: Pedotransfer Function (PTF) Comparison.** The Geochemical models (bottom row) utilizing Amorphous Iron and Aluminum Oxides outperform the standard Agronomic models (top row) in predicting the bound $P_{AAE10}$ legacy pool. Note that the raw mass $P_{CO2}$ slightly edges out the thermodynamic activity $a_{CO2}$ when predicting the aggressive laboratory EDTA extraction."
 
 # Safely filter complete cases
@@ -274,17 +222,9 @@ plot_ptf <- function(model, title) {
 (plot_ptf(ptf_agro_raw, "Agro Raw") | plot_ptf(ptf_agro_thm, "Agro Thermo")) /
     (plot_ptf(ptf_geo_raw, "Geo Raw") | plot_ptf(ptf_geo_thm, "Geo Thermo")) +
     plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
 
-## 6. Practical Agronomic PTF (All Available Trials)
 
-While the showdown above demonstrates the higher predictive accuracy of geochemical traits (Iron and Aluminum Oxides) for mechanistic modelling of the soil binding capacity, a **practical field tool** should maximize available data. Agronomists and farmers will often lack detailed `Feox` and `Alox` measurements. 
-
-By relying on median-imputed background cations (Ca, Mg, K) and intentionally removing the strict requirement for Fe/Al oxides, we can train a robust, generalized agronomic model across all available trials. This enables the inclusion of sites like **Reckenholz (REC)** and **Grignon (GRA)**, which were excluded from the rigorous geochemical showdown due to missing metal oxide data.
-
-This section presents the **"Final Practical Equations"**—a tool that accurately estimates the total bound legacy pool ($P_{AAE10}$) using only routinely measured agronomic parameters (Clay, Silt, pH) alongside standard $P_{CO2}$ or thermodynamic $a_{CO2}$. These practical equations can be reliably used in the field to obtain the Quantity/Intensity buffer slope ($\Delta Q / \Delta I$) as a proxy for the Phosphorus Buffer Capacity.
-
-```{r ptf-practical-agro, fig.width=10, fig.height=8}
+## ----ptf-practical-agro, fig.width=10, fig.height=8---------------------------
 # Create maximized dataset without Feox/Alox constraints
 D_ptf_agro <- D_ready |>
     drop_na(ln_P_AAE, ln_P_CO2, ln_a_CO2, z_ln_FineTexture, z_pH, z_ln_Ca, z_ln_Mg, z_ln_K, z_ln_Corg, z_Temp_Anom, z_Prec_Anom, z_Temp_Mean) |>
@@ -336,20 +276,9 @@ plot_resid_prac <- function(model, title) {
 (plot_ptf_prac(ptf_practical_raw, "Practical Agro Raw") | plot_ptf_prac(ptf_practical_thm, "Practical Agro Thermo")) /
     (plot_resid_prac(ptf_practical_raw, "Practical Agro Raw") | plot_resid_prac(ptf_practical_thm, "Practical Agro Thermo")) +
     plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
 
-## 7. Phase 5: Plant Uptake Models Comparison
 
-### Mechanistic Hypothesis: The Diffusion Bottleneck ($D_e \propto 1/b$)
-The rate-limiting step for P acquisition is diffusion through the soil matrix to the root surface. The effective diffusion coefficient ($D_e$) is directly proportional to $1/b$. Thus, $1/b$ acts as a **Diffusion Bottleneck**. Soils with high buffer capacity (low $1/b$) replenish the root depletion zone too slowly. Therefore, even if two soils have the exact same bulk $P_{CO2}$ concentration, the plant in the high-buffer soil will uptake less P because the dynamic supply to the root surface is restricted.
-
-To statistically prove this, we compare "Full" models (where $1/b$ penalizes the Michaelis-Menten affinity constant) against "Null" models (which omit the $1/b$ modifier entirely). If the diffusion bottleneck is real, the Full models should exhibit significantly higher Marginal $R^2$ values.
-
-We calculate the physical inverse buffer power ($1/b$) for all harvests from 2010 to 2022. Because our goal is a practical field tool, we calculate $1/b$ twice: once using the rigorous **Geochemical PTF** (which requires `Feox/Alox`), and once using our generalized **Practical Agronomic PTF** (which uses routinely available data). 
-
-We then evaluate how well the empirical ($P_{CO2}$), thermodynamic ($a_{CO2}$), and bound ($P_{AAE10}$) pools predict actual plant uptake when penalized by these two competing $1/b$ metrics (alongside the kinetic desorption rate $k$). This comparison will evaluate if the practical equations perform just as well as the strict geochemical ones when predicting actual agronomic outcomes.
-
-```{r plant-uptake-showdown, fig.width=12, fig.height=8}
+## ----plant-uptake-showdown, fig.width=12, fig.height=8------------------------
 library(nlme)
 
 # 1. Extract the Coefficients from Both PTFs
@@ -611,11 +540,9 @@ res_table |>
         validate_nlme(mod_thm_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Thermo a_CO2") |
         validate_nlme(mod_raw_aae_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Legacy P_AAE10"))) +
     plot_layout(guides = "collect") & theme(legend.position = "bottom")
-```
 
-### Residual Diagnostics per Site (Uptake Models)
 
-```{r residual-diagnostics-uptake, fig.width=10, fig.height=4}
+## ----residual-diagnostics-uptake, fig.width=10, fig.height=4------------------
 # Helper to plot boxplots of residuals per site
 plot_residuals_boxplot <- function(model, data, title) {
     plot_data <- data |> mutate(Residuals = residuals(model))
@@ -638,9 +565,9 @@ plot_residuals_boxplot <- function(model, data, title) {
     (plot_residuals_boxplot(mod_raw_co2_agro, D_Long_Agro, "Agro: Raw P_CO2") |
         plot_residuals_boxplot(mod_thm_co2_agro, D_Long_Agro, "Agro: Thermo a_CO2") |
         plot_residuals_boxplot(mod_raw_aae_agro, D_Long_Agro, "Agro: Legacy P_AAE10"))
-```
 
-```{r}
+
+## -----------------------------------------------------------------------------
 library(broom.mixed)
 
 # Helper function to generate a clean effects table
@@ -664,35 +591,9 @@ all_effects <- bind_rows(
 )
 
 print(as.data.frame(all_effects), row.names = FALSE)
-```
 
 
-## 7. The Yield-STP Comparison (Mitscherlich)
-
-### Mechanistic Hypothesis: The Efficiency Penalty
-Yield is the long-term biological integration of daily plant uptake, capped by environmental constraints (Mitscherlich asymptote). Because it is a downstream consequence of uptake, it inherits the same physical diffusion limitations. Here, $1/b$ acts as an **Efficiency Penalty** on the Mitscherlich rate constant ($c$). If the soil cannot physically supply P fast enough during critical early growth phases due to low $1/b$, the crop's yield potential is stunted. However, because the plant can store and reallocate P internally over the season, we expect the sensitivity of Yield to $1/b$ to be slightly dampened compared to instantaneous Uptake.
-
-To statistically prove this penalty, we compare "Full" Mitscherlich models (where $1/b$ modifies the rate constant) against "Null" models (which omit $1/b$).
-
-### Modelling rationale: path to the parsimonious model
-
-The agronomic yield response to soil test phosphorus (STP) is classically described by the **Mitscherlich equation** — a saturating exponential function where the asymptote represents the biologically achievable maximum yield and the rate constant $c$ governs how steeply yield rises with increasing P supply.
-
-**Step 1 — Local Normalization over historical maximums.**
-Relative yield is computed as $Y_{rel} = Y_{total} / \max(Y_{total})$ strictly within each site $\times$ crop $\times$ **year** combination. Normalizing to the local year maximum, rather than the historical 30-year maximum, safely controls for temporal shifts in absolute yield potential caused by modern crop breeding and inter-annual climate variations (e.g. drought years). This operation removes the variance in the absolute yield ceiling, making the maximum relative yield strictly equal to 1 for every site-year.
-
-**Step 2 — Dropping $\beta_k$ (desorption rate).**
-The kinetic desorption rate $k$ was initially included as a modifier of $c$ alongside buffer power $1/b$. Across all six uptake models, the standardised coefficient $\beta_k$ was consistently insignificant ($p \approx 0.7$), indicating that once the soil P concentration and physical buffer power are known, the kinetic rate does not add explanatory power for annual crop responses.
-
-**Step 3 — The role of buffer power $1/b$ on $c$.**
-Following @hirteYieldResponseSoil2021, we model the rate constant as a function of pedoclimatic predictors via a log-linear link:
-$$c_{\text{eff}} = c_{\text{base}} \cdot \exp(\beta_{\text{invb}} \cdot z_{1/b})$$
-A negative $\beta_{\text{invb}}$ means soils with higher buffer power (stronger P sorption) require more P in solution to achieve the same yield increment — the physical diffusion barrier slows P replenishment at the root surface, raising the effective half-saturation point.
-
-**Step 4 — Thermodynamic activity ($a_{\text{CO}_2}$) vs raw $P_{\text{CO}_2}$.**
-The original design anticipated that K and Mg fertilization treatments would introduce sufficient variance in ionic strength to meaningfully shift the thermodynamic activity coefficient $\gamma$, making $a_{\text{CO}_2} = \gamma \cdot c_{\text{CO}_2}$ substantially different from the raw concentration. In practice, the treatment-induced ionic strength variation was too small — the activity-corrected and raw concentrations were nearly collinear across the available treatment range. Raw $P_{\text{CO}_2}$ is therefore retained as the concentration metric.
-
-```{r mitscherlich-yield-models, fig.width=10, fig.height=4}
+## ----mitscherlich-yield-models, fig.width=10, fig.height=4--------------------
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 D_Yield <- D_ready |>
@@ -1046,11 +947,9 @@ ggplot() +
         legend.position = "bottom",
         strip.text = element_text(face = "bold", size = 11)
     )
-```
 
-### Residual Diagnostics per Site (Yield Models)
 
-```{r residual-diagnostics-yield, fig.width=12, fig.height=5}
+## ----residual-diagnostics-yield, fig.width=12, fig.height=5-------------------
 p_resid <- ggplot(D_Yield, aes(x = Fitted, y = Residual, color = site)) +
     geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
     geom_point(alpha = 0.4, size = 1.5) +
@@ -1066,22 +965,9 @@ p_box <- ggplot(D_Yield, aes(x = site, y = Residual, fill = site)) +
     theme(plot.title = element_text(face = "bold"), legend.position = "none")
 
 (p_resid | p_box)
-```
 
-## 8. Critical STP Analysis (Hirte et al. 2021 Framework)
 
-### Deriving the Dynamic $P_{\text{crit}}$
-
-Hirte et al. (2021) originally extended the Mitscherlich framework by deriving a **critical STP** ($P_{\text{crit}}$)—the soil test P concentration at which yield reaches 95% of its maximum—and then fitting downstream models to see how $P_{\text{crit}}$ varies by site. 
-
-Because we utilized a **One-Step NLME approach** (embedding the pedoclimatic drivers directly into the yield curve), we avoid the statistical danger of running two-step circular inferences. Instead, the critical STP for every specific plot and year is purely an algebraic consequence of the fitted model:
-
-**Derivation.** Setting $Y_{relative} = 0.95$ in the new Mitscherlich equation and solving for $P$:
-$$0.95 = 1 - \exp(-c_{\text{eff}} \cdot P_{\text{crit}}) \implies P_{\text{crit}} = \frac{\ln(20)}{c_{\text{eff}}}$$
-
-Because the rate constant $c_{\text{eff}}$ reacts continuously to $\text{pH}$, buffer power, climate, and the unmeasured random year effect $u_{\text{year}}$, the resulting $P_{\text{crit}}$ dynamically shifts. Soils with harsher conditions (e.g., lower $c_{\text{eff}}$) computationally demand a *higher* $P_{\text{crit}}$—they need more P physically present in solution to overcome the barrier and achieve the same 95% agronomic potential.
-
-```{r pcrit-analysis, fig.width=10, fig.height=5}
+## ----pcrit-analysis, fig.width=10, fig.height=5-------------------------------
 # ---------------------------------------------------------------------------
 # P_crit = STP at which Y = 95% of maximum yield
 #
@@ -1163,15 +1049,9 @@ p_pcrit_forest <- ggplot(nlme_effects, aes(x = estimate, y = reorder(term_clean,
     theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
 
 (p_pcrit_box | p_pcrit_forest) + plot_layout(widths = c(1, 1.5))
-```
 
-## 9. Spatial Validation: Leave-One-Site-Out Cross-Validation (LOSO-CV)
 
-To rigorously validate that our Pedotransfer Functions (PTFs) represent generalized physical laws rather than locally overfitted empirical correlations, we perform a Spatial Leave-One-Site-Out Cross-Validation (LOSO-CV). 
-
-For each iteration, the model is trained on $n-1$ sites, and the physical framework is then used to predict the legacy pool ($P_{AAE10}$) on the completely unseen left-out site. Because the random effects (e.g., site-specific intercepts) cannot be estimated for an unseen site, all out-of-sample predictions are strictly generated using the **fixed effects** alone. We compare the training performance (Marginal $R^2$) to the testing performance (Predictive $r^2$).
-
-```{r loso-cv}
+## ----loso-cv------------------------------------------------------------------
 # 1. Define the LOSO-CV function
 loso_cv <- function(formula_str, data) {
     sites <- unique(as.character(data$site))
@@ -1234,16 +1114,9 @@ cv_results <- bind_rows(
 cv_results |>
     kbl(caption = "**Table 4: Spatial Leave-One-Site-Out Cross-Validation (LOSO-CV).** Variance explained by fixed effects only. The Geochemical models maintain a higher predictive capability on completely unseen environments, confirming that amorphous metal oxides are the true physical drivers of soil buffering capacity.") |>
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
-```
 
-## 8. Phase 6: Cumulative P Balance ($P_{bal}$) Comparison
 
-### Mechanistic Hypothesis: The Fertilizer Sink ($\Delta I / \Delta Q$)
-For cumulative mass balance over 30 years, $1/b$ does **not** represent root diffusion. Instead, it represents the fundamental Q/I slope: $\Delta I / \Delta Q$. It defines the soil's **physicochemical binding capacity** for applied fertilizers. Here, $1/b$ acts as a **Fertilizer Sink**. Soils with high buffer power (low $1/b$) require massive historical P surpluses (high Cumulative $P_{bal}$) to raise the $P_{CO2}$ soil test by a single unit because the vast majority of the added P is instantly bound to amorphous metal oxides. Conversely, in low-buffer soils (high $1/b$), a small fertilizer surplus rapidly spikes the soil solution concentration.
-
-To demonstrate this, we construct a Linear Mixed-Effects Model predicting the 30-year Cumulative P Balance as a function of the Soil Test P interacting with $1/b$. We compare these "Full" models against "Null" models which lack the $1/b$ interaction to see if integrating physical buffering mathematically explains the site-to-site variance in historical fertilizer efficiency.
-
-```{r p-balance-models, fig.width=10, fig.height=4}
+## ----p-balance-models, fig.width=10, fig.height=4-----------------------------
 # 1. Construct the Cumulative Dataset
 D_Cum <- D_ready |>
     mutate(
@@ -1370,4 +1243,4 @@ p_null <- ggplot(plot_data_bal, aes(x = Predicted_Null, y = Cumulated_P_Balance,
     theme_minimal()
 
 (p_full | p_null) + plot_layout(guides = "collect") & theme(legend.position = "right")
-```
+

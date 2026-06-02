@@ -46,7 +46,7 @@ To capture the desorption process with high temporal resolution while preserving
 
 Although the kinetic extraction utilized deionized water, the immediate dissolution of native soil salts ($Ca^{2+}, Mg^{2+}, K^+$, etc.) generates a non-zero ionic strength ($I$) in the suspension. Because plant roots respond to thermodynamic energy rather than physical mass, the stoichiometric concentration of the extract ($c_i$) must be corrected to its true chemical activity ($a_i$).
 
-The activity coefficient ($\gamma$) for the divalent phosphate ion ($HPO_4^{2-}$, $z = -2$) was calculated for each site-specific matrix using the **Davies Equation**, which is highly robust for agricultural soil solutions up to $I \approx 0.1 \text{ M}$:
+The activity coefficient ($\gamma$) for the divalent phosphate ion ($HPO_4^{2-}$, $z = -2$) was calculated for each site-specific matrix using the **Davies Equation**, which is robust for agricultural soil solutions up to $I \approx 0.1 \text{ M}$:
 
 $$\log_{10}(\gamma) = -0.5 \cdot z^2 \left( \frac{\sqrt{I}}{1+\sqrt{I}} - 0.3 I \right)$$
 
@@ -54,7 +54,7 @@ The true thermodynamic activity ($a_i$) of the phosphorus in the extract was the
 
 $$a_i = c_i \cdot \gamma$$
 
-This correction neutralizes pedochemical variances caused by differing native background salinities and pH levels across the STYCS sites, converting the raw data into a universal thermodynamic Intensity ($I$) metric.
+This correction accounts for pedochemical variances caused by differing native background salinities and pH levels across the STYCS sites, converting the raw data into a universal thermodynamic Intensity ($I$) metric.
 
 ## Statistical Analysis and Modeling {#sec-statistical-analysis}
 
@@ -86,11 +86,11 @@ $$\text{PBC} = \frac{dQ}{dI} = K_f \cdot \frac{1}{n} \cdot I^{\left(\frac{1}{n} 
 
 ### 3. Agronomic Normalization: The Historical Baseline Strategy
 
-To statistically evaluate the predictive power of the chemical parameters across six highly diverse pedoclimatic sites, raw crop yield and P-uptake data required robust normalization to isolate chemical P-limitation from overarching climatic noise. 
+To statistically evaluate the predictive power of the chemical parameters across six diverse pedoclimatic sites, raw crop yield and P-uptake data required robust normalization to isolate chemical P-limitation from overarching climatic noise. 
 
-Standard normalization (dividing by the maximum yield of a given site within the specific experimental year) was rejected, as it artificially masks broad climatic limitations (e.g., drought) and forces the best plot of a poor year to equal 100%, mathematically erasing the biological penalty. Instead, a **historical biological baseline strategy** was employed. 
+Standard normalization (dividing by the maximum yield of a given site within the specific experimental year) was rejected, as it artificially masks broad climatic limitations (e.g., drought) and forces the best plot of a poor year to equal 100%, removing the biological penalty. Instead, a **historical biological baseline strategy** was employed. 
 
-Using the 40-year STYCS historical dataset, the true biological potential ($Y_{max}$ and $Uptake_{max}$) was calculated for each specific site and crop species by taking the 95th percentile of all fully fertilized (100% and 167% P) treatments. Current experimental yields and uptake values were divided by this historical baseline to calculate **Relative Historical Yield ($Y_{rel\_hist}$)**, providing a highly stable metric representing the percentage of the crop's long-term biological potential achieved.
+Using the 40-year STYCS historical dataset, the true biological potential ($Y_{max}$ and $Uptake_{max}$) was calculated for each specific site and crop species by taking the 95th percentile of all fully fertilized (100% and 167% P) treatments. Current experimental yields and uptake values were divided by this historical baseline to calculate **Relative Historical Yield ($Y_{rel\_hist}$)**, providing a stable metric representing the percentage of the crop's long-term biological potential achieved.
 
 ### 4. Comparative Modeling of Agronomic Outcomes
 

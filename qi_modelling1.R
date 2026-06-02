@@ -26,7 +26,7 @@
 ##         H --> J["Stochiometric Concentrations"]:::thermo
 ##     end
 ## 
-##     subgraph Phase_4 ["Phase 4: Field Scaling (PTF Showdown)"]
+##     subgraph Phase_4 ["Phase 4: Field Scaling (PTF Comparison)"]
 ##         I --> K["Agronomic vs Geochemical PTFs<br>1990-2022"]:::uptake
 ##         J --> K
 ##         K --> L("Selected Field Inverse Buffer Power: 1/b"):::uptake
@@ -80,7 +80,7 @@ site_geochemistry <- D |> group_by(site) |> summarise(feox_mean = mean(Feox, na.
 kinetics_stable <- D |> dplyr::select(site, treatment_ID, rep, k, v0_kPS = kPS, Pmax_PS = PS) |> distinct(site, treatment_ID, rep, .keep_all = TRUE)
 
 # 2. Base Merge
-D_master <- D2 |>
+D_main <- D2 |>
   filter(year >= 1990) |>
   group_by(site) |>
   mutate(
@@ -91,15 +91,15 @@ D_master <- D2 |>
   left_join(kinetics_stable, by = c("site", "treatment_ID", "rep"))
 
 # Impute missing cations for complete case retention (specifically CAD)
-global_med_Ca_H2O10 <- median(D_master$soil_0_20_Ca_H2O10, na.rm = TRUE)
-global_med_Mg_H2O10 <- median(D_master$soil_0_20_Mg_H2O10, na.rm = TRUE)
-global_med_K_H2O10  <- median(D_master$soil_0_20_K_H2O10, na.rm = TRUE)
+global_med_Ca_H2O10 <- median(D_main$soil_0_20_Ca_H2O10, na.rm = TRUE)
+global_med_Mg_H2O10 <- median(D_main$soil_0_20_Mg_H2O10, na.rm = TRUE)
+global_med_K_H2O10  <- median(D_main$soil_0_20_K_H2O10, na.rm = TRUE)
 
-global_med_Ca_AAE10 <- median(D_master$soil_0_20_Ca_AAE10, na.rm = TRUE)
-global_med_Mg_AAE10 <- median(D_master$soil_0_20_Mg_AAE10, na.rm = TRUE)
-global_med_K_AAE10  <- median(D_master$soil_0_20_K_AAE10, na.rm = TRUE)
+global_med_Ca_AAE10 <- median(D_main$soil_0_20_Ca_AAE10, na.rm = TRUE)
+global_med_Mg_AAE10 <- median(D_main$soil_0_20_Mg_AAE10, na.rm = TRUE)
+global_med_K_AAE10  <- median(D_main$soil_0_20_K_AAE10, na.rm = TRUE)
 
-D_master <- D_master |>
+D_main <- D_main |>
   group_by(site) |>
   mutate(
     soil_0_20_Ca_H2O10 = ifelse(is.na(soil_0_20_Ca_H2O10), median(soil_0_20_Ca_H2O10, na.rm = TRUE), soil_0_20_Ca_H2O10),
@@ -122,7 +122,7 @@ D_master <- D_master |>
   )
 
 # 3. Thermodynamic Speciation (Davies Equation)
-D_thermo <- D_master |>
+D_thermo <- D_main |>
   filter(!is.na(soil_0_20_pH_H2O), !is.na(soil_0_20_P_CO2)) |>
   mutate(
     K_mol_L = (soil_0_20_K_H2O10 / 10) / (39.10 * 1000), Ca_mol_L = (soil_0_20_Ca_H2O10 / 10) / (40.08 * 1000), Mg_mol_L = (soil_0_20_Mg_H2O10 / 10) / (24.30 * 1000),
@@ -177,7 +177,7 @@ D_ready <- D_thermo |>
 
 
 ## ----ptf-showdown, fig.width=12, fig.height=8---------------------------------
-#| fig-cap: "**Figure 1: Pedotransfer Function (PTF) Showdown.** The Geochemical models (bottom row) utilizing Amorphous Iron and Aluminum Oxides vastly outperform the standard Agronomic models (top row) in predicting the bound $P_{AAE10}$ legacy pool. Note that the raw mass $P_{CO2}$ slightly edges out the thermodynamic activity $a_{CO2}$ when predicting the aggressive laboratory EDTA extraction."
+#| fig-cap: "**Figure 1: Pedotransfer Function (PTF) Comparison.** The Geochemical models (bottom row) utilizing Amorphous Iron and Aluminum Oxides vastly outperform the standard Agronomic models (top row) in predicting the bound $P_{AAE10}$ legacy pool. Note that the raw mass $P_{CO2}$ slightly edges out the thermodynamic activity $a_{CO2}$ when predicting the aggressive laboratory EDTA extraction."
 
 # Safely filter complete cases
 D_ptf <- D_ready |> 
@@ -206,7 +206,7 @@ ptf_results |>
   kbl(caption = "**Table 1: Variance Explained by Pedotransfer Functions.** Geochemical traits account for a massive 14% increase in Marginal R² compared to standard agronomic soil texture (Clay/Silt), proving that amorphous metal oxides dictate the physical binding capacity of the soil matrix.") |> 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 
-# Graphical Comparison with unified legend
+# Graphical Showdown with unified legend
 plot_ptf <- function(model, title) {
   plot_data <- D_ptf |> mutate(Fitted = predict(model))
   ggplot(plot_data, aes(x = Fitted, y = ln_P_AAE, color = site)) +
@@ -261,7 +261,7 @@ D_Long <- D_ready |>
   ) |>
   
   # Normalize Uptake & Scale Bottlenecks
-  group_by(site, crop) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
+  group_by(site, crop, year) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
   filter(is.finite(inv_b), is.finite(Relative_Uptake)) |>
   mutate(
     z_inv_b = as.numeric(scale(inv_b)), 
@@ -331,10 +331,10 @@ res_table <- bind_rows(
 )
 
 res_table |> 
-  kbl(caption = "**Table 2: Michaelis-Menten Plant Uptake Showdown.** The physical diffusion highway (1/b) is highly significant across all models (p < 0.001). Because the buffer power was derived mechanically via the Geochemical PTF, it mathematically absorbs the kinetic desorption rate (k), rendering the latter insignificant (p = 0.45).") |> 
+  kbl(caption = "**Table 2: Michaelis-Menten Plant Uptake Comparison.** The physical diffusion highway (1/b) is highly significant across all models (p < 0.001). Because the buffer power was derived mechanically via the Geochemical PTF, it mathematically absorbs the kinetic desorption rate (k), rendering the latter insignificant (p = 0.45).") |> 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 
-# Showdown Graphs with unified legend
+# Comparison Graphs with unified legend
 (validate_nlme(mod_raw_co2, D_Long, "Relative_Uptake", "Model 1: Raw P_CO2") | 
  validate_nlme(mod_thm_co2, D_Long, "Relative_Uptake", "Model 2: Thermo a_CO2") | 
  validate_nlme(mod_raw_aae, D_Long, "Relative_Uptake", "Model 3: Legacy P_AAE10")) +
@@ -360,7 +360,7 @@ D_Long_Full <- D_ready |>
     b_power_agro = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
     inv_b_agro = 1 / b_power_agro
   ) |>
-  group_by(site, crop) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
+  group_by(site, crop, year) |> mutate(Relative_Uptake = annual_P_uptake / max(annual_P_uptake, na.rm = TRUE)) |> ungroup() |>
   filter(is.finite(Relative_Uptake), is.finite(inv_b_agro)) |>
   mutate(
     z_inv_b_agro = as.numeric(scale(inv_b_agro)),
@@ -443,8 +443,8 @@ D_Yield <- D_ready |>
     total_yield = tidyr::replace_na(annual_yield_mp_DM, 0) + tidyr::replace_na(annual_yield_bp_DM, 0)
   ) |>
   
-  # Normalize TOTAL YIELD by Site and Crop
-  group_by(site, crop) |> 
+  # Normalize TOTAL YIELD by Site, Crop, and Year
+  group_by(site, crop, year) |> 
   mutate(Relative_Yield = total_yield / max(total_yield, na.rm = TRUE)) |> 
   ungroup() |>
   
@@ -488,7 +488,7 @@ yield_table <- bind_rows(
 )
 
 yield_table |> 
-  kbl(caption = "**Table 3: Mitscherlich Agronomic Yield Showdown.** Unlike the soluble pools, the bound legacy pool ($P_{AAE10}$) remains restricted by the physical binding capacity of the soil matrix (1/b, p = 0.07) even when predicting total crop yield. Temperature anomalies fundamentally cap the absolute maximum agronomic yield across all models.") |> 
+  kbl(caption = "**Table 3: Mitscherlich Agronomic Yield Comparison.** Unlike the soluble pools, the bound legacy pool ($P_{AAE10}$) remains restricted by the physical binding capacity of the soil matrix (1/b, p = 0.07) even when predicting total crop yield. Temperature anomalies fundamentally cap the absolute maximum agronomic yield across all models.") |> 
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 
 cat("\n### BACK-TRANSFORMED ENVIRONMENT SHIFTS (STP units) ###\n")

@@ -5,6 +5,7 @@ project:
   render:
     - index.qmd
     - "notebooks/qi_modelling1.qmd"  # Explicitly render this specific notebook
+    - "notebooks/sanity_checks.qmd"
 
 execute:
   freeze: true
@@ -22,6 +23,8 @@ website:
         menu:
           - text: "Q/I & Thermodynamic Showdown"
             href: notebooks/qi_modelling1.html
+          - text: "Data Sanity Checks"
+            href: notebooks/sanity_checks.html
 
 # --- Top-level settings ---
 bibliography: references.bib

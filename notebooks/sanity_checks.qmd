@@ -13,9 +13,9 @@ library(ggpmisc)
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # 1. Load legacy kinetics and climate data
-RES <- readRDS("../data/RES.rds")
+RES <- readRDS("data/RES.rds")
 D_legacy <- RES$D
-climate_data <- readRDS("../data/all_P.rds") |>
+climate_data <- readRDS("data/all_P.rds") |>
     dplyr::select(site, year, anavg_temp, ansum_prec, juvdev_temp, juvdev_prec) |>
     dplyr::distinct()
 
@@ -28,8 +28,8 @@ kinetics_stable <- D_legacy |>
     dplyr::select(site, treatment_ID, rep, k, v0_kPS = kPS, Pmax_PS = PS) |>
     distinct(site, treatment_ID, rep, .keep_all = TRUE)
 
-# 2. Load accurate raw STYCS dataset and construct D_master
-D_master <- read_excel("../data/STYCS_data_2023_260511.xlsx", guess_max = 20000) |>
+# 2. Load accurate raw STYCS dataset and construct D_main
+D_main <- read_excel("data/STYCS_data_2023_260511.xlsx", guess_max = 20000) |>
     rename(rep = replicate) |>
     mutate(site = gsub("STYCS_", "", LtE_name)) |>
     left_join(climate_data, by = c("site", "year")) |>
@@ -53,14 +53,14 @@ D_master <- read_excel("../data/STYCS_data_2023_260511.xlsx", guess_max = 20000)
 
 ## Introduction
 
-This notebook contains sanity checks for the agronomic data using the **newly constructed `D_master`**, which merges the correct, uncorrupted field measurements from the raw Excel file with the stable kinetic laboratory measurements from the legacy `RES.rds` dataset. 
+This notebook contains sanity checks for the agronomic data using the **newly constructed `D_main`**, which merges the correct, uncorrupted field measurements from the raw Excel file with the stable kinetic laboratory measurements from the legacy `RES.rds` dataset.
 
 ## Summary Table
 
 Let's look at the average applied P fertilizer (`fert_P_tot`) and yield for each treatment at each site.
 
 ```{r}
-summary_table <- D_master %>%
+summary_table <- D_main %>%
     group_by(site, Treatment) %>%
     summarise(
         mean_yield = mean(annual_yield_mp_DM, na.rm = TRUE),
@@ -78,7 +78,7 @@ knitr::kable(summary_table, digits = 2)
 ### 1. Yield by Treatment and Site
 
 ```{r fig.width=10, fig.height=8}
-ggplot(D_master, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
+ggplot(D_main, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
     geom_boxplot(alpha = 0.7) +
     facet_wrap(~site, scales = "free_y") +
     labs(
@@ -93,7 +93,7 @@ ggplot(D_master, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
 ### 2. Applied P Fertilizer by Treatment and Site
 
 ```{r fig.width=10, fig.height=8}
-ggplot(D_master, aes(x = Treatment, y = fert_P_tot, fill = Treatment)) +
+ggplot(D_main, aes(x = Treatment, y = fert_P_tot, fill = Treatment)) +
     geom_boxplot(alpha = 0.7) +
     facet_wrap(~site, scales = "free_y") +
     labs(
@@ -108,7 +108,7 @@ ggplot(D_master, aes(x = Treatment, y = fert_P_tot, fill = Treatment)) +
 ### 3. Yield vs. Applied P Fertilizer
 
 ```{r fig.width=10, fig.height=8}
-ggplot(D_master, aes(x = fert_P_tot, y = annual_yield_mp_DM, color = Treatment)) +
+ggplot(D_main, aes(x = fert_P_tot, y = annual_yield_mp_DM, color = Treatment)) +
     geom_point(alpha = 0.7, size = 2) +
     geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
     facet_wrap(~site, scales = "free") +
@@ -123,7 +123,7 @@ ggplot(D_master, aes(x = fert_P_tot, y = annual_yield_mp_DM, color = Treatment))
 ### 4. Soil P vs. Treatment
 
 ```{r fig.width=10, fig.height=8}
-ggplot(D_master, aes(x = Treatment, y = soil_0_20_P_CO2, fill = Treatment)) +
+ggplot(D_main, aes(x = Treatment, y = soil_0_20_P_CO2, fill = Treatment)) +
     geom_boxplot(alpha = 0.7) +
     facet_wrap(~site, scales = "free_y") +
     labs(
@@ -138,7 +138,7 @@ ggplot(D_master, aes(x = Treatment, y = soil_0_20_P_CO2, fill = Treatment)) +
 ### 5. P Uptake vs. Applied Fertilizer
 
 ```{r fig.width=10, fig.height=8}
-ggplot(D_master, aes(x = fert_P_tot, y = annual_P_uptake, color = Treatment)) +
+ggplot(D_main, aes(x = fert_P_tot, y = annual_P_uptake, color = Treatment)) +
     geom_point(alpha = 0.7, size = 2) +
     geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
     facet_wrap(~site, scales = "free") +
@@ -156,13 +156,23 @@ Here we calculate the cumulated `P_balance` across the entire trial duration (19
 
 ```{r fig.width=12, fig.height=15}
 # Calculate cumulative P balance per plot
-D_cum <- D_master %>%
+D_cum <- D_main %>%
     group_by(site, Treatment, rep) %>%
     summarise(
         Cumulated_P_Balance = sum(annual_P_balance, na.rm = TRUE),
         mean_P_CO2 = mean(soil_0_20_P_CO2, na.rm = TRUE),
         mean_P_AAE10 = mean(soil_0_20_P_AAE10, na.rm = TRUE),
         mean_PS = mean(Pmax_PS, na.rm = TRUE),
+        v0_kPS = mean(v0_kPS, na.rm = TRUE),
+        mean_Clay = mean(soil_0_20_clay, na.rm = TRUE),
+        mean_Silt = mean(soil_0_20_silt, na.rm = TRUE),
+        mean_pH = mean(soil_0_20_pH_H2O, na.rm = TRUE),
+        mean_Corg = mean(soil_0_20_Corg, na.rm = TRUE),
+        mean_Prec = mean(ansum_prec, na.rm = TRUE),
+        mean_Temp = mean(anavg_temp, na.rm = TRUE),
+        mean_K = mean(soil_0_20_K_AAE10, na.rm = TRUE),
+        mean_Mg = mean(soil_0_20_Mg_AAE10, na.rm = TRUE),
+        mean_Lime = mean(soil_0_20_presample_lime, na.rm = TRUE),
         .groups = "drop"
     )
 
@@ -192,13 +202,39 @@ ggplot(D_indicators, aes(x = Indicator_Value, y = Cumulated_P_Balance, color = s
     theme_bw()
 ```
 
+### 6.5 Cumulated P Balance vs. Pedo-Climatic Site Drivers
+
+Following the variance decomposition (ICC), we want to map the cumulative P balance directly against the highly site-distinguishing variables.
+
+```{r fig.width=14, fig.height=10}
+D_pedo <- D_cum %>%
+    pivot_longer(
+        cols = c(mean_Clay, mean_Silt, mean_pH, mean_Corg, mean_Prec, mean_Temp, mean_K, mean_Mg, mean_Lime),
+        names_to = "Pedo_Driver",
+        values_to = "Driver_Value"
+    )
+
+ggplot(D_pedo, aes(x = Driver_Value, y = Cumulated_P_Balance, color = Treatment)) +
+    geom_point(alpha = 0.8, size = 2.5) +
+    facet_wrap(~ Pedo_Driver, scales = "free_x", ncol = 3) +
+    labs(
+        title = "Cumulated P Balance (1990-2022) Driven by Pedoclimatic Traits",
+        x = "Pedoclimatic Driver Value (Site Average)",
+        y = "Cumulated P Balance (kg P / ha)",
+        color = "P Treatment"
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+```
+
+
 ### 7. Annual P Uptake vs. Soil P Indicators
 
 To compare the predictive power of the soil tests against the annual P-uptake, we plot linear regressions faceted by the indicator. We include the linear regression equation and the $R^2$ to assess meaningful differences.
 
 ```{r fig.width=12, fig.height=15}
 # Pivot the dataset to long format for faceting by indicator
-D_uptake_annual <- D_master %>%
+D_uptake_annual <- D_main %>%
     pivot_longer(
         cols = c(soil_0_20_P_CO2, soil_0_20_P_AAE10, Pmax_PS),
         names_to = "Indicator",
@@ -231,7 +267,7 @@ Here we evaluate the long-term predictive power. We sum the `annual_P_uptake` ov
 
 ```{r fig.width=12, fig.height=15}
 # Calculate cumulative P uptake per plot
-D_cum_uptake <- D_master %>%
+D_cum_uptake <- D_main %>%
     group_by(site, Treatment, rep) %>%
     summarise(
         Cumulated_P_Uptake = sum(annual_P_uptake, na.rm = TRUE),
@@ -264,4 +300,251 @@ ggplot(D_cum_uptake, aes(x = Indicator_Value, y = Cumulated_P_Uptake)) +
         color = "Site"
     ) +
     theme_bw()
+```
+
+## 9. Site-Dependency of Environmental Covariates (Variance Decomposition)
+
+As observed above, metrics like the cumulative P balance and yield responses appear highly site-dependent. To formally quantify how strictly a covariate is grouped by its site (e.g. soil geology) versus how much it varies independently across plots and years (e.g. fertilizer, weather), we can compute the **Intra-Class Correlation Coefficient (ICC)**.
+
+### The Mixed-Effects Variance Decomposition
+
+To formally quantify how strictly a covariate is grouped by its site (e.g. soil geology) versus how much it varies independently across plots and years (e.g. fertilizer, weather), we compute the **Intra-Class Correlation Coefficient (ICC)**.
+
+For every numeric parameter in the dataset, we fit a random intercept mixed-effects model with no fixed effects (`lmer(scale(variable) ~ 1 + (1 | site))`). This forces the model to decompose the total variance of the parameter into exactly two variance fractions: 1. **Between-Site Variance (**$\sigma^2_{site}$): Variance driven purely by moving from one geographical location to another (geology and macro-climate). 2. **Residual Variance (**$\sigma^2_{residual}$): "Noise" happening *within* the site—such as plot-to-plot differences (caused by P, K, Mg fertilizer treatments) and year-to-year differences (weather anomalies, crop rotations).
+
+The ICC is then calculated as the ratio of site-driven variance to total variance: $$ ICC = \frac{\sigma^2_{site}}{\sigma^2_{site} + \sigma^2_{residual}} $$
+
+- **ICC \> 0.80**: The variable is almost entirely dictated by the geographical site (e.g. `pH` or soil texture). These parameters act as excellent, stable candidates for modeling the physical pedoclimatic baseline (the $1/b$ physical highway).
+- **ICC \< 0.30**: The variable fluctuates completely independently of the site. Its variance is heavily driven by local experimental treatments (e.g., `fert_N`, `P_CO2`) or local weather (`Temp_Anom`). Nesting these into the models (like the Mitscherlich rate constant $c_{eff}$) helps capture critical plot-level nutritional variance that the rigid site-level variables are blind to.
+
+```{r site-icc, fig.width=8, fig.height=6}
+library(lme4)
+library(performance)
+library(purrr)
+
+# Define the variables we want to decompose
+# We select all numeric variables from D_main, excluding kinetics and identifiers
+num_cols <- names(D_main)[sapply(D_main, is.numeric)]
+covariates <- setdiff(num_cols, c(
+    "year", "rep", "k", "Pmax_PS", "v0_kPS", "soil_0_20_P_test"
+))
+
+# Helper function to compute ICC for a single variable
+get_icc <- function(var_name, data) {
+    # We use a tryCatch just in case a variable is missing or singular
+    res <- tryCatch({
+        # Drop NAs for this specific variable to fit the lmer
+        d_clean <- data |> filter(!is.na(.data[[var_name]]))
+        
+        # Build formula explicitly because lmer doesn't support the dplyr .data pronoun
+        fmla <- as.formula(paste0("scale(`", var_name, "`) ~ 1 + (1 | site)"))
+        mod <- lmer(fmla, data = d_clean, control = lmerControl(calc.derivs = FALSE))
+        
+        # Explicitly extract variance components
+        vc <- as.data.frame(VarCorr(mod))
+        var_site <- vc$vcov[vc$grp == "site"]
+        var_resid <- vc$vcov[vc$grp == "Residual"]
+        
+        icc_val <- var_site / (var_site + var_resid)
+        return(icc_val)
+    }, error = function(e) return(NA))
+    
+    return(res)
+}
+
+# Calculate ICC for all covariates
+icc_results <- data.frame(
+    Variable = covariates,
+    ICC = sapply(covariates, get_icc, data = D_main)
+) |> 
+    filter(!is.na(ICC)) |> # Drop variables that failed to compute
+    arrange(desc(ICC)) |>
+    mutate(
+        Category = case_when(
+            ICC > 0.8 ~ "Highly Site-Dependent (Geology/Climate Baseline)",
+            ICC > 0.3 ~ "Mixed (Site + Plot/Temporal Effects)",
+            TRUE ~ "Highly Local/Temporal (Treatments/Weather)"
+        )
+    )
+
+# Print nice table
+knitr::kable(icc_results, digits = 3, caption = "**Table: Intra-Class Correlation (ICC) by Site.** Quantifies the proportion of variance driven strictly by pedo-climatic site differences.")
+
+# Visualize
+ggplot(icc_results, aes(x = reorder(Variable, ICC), y = ICC, fill = Category)) +
+    geom_col() +
+    coord_flip() +
+    scale_y_continuous(limits = c(0, 1.05), breaks = seq(0, 1, 0.2)) +
+    labs(
+        title = "Variance Explained by Site (Intra-Class Correlation)",
+        subtitle = "1.0 = Purely site-driven | 0.0 = Purely plot/year-driven",
+        x = "Covariate",
+        y = "Intra-Class Correlation (ICC)"
+    ) +
+    theme_bw(base_size = 12) +
+    theme(legend.position = "bottom", legend.direction = "vertical")
+```
+
+### 10. Covariate Permutation: Identifying the Best Pedoclimatic Drivers
+
+To rigorously test which combination of pedoclimatic traits best explains the variance across our 7 sites, we fit a series of Mixed-Effects models. For each of our 3 main soil indicators ($P_{CO2}$, $P_{AAE10}$, $PS$), we fit a baseline model:
+`annual_P_balance ~ scale(Indicator) + (1 | site)`
+
+Then, we systematically loop through every 2-variable combination of our 6 pedoclimatic drivers (`pH`, `Corg`, `Clay`, `Lime`, `Temp`, `Prec`) and fit:
+`annual_P_balance ~ scale(Indicator) + scale(Var1) + scale(Var2) + (1 | site)`
+
+If the two physical variables successfully explain the site-to-site differences, the Random Intercept variance (`1 | site`) should shrink substantially towards 0.
+
+```{r covariate-permutation, warning=FALSE, message=FALSE}
+library(tidyr)
+library(lme4)
+library(dplyr)
+library(performance)
+
+# Define variables for Annual data (D_main)
+cova_ann <- c("ansum_prec", "anavg_temp", "soil_0_20_pH_H2O", "soil_0_20_Corg", "soil_0_20_clay", "soil_0_20_presample_lime")
+inds_ann <- c("soil_0_20_P_CO2", "soil_0_20_P_AAE10", "Pmax_PS", "v0_kPS")
+
+# Define variables for Cumulated data (D_cum)
+cova_cum <- c("mean_Prec", "mean_Temp", "mean_pH", "mean_Corg", "mean_Clay", "mean_Lime")
+inds_cum <- c("mean_P_CO2", "mean_P_AAE10", "mean_PS", "v0_kPS")
+
+# Function to run permutations
+run_perms <- function(target, inds, covs, dat) {
+    d_clean <- dat |> drop_na(all_of(c(target, "site", covs, inds)))
+    combos <- combn(covs, 2, simplify = FALSE)
+    results <- list()
+    for(ind in inds) {
+        # Baseline model
+        f_base <- as.formula(paste0("scale(", target, ") ~ scale(`", ind, "`) + (1 | site)"))
+        mod_base <- lmer(f_base, data = d_clean, control = lmerControl(calc.derivs = FALSE))
+        base_vc <- as.data.frame(VarCorr(mod_base))
+        base_site_var <- base_vc$vcov[base_vc$grp == "site"]
+        
+        for(cb in combos) {
+            v1 <- cb[1]; v2 <- cb[2]
+            f_mod <- as.formula(paste0("scale(", target, ") ~ scale(`", ind, "`) + scale(`", v1, "`) + scale(`", v2, "`) + (1 | site)"))
+            mod <- suppressWarnings(tryCatch({
+                lmer(f_mod, data = d_clean, control = lmerControl(calc.derivs = FALSE))
+            }, error = function(e) NULL))
+            
+            if(is.null(mod)) next
+            
+            vc <- as.data.frame(VarCorr(mod))
+            site_var <- vc$vcov[vc$grp == "site"]
+            
+            # Safely calculate Marginal R2
+            r2m <- suppressWarnings(tryCatch(as.numeric(performance::r2(mod)$R2_marginal), error=function(e) NA))
+            
+            results[[length(results)+1]] <- data.frame(
+                Soil_Indicator = ind,
+                Pedo_Var_1 = v1,
+                Pedo_Var_2 = v2,
+                R2_Marginal = r2m,
+                AIC = AIC(mod),
+                Site_Var_Reduction_Pct = (base_site_var - site_var) / base_site_var * 100
+            )
+        }
+    }
+    
+    bind_rows(results) |> 
+        mutate(Stability = ifelse(Site_Var_Reduction_Pct < 0, "Unstable (Collinear)", "Stable")) |>
+        filter(Stability == "Stable") |>
+        mutate(
+            R2_Marginal = round(R2_Marginal, 3),
+            Site_Var_Reduction_Pct = round(Site_Var_Reduction_Pct, 1),
+            AIC = round(AIC, 1)
+        ) |>
+        arrange(desc(R2_Marginal)) |>
+        select(-Stability)
+}
+
+# Run for Annual P-Balance
+res_ann <- run_perms("annual_P_balance", inds_ann, cova_ann, D_main)
+knitr::kable(head(res_ann, 10), caption = "**Top 10 Stable Models: ANNUAL P-Balance (Sorted by Marginal $R^2$)**")
+
+# Run for Cumulated P-Balance
+# Ensure D_cum exists in the environment identically to how we generated it
+D_cum <- D_main |>
+    group_by(site, Treatment, rep) |>
+    summarise(
+        Cumulated_P_Balance = sum(annual_P_balance, na.rm = TRUE),
+        mean_P_CO2 = mean(soil_0_20_P_CO2, na.rm = TRUE),
+        mean_P_AAE10 = mean(soil_0_20_P_AAE10, na.rm = TRUE),
+        mean_PS = mean(Pmax_PS, na.rm = TRUE),
+        v0_kPS = mean(v0_kPS, na.rm = TRUE),
+        mean_Clay = mean(soil_0_20_clay, na.rm = TRUE),
+        mean_Silt = mean(soil_0_20_silt, na.rm = TRUE),
+        mean_pH = mean(soil_0_20_pH_H2O, na.rm = TRUE),
+        mean_Corg = mean(soil_0_20_Corg, na.rm = TRUE),
+        mean_Prec = mean(ansum_prec, na.rm = TRUE),
+        mean_Temp = mean(anavg_temp, na.rm = TRUE),
+        mean_K = mean(soil_0_20_K_AAE10, na.rm = TRUE),
+        mean_Mg = mean(soil_0_20_Mg_AAE10, na.rm = TRUE),
+        mean_Lime = mean(soil_0_20_presample_lime, na.rm = TRUE),
+        .groups = "drop"
+    )
+
+res_cum <- run_perms("Cumulated_P_Balance", inds_cum, cova_cum, D_cum)
+knitr::kable(head(res_cum, 10), caption = "**Top 10 Stable Models: CUMULATED P-Balance (Sorted by Marginal $R^2$)**")
+```
+## 11. Final Task Sanity Graphs: Yield and Uptake Distributions
+
+To verify the overall distributions and responses of Yield and P Uptake across the sites, treatments, years, and specific fertilizers, we plot the requested sanity checks below.
+
+```{r final-sanity-graphs, fig.width=12, fig.height=8, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Calculate cumulative P uptake
+D_graphs <- D_main |>
+    group_by(site, plot_nr) |>
+    arrange(year) |>
+    mutate(
+        cumulative_P_up = cumsum(replace_na(annual_P_uptake, 0))
+    ) |>
+    ungroup() |>
+    filter(!is.na(annual_yield_mp_DM))
+
+# Helper to plot across the 3 metrics
+plot_sanity <- function(metric_y, title_y) {
+    # 1. Y ~ Treatment faceted by trial
+    p1 <- ggplot(D_graphs, aes(x = Treatment, y = .data[[metric_y]], fill = Treatment)) +
+        geom_boxplot(alpha = 0.7, outlier.alpha = 0.3) +
+        facet_wrap(~ site, scales = "free_y") +
+        theme_bw() + 
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = paste(title_y, "~ Treatment by Site"), x = "Treatment", y = title_y)
+    
+    # 2. Y ~ year faceted by crop and site
+    p2 <- ggplot(D_graphs, aes(x = year, y = .data[[metric_y]], color = crop)) +
+        geom_point(alpha = 0.5) +
+        facet_grid(crop ~ site, scales = "free_y") +
+        theme_bw() +
+        theme(strip.text.y = element_text(angle = 0), legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(title = paste(title_y, "~ Year faceted by Crop and Site"), x = "Year", y = title_y)
+    
+    # 3. Y ~ fert_X for X in {P, K, Mg, N}
+    D_fert <- D_graphs |>
+        select(site, Treatment, all_of(metric_y), fert_P_tot, fert_K_tot, fert_Mg_tot, fert_N_tot) |>
+        pivot_longer(cols = starts_with("fert_"), names_to = "Fertilizer", values_to = "Amount") |>
+        mutate(Fertilizer = factor(Fertilizer, levels = c("fert_P_tot", "fert_K_tot", "fert_Mg_tot", "fert_N_tot"),
+                                   labels = c("P Applied", "K Applied", "Mg Applied", "N Applied")))
+        
+    p3 <- ggplot(D_fert, aes(x = Amount, y = .data[[metric_y]], color = site)) +
+        geom_point(alpha = 0.3) +
+        geom_smooth(method = "lm", se = FALSE) +
+        facet_wrap(~ Fertilizer, scales = "free_x") +
+        theme_bw() +
+        labs(title = paste(title_y, "~ Fertilizer Applied"), x = "Fertilizer Amount (kg/ha)", y = title_y)
+    
+    print(p1)
+    print(p2)
+    print(p3)
+}
+
+plot_sanity("annual_yield_mp_DM", "Annual Dry Yield (kg/ha)")
+plot_sanity("annual_P_uptake", "Annual P Uptake (kg P/ha)")
+plot_sanity("cumulative_P_up", "Cumulative P Uptake (kg P/ha)")
 ```
