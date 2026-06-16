@@ -2271,6 +2271,245 @@ Pseudo-R2: 0.289 </code></pre>
 </table>
 </div>
 </div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ----pcrit-quadrant-analysis, fig.width=10, fig.height=6----------------------</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Prepare function to do LOOCV and quadrant classification</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>run_loocv_quadrants <span class="ot">&lt;-</span> <span class="cf">function</span>(data, p_col, inv_b_col) {</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>    sites <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">as.character</span>(data<span class="sc">$</span>site))</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>    results <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (test_site <span class="cf">in</span> sites) {</span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Split Data and create standard column names for the formula</span></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>        train_data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(site <span class="sc">!=</span> test_site) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">P_test =</span> .data[[p_col]], <span class="at">z_inv_b_test =</span> .data[[inv_b_col]])</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>        test_data  <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(site <span class="sc">==</span> test_site) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">P_test =</span> .data[[p_col]], <span class="at">z_inv_b_test =</span> .data[[inv_b_col]])</span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>        start_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(<span class="fu">unique</span>(train_data<span class="sc">$</span>crop)) <span class="sc">-</span> <span class="dv">1</span>), <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Fit Model on Training Data (n-1)</span></span>
+<span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a>        fit <span class="ot">&lt;-</span> <span class="fu">tryCatch</span>({</span>
+<span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">nlme</span>(</span>
+<span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>                Relative_Yield <span class="sc">~</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">exp</span>(<span class="sc">-</span>(c_base <span class="sc">*</span> <span class="fu">exp</span>(</span>
+<span id="cb66-18"><a href="#cb66-18" aria-hidden="true" tabindex="-1"></a>                    beta_invb <span class="sc">*</span> z_inv_b_test <span class="sc">+</span> </span>
+<span id="cb66-19"><a href="#cb66-19" aria-hidden="true" tabindex="-1"></a>                    beta_pH <span class="sc">*</span> z_pH <span class="sc">+</span> </span>
+<span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a>                    beta_K <span class="sc">*</span> z_ln_K <span class="sc">+</span></span>
+<span id="cb66-21"><a href="#cb66-21" aria-hidden="true" tabindex="-1"></a>                    beta_Mg <span class="sc">*</span> z_ln_Mg <span class="sc">+</span></span>
+<span id="cb66-22"><a href="#cb66-22" aria-hidden="true" tabindex="-1"></a>                    beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span></span>
+<span id="cb66-23"><a href="#cb66-23" aria-hidden="true" tabindex="-1"></a>                    beta_Temp <span class="sc">*</span> z_Temp_Mean <span class="sc">+</span> </span>
+<span id="cb66-24"><a href="#cb66-24" aria-hidden="true" tabindex="-1"></a>                    beta_Prec <span class="sc">*</span> z_Prec_Anom</span>
+<span id="cb66-25"><a href="#cb66-25" aria-hidden="true" tabindex="-1"></a>                )) <span class="sc">*</span> (P_test <span class="sc">+</span> E_base)),</span>
+<span id="cb66-26"><a href="#cb66-26" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> train_data,</span>
+<span id="cb66-27"><a href="#cb66-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">fixed =</span> <span class="fu">list</span>(c_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_pH <span class="sc">~</span> <span class="dv">1</span>, beta_K <span class="sc">~</span> <span class="dv">1</span>, beta_Mg <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_Temp <span class="sc">~</span> <span class="dv">1</span>, beta_Prec <span class="sc">~</span> <span class="dv">1</span>, E_base <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb66-28"><a href="#cb66-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">random =</span> c_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>plot_nr,</span>
+<span id="cb66-29"><a href="#cb66-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">start =</span> start_vals,</span>
+<span id="cb66-30"><a href="#cb66-30" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>, <span class="at">returnObject =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb66-31"><a href="#cb66-31" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb66-32"><a href="#cb66-32" aria-hidden="true" tabindex="-1"></a>        }, <span class="at">error =</span> <span class="cf">function</span>(e) <span class="cn">NULL</span>)</span>
+<span id="cb66-33"><a href="#cb66-33" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb66-34"><a href="#cb66-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(fit)) {</span>
+<span id="cb66-35"><a href="#cb66-35" aria-hidden="true" tabindex="-1"></a>            cf <span class="ot">&lt;-</span> <span class="fu">fixef</span>(fit)</span>
+<span id="cb66-36"><a href="#cb66-36" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb66-37"><a href="#cb66-37" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Predict P_crit for the </span><span class="al">TEST</span><span class="co"> SITE</span></span>
+<span id="cb66-38"><a href="#cb66-38" aria-hidden="true" tabindex="-1"></a>            test_res <span class="ot">&lt;-</span> test_data <span class="sc">|&gt;</span></span>
+<span id="cb66-39"><a href="#cb66-39" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb66-40"><a href="#cb66-40" aria-hidden="true" tabindex="-1"></a>                    <span class="at">c_base_crop =</span> cf[<span class="st">"c_base.(Intercept)"</span>] <span class="sc">+</span> tidyr<span class="sc">::</span><span class="fu">replace_na</span>(cf[<span class="fu">paste0</span>(<span class="st">"c_base.crop"</span>, crop)], <span class="dv">0</span>),</span>
+<span id="cb66-41"><a href="#cb66-41" aria-hidden="true" tabindex="-1"></a>                    <span class="at">c_eff_loo =</span> c_base_crop <span class="sc">*</span> <span class="fu">exp</span>(</span>
+<span id="cb66-42"><a href="#cb66-42" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_invb"</span>] <span class="sc">*</span> z_inv_b_test <span class="sc">+</span> </span>
+<span id="cb66-43"><a href="#cb66-43" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_pH"</span>] <span class="sc">*</span> z_pH <span class="sc">+</span> </span>
+<span id="cb66-44"><a href="#cb66-44" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_K"</span>] <span class="sc">*</span> z_ln_K <span class="sc">+</span></span>
+<span id="cb66-45"><a href="#cb66-45" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_Mg"</span>] <span class="sc">*</span> z_ln_Mg <span class="sc">+</span></span>
+<span id="cb66-46"><a href="#cb66-46" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_N"</span>] <span class="sc">*</span> z_fert_N <span class="sc">+</span></span>
+<span id="cb66-47"><a href="#cb66-47" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_Temp"</span>] <span class="sc">*</span> z_Temp_Mean <span class="sc">+</span> </span>
+<span id="cb66-48"><a href="#cb66-48" aria-hidden="true" tabindex="-1"></a>                        cf[<span class="st">"beta_Prec"</span>] <span class="sc">*</span> z_Prec_Anom</span>
+<span id="cb66-49"><a href="#cb66-49" aria-hidden="true" tabindex="-1"></a>                    ),</span>
+<span id="cb66-50"><a href="#cb66-50" aria-hidden="true" tabindex="-1"></a>                    <span class="at">P_crit_loo =</span> (<span class="fu">log</span>(<span class="dv">20</span>) <span class="sc">/</span> c_eff_loo) <span class="sc">-</span> cf[<span class="st">"E_base"</span>],</span>
+<span id="cb66-51"><a href="#cb66-51" aria-hidden="true" tabindex="-1"></a>                    </span>
+<span id="cb66-52"><a href="#cb66-52" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Quadrant =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb66-53"><a href="#cb66-53" aria-hidden="true" tabindex="-1"></a>                        P_test <span class="sc">&gt;=</span> P_crit_loo <span class="sc">&amp;</span> Relative_Yield <span class="sc">&gt;=</span> <span class="fl">0.95</span> <span class="sc">~</span> <span class="st">"True Positive (Success)"</span>,</span>
+<span id="cb66-54"><a href="#cb66-54" aria-hidden="true" tabindex="-1"></a>                        P_test <span class="sc">&lt;</span>  P_crit_loo <span class="sc">&amp;</span> Relative_Yield <span class="sc">&lt;</span>  <span class="fl">0.95</span> <span class="sc">~</span> <span class="st">"True Negative (Correct Warning)"</span>,</span>
+<span id="cb66-55"><a href="#cb66-55" aria-hidden="true" tabindex="-1"></a>                        P_test <span class="sc">&gt;=</span> P_crit_loo <span class="sc">&amp;</span> Relative_Yield <span class="sc">&lt;</span>  <span class="fl">0.95</span> <span class="sc">~</span> <span class="st">"False Positive (Failure)"</span>,</span>
+<span id="cb66-56"><a href="#cb66-56" aria-hidden="true" tabindex="-1"></a>                        P_test <span class="sc">&lt;</span>  P_crit_loo <span class="sc">&amp;</span> Relative_Yield <span class="sc">&gt;=</span> <span class="fl">0.95</span> <span class="sc">~</span> <span class="st">"False Negative (Over-fertilized)"</span>,</span>
+<span id="cb66-57"><a href="#cb66-57" aria-hidden="true" tabindex="-1"></a>                        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"NA"</span></span>
+<span id="cb66-58"><a href="#cb66-58" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb66-59"><a href="#cb66-59" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb66-60"><a href="#cb66-60" aria-hidden="true" tabindex="-1"></a>            results[[test_site]] <span class="ot">&lt;-</span> test_res</span>
+<span id="cb66-61"><a href="#cb66-61" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb66-62"><a href="#cb66-62" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb66-63"><a href="#cb66-63" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb66-64"><a href="#cb66-64" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(results)</span>
+<span id="cb66-65"><a href="#cb66-65" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb66-66"><a href="#cb66-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-67"><a href="#cb66-67" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Run Quadrant Analysis for P_CO2 and P_AAE10</span></span>
+<span id="cb66-68"><a href="#cb66-68" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Running LOOCV Quadrant Analysis... This may take a minute...</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Running LOOCV Quadrant Analysis... This may take a minute...</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>quad_co2 <span class="ot">&lt;-</span> <span class="fu">run_loocv_quadrants</span>(D_Yield, <span class="st">"soil_0_20_P_CO2"</span>, <span class="st">"z_inv_b"</span>)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>quad_aae <span class="ot">&lt;-</span> <span class="fu">run_loocv_quadrants</span>(D_Yield, <span class="st">"soil_0_20_P_AAE10"</span>, <span class="st">"z_inv_b"</span>)</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Summarize the Results</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>sum_quads <span class="ot">&lt;-</span> <span class="cf">function</span>(quad_data, extractant_name) {</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>    total <span class="ot">&lt;-</span> <span class="fu">nrow</span>(quad_data)</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>    quad_data <span class="sc">|&gt;</span></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">group_by</span>(Quadrant) <span class="sc">|&gt;</span></span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">'drop'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a>        dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">Extractant =</span> extractant_name,</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">Percentage =</span> <span class="fu">round</span>((Count <span class="sc">/</span> total) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a>res_co2 <span class="ot">&lt;-</span> <span class="fu">sum_quads</span>(quad_co2, <span class="st">"P_CO2 (Intensity)"</span>)</span>
+<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a>res_aae <span class="ot">&lt;-</span> <span class="fu">sum_quads</span>(quad_aae, <span class="st">"P_AAE10 (Legacy Pool)"</span>)</span>
+<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a>quad_summary <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(res_co2, res_aae) <span class="sc">|&gt;</span></span>
+<span id="cb68-20"><a href="#cb68-20" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(Extractant, Quadrant, Count, Percentage) <span class="sc">|&gt;</span></span>
+<span id="cb68-21"><a href="#cb68-21" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">arrange</span>(Quadrant, Extractant)</span>
+<span id="cb68-22"><a href="#cb68-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-23"><a href="#cb68-23" aria-hidden="true" tabindex="-1"></a>quad_summary <span class="sc">|&gt;</span></span>
+<span id="cb68-24"><a href="#cb68-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">kbl</span>(<span class="at">caption =</span> <span class="st">"**Table 5: Predictive Quadrant Analysis (LOOCV).** Evaluating the agronomic safety of dynamic P_crit predictions on fully unseen sites."</span>) <span class="sc">|&gt;</span></span>
+<span id="cb68-25"><a href="#cb68-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>), <span class="at">full_width =</span> F)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-striped table-hover caption-top table-sm small">
+<caption>**Table 5: Predictive Quadrant Analysis (LOOCV).** Evaluating the agronomic safety of dynamic P_crit predictions on fully unseen sites.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Extractant</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Quadrant</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Count</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">P_AAE10 (Legacy Pool)</td>
+<td style="text-align: left;">False Negative (Over-fertilized)</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">2.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_CO2 (Intensity)</td>
+<td style="text-align: left;">False Negative (Over-fertilized)</td>
+<td style="text-align: right;">220</td>
+<td style="text-align: right;">5.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P_AAE10 (Legacy Pool)</td>
+<td style="text-align: left;">False Positive (Failure)</td>
+<td style="text-align: right;">2407</td>
+<td style="text-align: right;">63.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_CO2 (Intensity)</td>
+<td style="text-align: left;">False Positive (Failure)</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P_AAE10 (Legacy Pool)</td>
+<td style="text-align: left;">True Negative (Correct Warning)</td>
+<td style="text-align: right;">1177</td>
+<td style="text-align: right;">30.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_CO2 (Intensity)</td>
+<td style="text-align: left;">True Negative (Correct Warning)</td>
+<td style="text-align: right;">3566</td>
+<td style="text-align: right;">93.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">P_AAE10 (Legacy Pool)</td>
+<td style="text-align: left;">True Positive (Success)</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">3.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">P_CO2 (Intensity)</td>
+<td style="text-align: left;">True Positive (Success)</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Visualization</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>p_quad <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(quad_summary, <span class="fu">aes</span>(<span class="at">x =</span> Quadrant, <span class="at">y =</span> Percentage, <span class="at">fill =</span> Extractant)) <span class="sc">+</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"P_CO2 (Intensity)"</span> <span class="ot">=</span> <span class="st">"#2c7bb6"</span>, <span class="st">"P_AAE10 (Legacy Pool)"</span> <span class="ot">=</span> <span class="st">"#d7191c"</span>)) <span class="sc">+</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(Percentage, <span class="st">"%"</span>)), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.9</span>), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>) <span class="sc">+</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Agronomic Safety Check: Out-of-Sample P_crit Quadrants"</span>,</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">subtitle =</span> <span class="st">"False Positive = Predicted P was sufficient, but yield was actually &lt; 0.95 (Most dangerous error!)"</span>,</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Agronomic Outcome Quadrant"</span>, <span class="at">y =</span> <span class="st">"Percentage of Left-out Plots (%)"</span></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">15</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">face =</span> <span class="st">"bold"</span>)</span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p_quad)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="qi_modelling1_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Scatter Plot of Quadrants (Normalized by P_crit)</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>quad_co2_plot <span class="ot">&lt;-</span> quad_co2 <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">P_Ratio =</span> P_test <span class="sc">/</span> P_crit_loo, <span class="at">Extractant =</span> <span class="st">"P_CO2 (Intensity)"</span>)</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>quad_aae_plot <span class="ot">&lt;-</span> quad_aae <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">P_Ratio =</span> P_test <span class="sc">/</span> P_crit_loo, <span class="at">Extractant =</span> <span class="st">"P_AAE10 (Legacy Pool)"</span>)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>quad_all <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(quad_co2_plot, quad_aae_plot)</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>p_scatter <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(quad_all, <span class="fu">aes</span>(<span class="at">x =</span> P_Ratio, <span class="at">y =</span> Relative_Yield, <span class="at">color =</span> Quadrant)) <span class="sc">+</span></span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fl">0.95</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">1.0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"True Positive (Success)"</span> <span class="ot">=</span> <span class="st">"#1a9641"</span>,</span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"True Negative (Correct Warning)"</span> <span class="ot">=</span> <span class="st">"#a6d96a"</span>,</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"False Positive (Failure)"</span> <span class="ot">=</span> <span class="st">"#d7191c"</span>,</span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"False Negative (Over-fertilized)"</span> <span class="ot">=</span> <span class="st">"#fdae61"</span>,</span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"NA"</span> <span class="ot">=</span> <span class="st">"gray"</span></span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">+</span></span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>Extractant, <span class="at">scales =</span> <span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
+<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Predictive Quadrant Analysis: Normalized P vs Yield"</span>,</span>
+<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">subtitle =</span> <span class="st">"Vertical line: Predicted P_crit threshold. Horizontal line: 95% Yield Target."</span>,</span>
+<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Ratio: Actual Soil P / Predicted P_crit (Log Scale)"</span>, </span>
+<span id="cb70-23"><a href="#cb70-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Relative Yield"</span></span>
+<span id="cb70-24"><a href="#cb70-24" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb70-25"><a href="#cb70-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb70-26"><a href="#cb70-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb70-27"><a href="#cb70-27" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb70-28"><a href="#cb70-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb70-29"><a href="#cb70-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb70-30"><a href="#cb70-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">11</span>)</span>
+<span id="cb70-31"><a href="#cb70-31" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb70-32"><a href="#cb70-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">3</span>), <span class="at">nrow =</span> <span class="dv">2</span>))</span>
+<span id="cb70-33"><a href="#cb70-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-34"><a href="#cb70-34" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p_scatter)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="qi_modelling1_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
 
