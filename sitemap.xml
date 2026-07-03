@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/notebooks/sanity_checks.html</loc>
-    <lastmod>2026-06-05T10:35:46.074Z</lastmod>
+    <loc>https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/presentation/index.html</loc>
+    <lastmod>2026-07-03T10:57:57.613Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/notebooks/qi_modelling1.html</loc>
+    <lastmod>2026-06-30T14:34:34.110Z</lastmod>
   </url>
   <url>
     <loc>https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/index.html</loc>
     <lastmod>2026-05-29T08:27:56.244Z</lastmod>
   </url>
   <url>
-    <loc>https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/notebooks/qi_modelling1.html</loc>
-    <lastmod>2026-06-16T14:14:23.190Z</lastmod>
+    <loc>https://ptochosgeorgos.github.io/Article-P-desorption-kinetics/notebooks/sanity_checks.html</loc>
+    <lastmod>2026-06-05T10:35:46.074Z</lastmod>
   </url>
 </urlset>
