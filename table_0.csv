@@ -1,0 +1,5 @@
+,Model,Marginal_R2,Conditional_R2
+0,Agronomic (Raw P_CO2),0.707,0.866
+1,Agronomic (Thermo a_CO2),0.7,0.865
+2,Geochemical (Raw P_CO2),0.741,0.865
+3,Geochemical (Thermo a_CO2),0.737,0.863

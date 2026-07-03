@@ -1,0 +1,5 @@
+,Model,Mean_In_Sample_R2,Mean_Out_Sample_R2
+0,Agronomic (Raw P_CO2),0.713,0.627
+1,Agronomic (Thermo a_CO2),0.708,0.625
+2,Geochemical (Raw P_CO2),0.731,0.631
+3,Geochemical (Thermo a_CO2),0.727,0.631

@@ -194,45 +194,45 @@ fit.soil.AAE10<-lmer(log(soil_0_20_P_AAE10)~ soil_0_20_clay+ soil_0_20_pH_H2O + 
 r.squaredGLMM(fit.soil.kPS)
 r.squaredGLMM(fit.soil.kPS2)
 
-fit.kin.Yrel     <- lmer(Ymain_rel         ~ k * log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D)
+fit.kin.Yrel     <- lmer(Ymain_rel         ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D)
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k + log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k + log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.kin.Ynorm)
 
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.kin.Ynorm)
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS)  + (1|year), D, subset = Treatment != "P166")
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.kin.Ynorm)
 
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D)
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D)
 r.squaredGLMM(fit.kin.Ynorm)
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment == "P0")
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment == "P0")
 r.squaredGLMM(fit.kin.Ynorm)
 summary(fit.kin.Ynorm, ddf="Kenward-Roger")
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment == "P100")
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment == "P100")
 r.squaredGLMM(fit.kin.Ynorm)
 
 
 
 
-fit.grud.CO2.Ynorm     <- lmer(Ymain_norm    ~ log(soil_0_20_P_CO2) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.grud.CO2.Ynorm     <- lmer(Ymain_norm    ~ log(soil_0_20_P_CO2) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.grud.CO2.Ynorm)
-fit.grud.AAE10.Ynorm   <- lmer(Ymain_norm    ~ log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.grud.AAE10.Ynorm   <- lmer(Ymain_norm    ~ log(soil_0_20_P_AAE10) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.grud.AAE10.Ynorm)
-fit.grud.CO2.AAE10.Ynorm <- lmer(Ymain_norm  ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.grud.CO2.AAE10.Ynorm <- lmer(Ymain_norm  ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.grud.CO2.AAE10.Ynorm)
 # compare with k*log(PS)
-fit.kin.Ynorm   <- lmer(Ymain_norm       ~ k*log(PS) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.kin.Ynorm   <- lmer(Ymain_norm       ~ k*log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
 r.squaredGLMM(fit.kin.Ynorm)
 
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
-fit.kin.Pexport  <- lmer(annual_P_uptake  ~ k * log(PS) + (1|year) + (1|Site)  + (1|Site:block), D)
-fit.kin.Pbalance <- lmer(annual_P_balance ~ k * log(PS) + (1|year) + (1|Site)  + (1|Site:block), D)
+fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
+fit.kin.Pexport  <- lmer(annual_P_uptake  ~ k * log(PS) + scale(anavg_temp) + scale(soil_0_20_Corg) + (1|year) + (1|Site)  + (1|Site:block), D)
+fit.kin.Pbalance <- lmer(annual_P_balance ~ k * log(PS) + scale(ansum_prec) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block), D)
 
 car::vif(lm(Ymain_norm       ~ (k) * log(PS)  + crop, D))
 car::vif(lm(Ymain_norm       ~ scale(k) * scale(log(PS))   + crop, D))
@@ -275,26 +275,26 @@ fit.grud.PS       <- lm(log(PS)         ~ log(soil_0_20_P_CO2) + log(soil_0_20_P
 fit.grud.k        <- lm(k               ~ log(soil_0_20_P_CO2) + log(soil_0_20_P_AAE10), D)
 fit.grud.kPS      <- lm(I(log(k*PS))    ~ log(soil_0_20_P_CO2) + log(soil_0_20_P_AAE10), D)
 
-fit.grud.CO2.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_CO2) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.grud.AAE10.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.grud.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.grud.CO2.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_CO2) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.grud.AAE10.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_AAE10) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.grud.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + scale(anavg_temp) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
 
 
 # this is hopeless, since cannot log becaus of 0's
-fit.CO2.Pexport     <- lmer(annual_P_uptake     ~ log(soil_0_20_P_CO2) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.CO2.Pexport     <- lmer(annual_P_uptake     ~ log(soil_0_20_P_CO2) + scale(anavg_temp) + scale(soil_0_20_Corg) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
 
-fit.AAE10.Pexport     <- lmer(annual_P_uptake ~ log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.AAE10.Pexport     <- lmer(annual_P_uptake ~ log(soil_0_20_P_AAE10) + scale(anavg_temp) + scale(soil_0_20_Corg) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
 
-fit.grud.Pexport     <- lmer(annual_P_uptake     ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-
-fit.CO2.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_CO2)  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.grud.Pexport     <- lmer(annual_P_uptake     ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + scale(anavg_temp) + scale(soil_0_20_Corg) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
 
 
-fit.AAE10.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_AAE10)  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.CO2.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_CO2) + scale(ansum_prec) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
 
 
-fit.grud.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10)  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+fit.AAE10.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_AAE10) + scale(ansum_prec) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
+
+
+fit.grud.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + scale(ansum_prec) + scale(soil_0_20_clay) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
 
 
 

@@ -1,0 +1,10 @@
+,Unnamed: 0,Model,Marginal_R2,Conditional_R2,AIC,p_val_Interaction
+0,Marginal R2...1,1. Full - Raw P_CO2,0.4,0.831,6304.9,0.9864
+1,Marginal R2...2,2. Full - Thermo a_CO2,0.4,0.836,6305.3,0.9996
+2,Marginal R2...3,3. Full - Legacy P_AAE10,0.43,0.74,6248.7,0.8452
+3,Marginal R2...4,1. Freundlich n - Raw P_CO2,0.39,0.848,6300.5,0.1914
+4,Marginal R2...5,2. Freundlich n - Thermo a_CO2,0.39,0.853,6300.9,0.186
+5,Marginal R2...6,3. Freundlich n - Legacy P_AAE10,0.466,0.686,6241.4,0.8127
+6,Marginal R2...7,1. Null - Raw P_CO2 (No 1/b),0.398,0.83,6318.0,
+7,Marginal R2...8,2. Null - Thermo a_CO2 (No 1/b),0.398,0.835,6318.5,
+8,Marginal R2...9,3. Null - Legacy P_AAE10 (No 1/b),0.427,0.742,6262.1,

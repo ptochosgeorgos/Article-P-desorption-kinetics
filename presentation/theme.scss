@@ -1,0 +1,137 @@
+/*-- scss:defaults --*/
+
+// Colors
+$agroscope-red: #E3000F;
+$body-bg: #ffffff;
+$body-color: #000000;
+
+// Typography
+$font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$presentation-heading-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$presentation-heading-color: #000000;
+$presentation-heading-font-weight: bold;
+
+/*-- scss:rules --*/
+
+// Left Sidebar Gradient with text
+.reveal {
+  &::before {
+    content: "Agroscope";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 45px; // Width of sidebar
+    background: linear-gradient(to bottom, #ffffff 0%, #ffffff 10%, $agroscope-red 50%, $agroscope-red 100%);
+    z-index: 10;
+    
+    // Text styling for vertical "Agroscope"
+    color: white;
+    font-family: $font-family-sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    
+    // Rotate and position text
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding-top: 30px; // Spacing from bottom
+  }
+}
+
+// Adjust slide content container to not overlap sidebar
+.reveal .slides {
+  margin-left: 50px; // Leave room for sidebar
+}
+
+// Global federal logo top left
+.federal-logo {
+  position: absolute;
+  top: 30px;
+  left: 70px;
+  height: 60px;
+  z-index: 15;
+}
+
+// Title Slide specific overrides
+.title-slide {
+  text-align: left !important;
+  
+  h1.title {
+    font-weight: bold;
+    font-size: 2.5em;
+    margin-top: 1.5em;
+    margin-left: 20px;
+  }
+  .subtitle {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-left: 20px;
+  }
+  .quarto-title-author-name {
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-top: 2em;
+    margin-left: 20px;
+  }
+  .quarto-title-date {
+    font-size: 1em;
+    margin-left: 20px;
+    margin-top: 1em;
+  }
+}
+
+// Slide headers
+.reveal h2 {
+  font-weight: bold;
+  font-size: 1.2em !important;
+  margin-top: 0.5em;
+  margin-left: 20px;
+}
+
+// Mermaid Styling (Invisible Background + Glow)
+.mermaid svg {
+  background: transparent !important;
+}
+
+.mermaid .cluster rect {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
+.mermaid .node text {
+  font-size: 14px !important;
+}
+
+.mermaid .cluster-label text {
+  font-size: 16px !important;
+  fill: #777 !important;
+}
+
+@keyframes nodeGlow {
+  0% { filter: drop-shadow(0 0 2px rgba(100, 100, 100, 0.2)); }
+  50% { filter: drop-shadow(0 0 12px rgba(100, 100, 100, 0.7)); }
+  100% { filter: drop-shadow(0 0 2px rgba(100, 100, 100, 0.2)); }
+}
+
+.mermaid .node {
+  animation: nodeGlow 3s ease-in-out infinite alternate;
+}
+
+// Slide Footer horizontal line
+.reveal .slide-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 70px;
+  width: calc(100% - 100px);
+  border-top: 1px solid #777;
+  font-size: 12px;
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  color: #333;
+}

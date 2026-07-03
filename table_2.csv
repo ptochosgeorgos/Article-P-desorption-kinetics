@@ -1,0 +1,20 @@
+,Model,Marginal_R2,Conditional_R2,AIC,Beta_1b_Estimate,p_val_Physical_1b,p_val_J0
+0,Raw Empirical (P_CO2),Raw Empirical (P_CO2),Raw Empirical (P_CO2),Raw Empirical (P_CO2),Raw Empirical (P_CO2),Raw Empirical (P_CO2),Raw Empirical (P_CO2)
+1,1. Geo PBC - Raw P_CO2 (Num J0),0.331,0.691,-1029.5,-0.5635,0.0006,0.0000
+2,1. Geo PBC - Raw P_CO2 (Den J0),0.081,0.345,-707.8,0.8359,0.0000,0.0000
+3,Thermodynamic (a_CO2),Thermodynamic (a_CO2),Thermodynamic (a_CO2),Thermodynamic (a_CO2),Thermodynamic (a_CO2),Thermodynamic (a_CO2),Thermodynamic (a_CO2)
+4,1. Agro PBC - Raw P_CO2 (Num J0),0.266,0.543,-866.9,1.0289,0.0000,0.0000
+5,1. Agro PBC - Raw P_CO2 (Den J0),0.088,0.360,-718.5,0.9782,0.0000,0.0000
+6,Bound Legacy (P_AAE10),Bound Legacy (P_AAE10),Bound Legacy (P_AAE10),Bound Legacy (P_AAE10),Bound Legacy (P_AAE10),Bound Legacy (P_AAE10),Bound Legacy (P_AAE10)
+7,2. Geo PBC - Thermo a_CO2 (Num J0),0.342,0.697,-1027.9,-0.4019,0.0083,0.0000
+8,2. Geo PBC - Thermo a_CO2 (Den J0),0.081,0.352,-702.8,0.8304,0.0000,0.0000
+9,2. Agro PBC - Thermo a_CO2 (Num J0),0.267,0.543,-867.3,1.0327,0.0000,0.0000
+10,2. Agro PBC - Thermo a_CO2 (Den J0),0.416,0.689,-1031.7,-0.1560,0.1118,0.0003
+11,3. Geo PBC - Legacy P_AAE10 (Num J0),0.306,0.656,-987.3,-1.4896,0.0000,0.0000
+12,3. Geo PBC - Legacy P_AAE10 (Den J0),0.294,0.615,-940.1,-0.9530,0.0000,0.0663
+13,3. Agro PBC - Legacy P_AAE10 (Num J0),0.387,0.670,-1008.5,-1.9222,0.0000,0.0000
+14,3. Agro PBC - Legacy P_AAE10 (Den J0),0.371,0.629,-958.7,-1.3212,0.0000,0.0375
+15,Null Models (No 1/b Penalty),Null Models (No 1/b Penalty),Null Models (No 1/b Penalty),Null Models (No 1/b Penalty),Null Models (No 1/b Penalty),Null Models (No 1/b Penalty),Null Models (No 1/b Penalty)
+16,1. Null Model - Raw P_CO2 (No 1/b),0.367,0.675,-1011.0,,,0.0062
+17,2. Null Model - Thermo a_CO2 (No 1/b),0.377,0.685,-1024.0,,,0.0035
+18,3. Null Model - Legacy P_AAE10 (No 1/b),0.308,0.561,-887.2,,,0.0000

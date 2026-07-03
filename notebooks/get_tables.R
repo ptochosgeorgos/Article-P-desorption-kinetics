@@ -103,6 +103,22 @@ cat("--- DEFAULT ANNUAL ---\n")
 res_ann <- run_perms("annual_P_balance", inds_ann, cova_ann, D_main, nested=FALSE)
 print(head(res_ann, 15))
 
+res_yield_ann <- run_perms("annual_yield_mp_DM", inds_ann, cova_ann, D_main, nested=FALSE)
+cat("--- DEFAULT ANNUAL YIELD ---\n")
+print(head(res_yield_ann, 15))
+
+res_up_ann <- run_perms("annual_P_uptake", inds_ann, cova_ann, D_main, nested=FALSE)
+cat("--- DEFAULT ANNUAL P-UPTAKE ---\n")
+print(head(res_up_ann, 15))
+
 cat("\n--- NESTED ANNUAL (1 | site) + (1 | site:year_f) ---\n")
 res_ann_nested <- run_perms("annual_P_balance", inds_ann, cova_ann, D_main, nested=TRUE)
 print(head(res_ann_nested, 15))
+
+res_yield_ann_nested <- run_perms("annual_yield_mp_DM", inds_ann, cova_ann, D_main, nested=TRUE)
+cat("--- NESTED ANNUAL YIELD ---\n")
+print(head(res_yield_ann_nested, 15))
+
+res_up_ann_nested <- run_perms("annual_P_uptake", inds_ann, cova_ann, D_main, nested=TRUE)
+cat("--- NESTED ANNUAL P-UPTAKE ---\n")
+print(head(res_up_ann_nested, 15))

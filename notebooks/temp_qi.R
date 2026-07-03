@@ -325,7 +325,7 @@ D_Long <- D_ready |>
             get_int_geo("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_geo("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
 
-        ln_K_pred_geo = C_geo("(Intercept)") + C_geo("z_ln_Feox") * z_ln_Feox + C_geo("z_ln_Alox") * z_ln_Alox + C_geo("z_pH") * z_pH + C_geo("z_ln_Ca") * z_ln_Ca + C_geo("z_ln_Mg") * z_ln_Mg + C_geo("z_ln_K") * z_ln_K + C_geo("z_ln_Corg") * z_ln_Corg + C_geo("z_Temp_Anom") * z_Temp_Anom + C_geo("z_Prec_Anom") * z_Prec_Anom + C_geo("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_geo = C_geo(1) + C_geo("z_ln_Feox") * z_ln_Feox + C_geo("z_ln_Alox") * z_ln_Alox + C_geo("z_pH") * z_pH + C_geo("z_ln_Ca") * z_ln_Ca + C_geo("z_ln_Mg") * z_ln_Mg + C_geo("z_ln_K") * z_ln_K + C_geo("z_ln_Corg") * z_ln_Corg + C_geo("z_Temp_Anom") * z_Temp_Anom + C_geo("z_Prec_Anom") * z_Prec_Anom + C_geo("z_Temp_Mean") * z_Temp_Mean,
 
         b_power_geo = n_pred_geo * exp(ln_K_pred_geo) * (soil_0_20_P_CO2^(n_pred_geo - 1)),
         inv_b_geo = 1 / b_power_geo
@@ -343,7 +343,7 @@ D_Long <- D_ready |>
             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
 
-        ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_agro = C_agro(1) + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
 
         b_power_agro = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
         inv_b_agro = 1 / b_power_agro
@@ -610,11 +610,11 @@ D_Yield <- D_ready |>
             get_int_agro("ln_P_CO2", "z_ln_Corg") * z_ln_Corg +
             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
-        ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_agro = C_agro(1) + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
         b_power = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
         inv_b = 1 / b_power,
         # Safely sum Main Product and Byproduct
-        total_yield = tidyr::replace_na(annual_yield_mp_DM, 0) + tidyr::replace_na(annual_yield_bp_DM, 0)
+        total_yield = tidyr::replace_na(annual_yield_mp_DM, 0)
     ) |>
 
     # Normalize TOTAL YIELD by Site, Crop, and Year
@@ -659,11 +659,11 @@ m_yield_raw_co2 <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_CO2),
+    )) * (soil_0_20_P_CO2 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_invb + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_invb = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_invb = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -676,11 +676,11 @@ m_yield_thm_co2 <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * a_CO2_total_mg_L),
+    )) * (a_CO2_total_mg_L + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_invb + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_invb = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_invb = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -693,11 +693,11 @@ m_yield_raw_aae <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_AAE10),
+    )) * (soil_0_20_P_AAE10 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_invb + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_invb = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_invb = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -713,11 +713,11 @@ m_yield_raw_co2_n <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_CO2),
+    )) * (soil_0_20_P_CO2 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_n + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_n = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_n ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_n = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -730,11 +730,11 @@ m_yield_thm_co2_n <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * a_CO2_total_mg_L),
+    )) * (a_CO2_total_mg_L + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_n + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_n = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_n ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_n = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -747,11 +747,11 @@ m_yield_raw_aae_n <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_AAE10),
+    )) * (soil_0_20_P_AAE10 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_n + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_n = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_n ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_n = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -767,11 +767,11 @@ m_yield_raw_co2_b <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_CO2),
+    )) * (soil_0_20_P_CO2 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_b + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_b = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_b ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_b = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -784,11 +784,11 @@ m_yield_thm_co2_b <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * a_CO2_total_mg_L),
+    )) * (a_CO2_total_mg_L + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_b + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_b = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_b ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_b = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -801,11 +801,11 @@ m_yield_raw_aae_b <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_AAE10),
+    )) * (soil_0_20_P_AAE10 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_b + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_b = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_b ~ 1, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_b = 0, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -820,11 +820,11 @@ m_yield_raw_co2_null <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_CO2),
+    )) * (soil_0_20_P_CO2 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -836,11 +836,11 @@ m_yield_thm_co2_null <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * a_CO2_total_mg_L),
+    )) * (a_CO2_total_mg_L + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -852,11 +852,11 @@ m_yield_raw_aae_null <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_AAE10),
+    )) * (soil_0_20_P_AAE10 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_pH + beta_fertK + beta_fertMg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_pH ~ 1, beta_fertK ~ 1, beta_fertMg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1),  beta_pH = 0, beta_fertK = 0, beta_fertMg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -906,7 +906,8 @@ make_curves <- function(var, beta_name, title) {
             ),
             Driver = title,
             # Predict holding other covariates at 0 (their standardized mean)
-            Predicted = 1 - exp(-cf["c_base"] * exp(cf[[beta_name]] * val) * P)
+            c_base_mean = mean(cf[grep("c_base", names(cf))]),
+            Predicted = 1 - exp(-c_base_mean * exp(cf[[beta_name]] * val) * (P + cf["E_base"]))
         )
 }
 
@@ -990,7 +991,7 @@ D_Pcrit <- D_Yield |>
             cf["beta_Temp"] * z_Temp_Mean + 
             cf["beta_Prec"] * z_Prec_Anom
         ),
-        P_crit = log(20) / c_eff,               # mg/L P_CO2 at 95% max yield
+        P_crit = (log(20) / c_eff) - cf['E_base'],               # mg/L P_CO2 at 95% max yield
         ln_P_crit = log(P_crit),
         crop   = as.factor(crop)
     ) |>
@@ -1129,7 +1130,7 @@ D_Cum <- D_ready |>
             get_int_agro("ln_P_CO2", "z_ln_Corg") * z_ln_Corg +
             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
-        ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_agro = C_agro(1) + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
         b_power_agro = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
         inv_b_agro = 1 / b_power_agro
     ) |>

@@ -463,12 +463,22 @@ run_perms <- function(target, inds, covs, dat) {
 res_ann <- run_perms("annual_P_balance", inds_ann, cova_ann, D_main)
 knitr::kable(head(res_ann, 10), caption = "**Top 10 Stable Models: ANNUAL P-Balance (Sorted by Marginal $R^2$)**")
 
+# Run for Annual Yield
+res_yield_ann <- run_perms("annual_yield_mp_DM", inds_ann, cova_ann, D_main)
+knitr::kable(head(res_yield_ann, 10), caption = "**Top 10 Stable Models: ANNUAL Yield (Sorted by Marginal $R^2$)**")
+
+# Run for Annual P-Uptake
+res_up_ann <- run_perms("annual_P_uptake", inds_ann, cova_ann, D_main)
+knitr::kable(head(res_up_ann, 10), caption = "**Top 10 Stable Models: ANNUAL P-Uptake (Sorted by Marginal $R^2$)**")
+
 # Run for Cumulated P-Balance
 # Ensure D_cum exists in the environment identically to how we generated it
 D_cum <- D_main |>
     group_by(site, Treatment, rep) |>
     summarise(
         Cumulated_P_Balance = sum(annual_P_balance, na.rm = TRUE),
+        Cumulated_Yield = sum(annual_yield_mp_DM, na.rm = TRUE),
+        Cumulated_P_Uptake = sum(annual_P_uptake, na.rm = TRUE),
         mean_P_CO2 = mean(soil_0_20_P_CO2, na.rm = TRUE),
         mean_P_AAE10 = mean(soil_0_20_P_AAE10, na.rm = TRUE),
         mean_PS = mean(Pmax_PS, na.rm = TRUE),
@@ -487,6 +497,14 @@ D_cum <- D_main |>
 
 res_cum <- run_perms("Cumulated_P_Balance", inds_cum, cova_cum, D_cum)
 knitr::kable(head(res_cum, 10), caption = "**Top 10 Stable Models: CUMULATED P-Balance (Sorted by Marginal $R^2$)**")
+
+# Run for Cumulated Yield
+res_yield_cum <- run_perms("Cumulated_Yield", inds_cum, cova_cum, D_cum)
+knitr::kable(head(res_yield_cum, 10), caption = "**Top 10 Stable Models: CUMULATED Yield (Sorted by Marginal $R^2$)**")
+
+# Run for Cumulated P-Uptake
+res_up_cum <- run_perms("Cumulated_P_Uptake", inds_cum, cova_cum, D_cum)
+knitr::kable(head(res_up_cum, 10), caption = "**Top 10 Stable Models: CUMULATED P-Uptake (Sorted by Marginal $R^2$)**")
 ```
 ## 11. Final Task Sanity Graphs: Yield and Uptake Distributions
 

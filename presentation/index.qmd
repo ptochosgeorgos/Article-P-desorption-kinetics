@@ -1,757 +1,480 @@
 ---
-title: "Master Thesis"
-subtitle: "P-release kinetic as a predictor for P-availability in the STYCS Trials"
-author: "Marc Jerónimo Pérez y Ropero"
-format: 
+title: "P-release kinetics as a predictor for P-availability"
+subtitle: "in Swiss cropping systems"
+author: "Agroscope Research Team"
+date: "2026-07-21"
+format:
   revealjs:
-    smaller: true
-    scrollable: true
-    embed-resources: true
-    theme: dracula
-    incremental: true
-    math-method: mathjax
+    theme: theme.scss
+    footer: "[🔙 Return to Map](#/graphical-abstract-the-path-through-the-swamp)"
+    transition: slide
+    slide-number: true
+    width: 1280
+    height: 720
+    include-in-header:
+      text: |
+        <style>
+          /* Inject Logo globally if present */
+          .federal-logo-img { position: absolute; top: 20px; left: 70px; height: 60px; z-index: 200; }
+        </style>
+        <img class="federal-logo-img" src="logo.png" onerror="this.style.display='none'" alt="Federal Logo">
 ---
 
-```{r setup}
-#| include: false
+## Graphical Abstract: The Path Through the Swamp { .center }
+
+```{mermaid}
+%%| fig-width: 12
+graph LR
+    %% Start
+    SQ[Agnostic Approach <br> Affine Recommendation <br> F = C * Q_yield]
+    
+    %% Step 1: Soil Assessment
+    subgraph 1. Soil State Assessment
+        G_PTF[Agnostic: <br> Stoichiometric Concentration <br> P_CO2 / P_AAE10]
+        M_PTF[Mechanistic: <br> Thermodynamic Activity <br> a_CO2]
+    end
+    
+    %% Step 2: Biological Interface
+    subgraph 2. Biological Interface
+        G_UP[Agnostic: <br> Direct Uptake Correlation <br> P_uptake ~ STP]
+        M_UP[Mechanistic: <br> Yield Model & P_crit <br> Buffer Power b & 1/b]
+    end
+    
+    %% Step 3: Final Output
+    subgraph 3. Fertilizer Recommendation
+        G_REC[Agnostic: <br> Multiplicative Correction <br> F = C * Q_yield]
+        M_REC[Mechanistic: <br> Additive Correction <br> F = Q_yield + dQ_soil]
+    end
+
+    SQ --> G_PTF
+    SQ --> M_PTF
+    
+    G_PTF --> G_UP
+    M_PTF --> M_UP
+    
+    G_UP --> G_REC
+    M_UP --> M_REC
+
+    classDef agnostic fill:none,stroke:#1f77b4,stroke-width:2px,color:#1f77b4,rx:5px,ry:5px;
+    classDef mech fill:none,stroke:#2ca02c,stroke-width:2px,color:#2ca02c,rx:5px,ry:5px;
+    classDef start fill:none,stroke:#7f7f7f,stroke-width:2px,color:#7f7f7f,rx:10px,ry:10px;
+    
+    class SQ start;
+    class G_PTF,G_UP,G_REC agnostic;
+    class M_PTF,M_UP,M_REC mech;
+    
+    click SQ "#/the-swamp-of-the-dead-grud-p_co2-model" "Jump to Agnostic Model"
+    click G_PTF "#" "Dummy"
+    click M_PTF "#" "Dummy"
+    click G_UP "#" "Dummy"
+    click M_UP "#" "Dummy"
+    click G_REC "#" "Dummy"
+    click M_REC "#" "Dummy"
+```
+
+
+## The Swamp of the Dead: GRUD $P_{CO2}$ Model { .scrollable }
+
+The GRUD assumes that correcting a P-deficit requires a simple linear multiplier $C$, mapping continuous soil variables into rigid, discrete steps ($C: \mathbb{R}^2 	o \mathbb{Q}$).
+
+```{r}
+#| echo: false
 #| message: false
 #| warning: false
+#| fig-width: 12
+#| fig-height: 8
+library(plotly)
+library(htmltools)
 
+x_clay <- c("<10", "10-20", "20-30", "30-40", ">40")
+y_co2 <- c("0.15", "0.46", "0.77", "1.08", "1.39", "1.70", "2.01", "2.32", "2.63", "2.94", "3.25", "3.56", "3.88", "4.19", "4.50", "≥4.65")
+z_co2 <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.2,
+  1.4, 1.4, 1.3, 1.2, 1.1,
+  1.2, 1.2, 1.1, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8,
+  1.0, 1.0, 1.0, 0.8, 0.6,
+  1.0, 1.0, 0.8, 0.6, 0.0,
+  1.0, 0.8, 0.6, 0.0, 0.0,
+  0.8, 0.8, 0.4, 0.0, 0.0,
+  0.8, 0.6, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), nrow=16, ncol=5, byrow=TRUE)
 
-suppressPackageStartupMessages({
-  library(multcomp)
-  library(car)
-  library(tidyr)
-  library(lme4)
-  library(ggplot2)
-  library(ggtext)
-  library(ggpmisc)
-  library(nlme)
-  library(latex2exp)
-  library(kableExtra)
-  library(broom)
-  library(dplyr)
-  library(MuMIn)
-  library(kableExtra)
-  library(dplyr)
-  library(lmerTest)
-  library(webshot2)
+# Reverse y so 0 is at bottom
+z_co2_rev <- z_co2[16:1, ]
+y_co2_rev <- rev(y_co2)
 
-})
-
-options(warn = -1)
-load("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/results_coefficient_analysis")
-RES <- readRDS("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/RES.rds")
-d <- d[d$Site!="Cadenazzo",]
-
-D <- RES$D2
-
-# 'd' is your starting dataframe with all 2017-2022 data
-
-# This single command creates your final, ready-to-use dataframe.
-D <- D %>%
-  # First, convert all categorical columns to factors.
-  mutate(across(c(site, Site, Treatment, Rep,rep, block, year, uid, ui, location), as.factor)) %>%
-  
-  # SECOND, on that same dataframe, scale all the columns that are still numeric.
-  mutate(across(where(is.numeric), scale))
-
-# That's it! 'd_prepared_for_modeling' is the only dataframe you need.
-# It contains both your factor columns and your scaled numeric columns.
-# You can now use it directly in your lmer() models.
-
-fit.soil.PS  <- lmer(PS     ~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt + Feox + Alox  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-# fit.soil.PS2 <- lmer(log(PS)     ~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.soil.k   <- lmer(k           ~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt + Feox + Alox + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.soil.kPS <- lmer(I(k*PS)~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt + Feox + Alox + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.soil.kPS2<- lmer(I(k*log(PS))~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt + Feox + Alox + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.soil.CO2 <- lmer(soil_0_20_P_CO2~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt + Feox + Alox + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.soil.AAE10<-lmer(soil_0_20_P_AAE10~ soil_0_20_clay+ soil_0_20_pH_H2O + soil_0_20_Corg + soil_0_20_silt + Feox + Alox + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-fit.kin.Yrel     <- lmer(Ymain_rel         ~ k * log(PS)  + (1|year) + (1|Site)  + (1|Site:block), D)
-fit.grud.CO2.Ynorm     <- lmer(Ymain_norm    ~ log(soil_0_20_P_CO2) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
-r.squaredGLMM(fit.grud.CO2.Ynorm)
-fit.grud.AAE10.Ynorm   <- lmer(Ymain_norm    ~ log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
-r.squaredGLMM(fit.grud.AAE10.Ynorm)
-fit.grud.CO2.AAE10.Ynorm <- lmer(Ymain_norm  ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
-r.squaredGLMM(fit.grud.CO2.AAE10.Ynorm)
-# compare with k*log(PS)
-fit.kin.Ynorm   <- lmer(Ymain_norm       ~ k*log(PS) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
-r.squaredGLMM(fit.kin.Ynorm)
-
-fit.kin.Ynorm    <- lmer(Ymain_norm       ~ k * log(PS) + (1|year) + (1|Site)  + (1|Site:block), D, subset = Treatment != "P166")
-fit.kin.Pexport  <- lmer(annual_P_uptake  ~ k * log(PS) + (1|year) + (1|Site)  + (1|Site:block), D)
-fit.kin.Pbalance <- lmer(annual_P_balance ~ k * log(PS) + (1|year) + (1|Site)  + (1|Site:block), D)
-
-fit.grud.PS       <- lm(log(PS)         ~ log(soil_0_20_P_CO2) + log(soil_0_20_P_AAE10), D)
-fit.grud.k        <- lm(k               ~ log(soil_0_20_P_CO2) + log(soil_0_20_P_AAE10), D)
-fit.grud.kPS      <- lm(I(log(k*PS))    ~ log(soil_0_20_P_CO2) + log(soil_0_20_P_AAE10), D)
-
-fit.grud.CO2.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_CO2) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.grud.AAE10.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-fit.grud.Yrel     <- lmer(Ymain_rel       ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-
-# this is hopeless, since cannot log becaus of 0's
-fit.CO2.Pexport     <- lmer(annual_P_uptake     ~ log(soil_0_20_P_CO2) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-fit.AAE10.Pexport     <- lmer(annual_P_uptake ~ log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-fit.grud.Pexport     <- lmer(annual_P_uptake     ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10) + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-
-fit.CO2.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_CO2)  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-
-fit.AAE10.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_AAE10)  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-
-fit.grud.Pbalance     <- lmer(annual_P_balance      ~ log(soil_0_20_P_CO2) * log(soil_0_20_P_AAE10)  + (1|year) + (1|Site)  + (1|Site:block) + (1|Site:Treatment), D)
-
-lmer_models_soil <- list(
-  PS = fit.soil.PS,
-  k = fit.soil.k,
-  'log(k*PS)' = fit.soil.kPS,
-  CO2 = fit.soil.CO2,
-  AAE10 = fit.soil.AAE10
+# Custom color scale based on GRUD classes
+colorscale <- list(
+  c(0, "#1f77b4"),   # E (0.0)
+  c(0.2, "#1f77b4"),
+  c(0.2, "#17becf"), # D (0.4-0.8)
+  c(0.6, "#17becf"),
+  c(0.6, "#2ca02c"), # C (1.0-1.1)
+  c(0.75, "#2ca02c"),
+  c(0.75, "#ff7f0e"),# B (1.2-1.4)
+  c(0.9, "#ff7f0e"),
+  c(0.9, "#d62728"), # A (1.5)
+  c(1, "#d62728")
 )
 
-
-
-lmer_models_yield_norm <- list(
-  "Yn-STP-CO2" = fit.grud.CO2.Ynorm,
-  "Yn-STP-AAE10" = fit.grud.AAE10.Ynorm,
-  "Yn-STP-GRUD" = fit.grud.CO2.AAE10.Ynorm,
-  "Yn-Kinetic" = fit.kin.Ynorm
-)
-  
-
-lmer_models_balance <- list(
-  CO2_Pbalance = fit.CO2.Pbalance,
-  AAE10_Pbalance = fit.AAE10.Pbalance,
-  Grud_Pbalance = fit.grud.Pbalance,
-  Kin_Pbalance = fit.kin.Pbalance
-)
-
-lmer_models_export <- list(
-  CO2_Pexport = fit.CO2.Pexport,
-  AAE10_Pexport = fit.AAE10.Pexport,
-  Grud_Pexport = fit.grud.Pexport,
-  Kin_Pexport = fit.kin.Pexport
-)
-
-
-```
-
-```{r}
-#| echo: false
-create_coef_table <- function(lmer_models, 
-                              covariate_order = NULL, 
-                              covariate_labels = NULL, # NEU: Benannter Vektor für Zeilennamen
-                              model_labels = NULL,
-                              descriptor = "Model") {   # NEU: Benannter Vektor für Spaltennamen
-
-  # Extract coefficients and p-values (Ihre Originalfunktion, keine Änderung hier)
-  extract_coef_info <- function(model) {
-    # ... (keine Änderung, Ihr Code bleibt hier)
-    coef_matrix <- summary(model)|> coef()
-    estimates <- coef_matrix[, 1]
-    p_values <- coef_matrix[, ncol(coef_matrix)]
-    formatted_coef <- sapply(seq_along(estimates), function(i) {
-      est_str <- sprintf("%.3f", estimates[i])
-      stars <- if (p_values[i] < 0.001) "***" else
-               if (p_values[i] < 0.01) "** " else
-               if (p_values[i] < 0.05) "* " else  ""
-      paste0(est_str,stars)
-    })
-    names(formatted_coef) <- rownames(coef_matrix)
-    return(formatted_coef)
-  }
-
-  # Extract R-squared values (Ihre Originalfunktion, keine Änderung hier)
-  extract_r_squared <- function(model) {
-    # ... (keine Änderung, Ihr Code bleibt hier)
-    r2_values <- MuMIn::r.squaredGLMM(model) # MuMIn:: hinzugefügt für Klarheit
-    return(c(
-      R2m = sprintf("%.3f", r2_values[1, "R2m"]),
-      R2c = sprintf("%.3f", r2_values[1, "R2c"])
-    ))
-  }
-
-  # Daten extrahieren (Ihr Originalcode)
-  all_coefs <- lapply(lmer_models, extract_coef_info)
-  all_r_squared <- lapply(lmer_models, extract_r_squared)
-  all_covariate_names <- unique(unlist(lapply(all_coefs, names)))
-
-  if (is.null(covariate_order)) {
-    covariate_order <- c("(Intercept)", sort(all_covariate_names[all_covariate_names != "(Intercept)"]))
-  }
-  covariate_order <- covariate_order[covariate_order %in% all_covariate_names]
-  final_order <- c(covariate_order, "R2m", "R2c")
-
-  # Matrix erstellen (Ihr Originalcode)
-  results_matrix <- matrix("",
-                           nrow = length(final_order),
-                           ncol = length(lmer_models),
-                           dimnames = list(final_order, names(lmer_models)))
-
-  # Matrix füllen (Ihr Originalcode)
-  for (model_name in names(lmer_models)) {
-    model_coefs <- all_coefs[[model_name]]
-    for (covar in names(model_coefs)) {
-      if (covar %in% covariate_order) {
-        results_matrix[covar, model_name] <- model_coefs[covar]
-      }
-    }
-    r2_values <- all_r_squared[[model_name]]
-    results_matrix["R2m", model_name] <- r2_values["R2m"]
-    results_matrix["R2c", model_name] <- r2_values["R2c"]
-  }
-
-  # --- NEU: Zeilen- und Spaltennamen ersetzen ---
-  
-  # Ersetze die Zeilennamen (Kovariaten), falls covariate_labels übergeben wurde
-  if (!is.null(covariate_labels)) {
-    # Finde die Übereinstimmungen in den aktuellen Zeilennamen
-    row_matches <- match(rownames(results_matrix), names(covariate_labels))
-    # Ersetze nur die, die gefunden wurden
-    new_rownames <- rownames(results_matrix)
-    new_rownames[!is.na(row_matches)] <- covariate_labels[row_matches[!is.na(row_matches)]]
-    rownames(results_matrix) <- new_rownames
-  }
-  
-  # Ersetze die Spaltennamen (Modelle), falls model_labels übergeben wurde
-  if (!is.null(model_labels)) {
-    col_matches <- match(colnames(results_matrix), names(model_labels))
-    new_colnames <- colnames(results_matrix)
-    new_colnames[!is.na(col_matches)] <- model_labels[col_matches[!is.na(col_matches)]]
-    colnames(results_matrix) <- new_colnames
-  }
-  
-  # --- Ende der neuen Sektion ---
-
-  # Convert to data frame for kable
-  results_df <- data.frame("Model" = rownames(results_matrix),
-                           results_matrix,
-                           check.names = FALSE, # Verhindert, dass R Spaltennamen ändert
-                           stringsAsFactors = FALSE)
-  
-  results_df
-}
-```
-
-## Introduction
-
--   In my Internship I studied the current GRUD, particularly Mg, P and K
-
--   Fertilizer requirement models imply $Y\sim STP + Clay$ & $P-\text{Export}\sim STP + Clay$
-
--   Currently only stationary measurement of STP are considered
-
--   Could a kinetic desorption-model better explain the soil status and yield data?
-
-## The STYCS Experiment
-
--   LTE STYCS, all treatment conditions equal except P-fertilization, which is in 6 Levels, 3 were considered($P0$,$P100$,$P166$)
--   4 Sites regarded; Ellighausen, Rümlang-Altwi, Oensingen, Zürich-Reckenholz
--   5 Sites, 4 blocks per site, 6 Treatment-Levels, 4 Repetitions
--   Years 2017-2022 were modelled, kinetic data was collected only for year 2022
-
-![](https://www.agroscope.admin.ch/agroscope/en/home/topics/environment-resources/monitoring-analytics/long-term-trials/stycs/_jcr_content/par/columncontrols/items/0/column/image/image.imagespooler.jpg/1617866324311/Feld-STYCS.jpg){fig-align="center"}
-
-## A kinetic Approach to P
-
-::::: columns
-::: {.column width="45%"}
-The net-desorption was modeled using a first-order kinetic equation:
-
-**1. The Rate of Release:** The change in P over time is proportional to the remaining desorbable P. $$\frac{dP}{dt}=k \times (P^S-P)$$
-
-**2. The Solution:** When solved, this gives us the equation for the curve: $$P(t)=P^S \times (1-e^{-kt})$$
-
--   $P^S$ (PS): The maximum desorbable P pool.
--   $k$: The first-order rate constant.
-:::
-
-::: {.column width="55%"}
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-align: "center"
-#| fig-height: 7
-
-library(ggplot2)
-
-# Parameters for our ideal curve
-PS <- 0.8 # The plateau
-k <- 0.1   # The rate constant
-
-# Create plot data
-t <- seq(0, 120, length.out = 100)
-P <- PS * (1 - exp(-k * t))
-df_conceptual <- data.frame(t, P)
-
-# Calculate half-life and tangent parameters
-tau <- log(2) / k
-P_tau <- PS / 2
-slope_tau <- k * PS / 2
-intercept_tau <- (PS / 2) * (1 - log(2))
-
-# --- NEW DARKER COLORS ---
-dark_purple <- "#9A51E0"
-dark_orange <- "#D97F22"
-dark_cyan <- "#48B6D5"
-dark_green <- "#2ABD4A"
-
-# Create a separate data frame for annotations
-annotation_data <- data.frame(
-  x = c(50, tau, 25),
-  y = c(PS + 0.05, -0.05, 0.5),
-  label = c(
-    "'PS (The desorbable P pool)'",
-    "paste(tau, ' = ', frac(ln(2), k), ' (Half-life)')",
-    "paste('Rate at half-life = ', frac(k %*% PS, 2))"
-  ),
-  color = c(dark_orange, dark_cyan, dark_green), # Using new darker colors
-  angle = c(0, 0, 18)
-)
-
-# Create the plot
-ggplot(df_conceptual, aes(x = t, y = P)) +
-  geom_line(color = dark_purple, size = 1.5) + # Using new darker purple
-  geom_hline(yintercept = PS, linetype = "dashed", color = dark_orange, size = 1) + # Using new darker orange
-  geom_segment(aes(x = tau, y = 0, xend = tau, yend = P_tau), linetype = "dotted", color = dark_cyan) + # Using new darker cyan
-  geom_segment(aes(x = 0, y = P_tau, xend = tau, yend = P_tau), linetype = "dotted", color = dark_cyan) + # Using new darker cyan
-  geom_abline(intercept = intercept_tau, slope = slope_tau, linetype = "dashed", color = dark_green, size = 1) + # Using new darker green
-  geom_text(
-    data = annotation_data,
-    aes(x = x, y = y, label = label, color = I(color), angle = angle),
-    size = 5,
-    parse = TRUE
-  ) +
-  labs(
-    title = "Simulated Kinetic Model",
-    x = "Time (t)",
-    y = "P desorbed (mg/L)"
-  ) +
-  theme_minimal(base_size = 16) +
-  theme(
-    plot.title = element_text(hjust = 0.5)
-  ) +
-  coord_cartesian(ylim = c(0, 1), clip = "off")
-```
-:::
-:::::
-
-## Adapted Kinetic-Experiment Setup
-
-![](Experimental_Setup.png){fig-align="center"}
-
-```{r}
-#| label: fig-replicability-setup
-#| echo: false
-#| message: false
-#| warning: false
-#| include: false 
-# This chunk does all calculations for the next 3 slides and is hidden
-
-library(dplyr); library(ggplot2); library(nlme); library(latex2exp)
-
-Res <- nlsList(Pv.mg.L. ~ PS * (1 - exp(-k * (t.dt))) | uid, d[, c("Pv.mg.L.", "ui", "t.dt","uid")],  start=list(PS=0.1,k=0.2))
-# summary(Res)
-# d$nls_pred <- predict(Res)
-
-# Extract coefficients from the nlsList results
-nls_coefs <- coef(Res)
-nls_coefs$uid <- rownames(nls_coefs)
-
-
-d_plot <- merge(d, nls_coefs, by = "uid")
-
-# Most straightforward approach - create curves manually
-time_seq <- seq(min(d$t.dt, na.rm = TRUE), max(d$t.dt, na.rm = TRUE), length.out = 100)
-
-# Create prediction data
-pred_data <- d_plot %>%
-  select(uid, Site, Treatment, Repetition, PS, k,ui,Pv_Olsen.mg.L.,Pv_labile.mg.L.) %>%
-  distinct() %>%
-  crossing(t.dt = time_seq) %>%
-  mutate(pred_Pv = PS * (1 - exp(-k * (t.dt))))
-
-hline_data <- d_plot %>%
-  select(Site, Treatment, Repetition, Pv_Olsen.mg.L., Pv_labile.mg.L.) %>%
-  distinct()
-
-# Step 1: Prepare data and fit the flawed linearized model
-d_linear <- d_plot %>%
-  mutate(
-    flawed_PS = Pv_Olsen.mg.L.,
-    Y1 = log(1 - (Pv.mg.L. / flawed_PS))
-  ) %>%
-  filter(is.finite(Y1))
-
-res_linear <- lmList(Y1 ~ t.dt | uid, data = d_linear, na.action = na.pass)
-coefs_linear <- coef(res_linear)
-coefs_linear$k_flawed <- -coefs_linear$t.dt
-coefs_linear$uid <- rownames(coefs_linear)
-
-# Step 2: Generate predictions from the flawed model
-pred_data_flawed <- d_plot %>%
-  select(uid, Site, Treatment, Repetition, Pv_Olsen.mg.L.) %>%
-  distinct() %>%
-  left_join(select(coefs_linear, uid, k_flawed), by = "uid") %>%
-  crossing(t.dt = seq(0, 60, length.out = 100)) %>%
-  mutate(pred_Pv_flawed = Pv_Olsen.mg.L. * (1 - exp(-k_flawed * t.dt)))
-
-# Step 3: Define the base plot object
-p_base <- ggplot() +
-  geom_point(data = d_plot, aes(y = Pv.mg.L., x = t.dt, col = Repetition), alpha = 0.7) +
-  facet_grid(Treatment ~ Site, scales = "free_y") +
-  labs(x = TeX("$Time (min)$"), y = TeX("$P_{V}(\\frac{mg}{L})$")) +
-  theme_bw(base_size = 14)
-```
-
-## Method Validation
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-height: 9
-#| fig-width: 16
-p_base + labs(title = "Step 1: Raw Experimental Data")
-```
-
-## Method Validation
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-height: 9
-#| fig-width: 16
-p_base +
-  geom_line(data = pred_data_flawed, aes(x = t.dt, y = pred_Pv_flawed, color = Repetition), linetype = "dashed", size = 1) +
-  labs(title = "Step 2: The Flawed Linearized Model Fit")
-```
-
-## Method Validation
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-height: 9
-#| fig-width: 16
-p_base +
-  geom_line(data = pred_data, aes(x = t.dt, y = pred_Pv, color = Repetition), size = 1) +
-  labs(title = "Step 3: The Successful Non-Linear Model Fit")
-```
-
-## Method Validation
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-height: 9
-#| fig-width: 16
-
-# Create the data for the hline
-hline_data_comparison <- d_plot %>%
-  select(Site, Treatment, Repetition, Pv_Olsen.mg.L., Pv_labile.mg.L.) %>%
-  mutate(flawed_estimate = Pv_Olsen.mg.L. - Pv_labile.mg.L.) %>%
-  distinct()
-
-# Create the final comparison plot
-p_base +
-  # Plot 1: Our successful non-linear model fit
-  geom_line(data = pred_data, aes(x = t.dt, y = pred_Pv, col = Repetition), size = 1) +
-  
-  # Plot 2: The flawed P-Olsen - P-labile estimate
-  geom_hline(
-    data = hline_data_comparison,
-    aes(yintercept = flawed_estimate, color = Repetition),
-    linetype = "dashed", size = 1.2
-  ) +
-  
-  labs(
-    title = "Successful Fit vs. Flawed Assumption",
-    subtitle = "Solid lines = Our successful model | Dashed lines = Flawed P-Olsen estimate"
-  )
-```
-
-## The Competing Predictors
-
-We compared two approaches to predict agronomic outcomes:
-
-::::: columns
-::: {.column width="50%"}
-**The Standard Method**
-
--   $P_{CO2}$
--   $P_{AAE10}$
-
-These are static "snapshots" of the soil's P capacity.
-:::
-
-::: {.column width="50%"}
-**The Kinetic Method**
-
--   **PS (**$P^S$): The **size** of the available P pool.
--   **k:** The **rate** of P release.
--   $J_0=k*P^S$ The maximal desorption speed/initial Flow
-
-This approach measures P as a dynamic process.
-:::
-:::::
-
-## Measuring Success: The Key Outcomes
-
-We tested the models against three agronomic metrics:
-
-**1. Normalized Yield (**$Y_{norm}$) - How well did the crop perform relative to its maximum potential at that specific site?
-
-**2. P-Export (**$P_{up}$) - How much phosphorus did the crop remove from the field?
-
-**3. P-Balance (**$P_{bal}$) - What is the long-term surplus or deficit of P in the soil? This is a key indicator of sustainability.
-
-## How We Compared the Models
-
-To ensure a fair and robust comparison, we used a consistent statistical approach:
-
-**1. Linear Mixed-Effects Models (`lmer`)** - We built a separate model for each agronomic outcome (Yield, P-Export, P-Balance). - This approach accounts for the nested structure of the STYCS experiment (sites, years, blocks).
-
-**2. Standardized Coefficients (β)** - All numeric variables were **scaled and centered** (mean=0, sd=1). - This allows us to directly compare the effect size of each predictor. A larger coefficient means a stronger effect.
-
-**3. The Comparison** - In the following tables, **each column represents a separate model** where we test a different set of predictors.
-
-## What Do the P Metrics Actually Measure?
-
-A robust P metric should reflect both the soil's inherent properties (like texture and pH) and the impact of management (fertilization). We modeled each metric to see what drives it.
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-
-
-highlight_significant_cells <- function(df) {
-  df_highlighted <- df
-
-  for (col in names(df)[-1]) {
-    df_highlighted[[col]] <- cell_spec(df[[col]],
-      format = "html",
-      color = case_when(
-        grepl("\\*\\*\\*", df[[col]]) ~ "red",
-        grepl("\\*\\*", df[[col]])    ~ "orange",
-        grepl("\\*", df[[col]])       ~ "yellow",
-        TRUE                          ~ "white"
-      ),
-      bold = grepl("\\*", df[[col]])
+annotations_list <- list()
+for(i in 1:16) {
+  for(j in 1:5) {
+    annotations_list[[length(annotations_list) + 1]] <- list(
+      x = x_clay[j], y = y_co2_rev[i],
+      text = as.character(z_co2_rev[i,j]),
+      showarrow = FALSE,
+      font = list(color = ifelse(z_co2_rev[i,j] < 0.5, "white", "black"))
     )
   }
-
-  return(df_highlighted)
 }
 
-# Define the new, clean names for the table
-lmer_models_soil <- list(
-  "m.PS" = fit.soil.PS,
-  "m.k" = fit.soil.k,
-  "m.log(k*PS)" = fit.soil.kPS,
-  "m.PCO2" = fit.soil.CO2,
-  "m.PAAE10" = fit.soil.AAE10
-)
-covariate_labels_soil_props <- c(
-  "(Intercept)" = "Intercept",
-  "soil_0_20_Corg" = "C-org",
-  "soil_0_20_clay" = "Clay",
-  "soil_0_20_silt" = "Silt",
-  "soil_0_20_pH_H2O" = "pH",
-  "Fed" = "Fed",
-  "Ald" = "Ald",
-  "R2m" = "marginal R²",
-  "R2c" = "conditional R²"
-)
-model_labels_soil <- c(
-  "m.PCO2" = "P-CO2",
-  "m.PAAE10" = "P-AAE10",
-  "m.PS" = "PS",
-  "m.k" = "k",
-  "m.log(k*PS)" = "J0"
-)
-results_table_soil <- create_coef_table(
-  lmer_models_soil,
-  covariate_labels = covariate_labels_soil_props,
-  model_labels = model_labels_soil
-)
+p1 <- plot_ly(x = x_clay, y = y_co2_rev, z = z_co2_rev, type = "heatmap", colorscale = colorscale, zmin=0, zmax=1.5, showscale=FALSE, height=500) %>%
+  layout(title = "P_CO2 Flat Heatmap", xaxis = list(title = "Clay %"), yaxis = list(title = "P_CO2 (mg/kg)"), annotations = annotations_list)
 
+# For 3D surface we need numeric axes for smooth rotating
+p2 <- plot_ly(x = 1:5, y = 1:16, z = z_co2, type = "surface", colorscale = colorscale, cmin=0, cmax=1.5, showscale=FALSE, height=500) %>%
+  layout(title = "P_CO2 3D Staircase", scene = list(
+    xaxis = list(title = "Clay %", tickvals=1:5, ticktext=x_clay),
+    yaxis = list(title = "P_CO2 (mg/kg)", tickvals=1:16, ticktext=y_co2),
+    zaxis = list(title = "Correction Factor C")
+  ))
 
-results_table_soil <- results_table_soil[-1, ]
-
-# Apply formatting and display
-coef_table_soil_highlighted <- highlight_significant_cells(results_table_soil)
-kable(coef_table_soil_highlighted,format.args = list(math_method = "mathjax"),
-      escape = FALSE, format = "html", row.names = FALSE) %>%
-  kable_styling(full_width = FALSE, position = "left")
+browsable(tagList(
+  div(style="display:flex; justify-content:space-between;",
+      div(style="width:48%;", p1),
+      div(style="width:48%;", p2)
+  )
+))
 ```
 
-## Predicting Yield: The Standard Test Excels
+---
 
-First, we tested which P metric was best at predicting site-normalized yield ($Y_{norm}$).
+## The Swamp of the Dead: GRUD $P_{AAE10}$ Model { .scrollable }
+
+By applying the exact same affine mathematical structure to an aggressive extractant ($AAE10$), the GRUD implicitly assumes a linear correlation with $CO_2$, completely ignoring the complex, non-linear dissolution kinetics of solid mineral phase Phosphorus.
 
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
+#| fig-width: 12
+#| fig-height: 8
 
-# Define the models for this comparison
+y_aae10 <- c("2.5", "7.5", "12.5", "17.5", "22.5", "27.5", "32.5", "37.5", "42.5", "47.5", "52.5", "57.5", "62.5", "67.5", "72.5", "77.5", "82.5", "87.5", "92.5", "97.5", "102.5", "107.5", "112.5", "117.5", "122.5", "≥125")
+z_aae10 <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.4,
+  1.5, 1.5, 1.4, 1.4, 1.2,
+  1.5, 1.4, 1.4, 1.2, 1.2,
+  1.4, 1.4, 1.2, 1.2, 1.2,
+  1.4, 1.2, 1.2, 1.2, 1.0,
+  1.2, 1.2, 1.2, 1.0, 1.0,
+  1.2, 1.2, 1.0, 1.0, 1.0,
+  1.2, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8,
+  1.0, 1.0, 1.0, 0.8, 0.8,
+  1.0, 1.0, 0.8, 0.8, 0.8,
+  1.0, 0.8, 0.8, 0.8, 0.6,
+  0.8, 0.8, 0.8, 0.6, 0.6,
+  0.8, 0.8, 0.6, 0.6, 0.6,
+  0.8, 0.6, 0.6, 0.6, 0.4,
+  0.6, 0.6, 0.6, 0.4, 0.4,
+  0.6, 0.6, 0.4, 0.4, 0.4,
+  0.6, 0.4, 0.4, 0.4, 0.0,
+  0.4, 0.4, 0.4, 0.0, 0.0,
+  0.4, 0.4, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), nrow=26, ncol=5, byrow=TRUE)
 
-lmer_models_yield <- list(
-  "P_CO2" = fit.grud.CO2.Ynorm,
-  "P_AAE10" = fit.grud.AAE10.Ynorm,
-  "GRUD" = fit.grud.CO2.AAE10.Ynorm,
-  "Kinetic" = fit.kin.Ynorm
-)
+z_aae_rev <- z_aae10[26:1, ]
+y_aae_rev <- rev(y_aae10)
 
+annotations_list2 <- list()
+for(i in 1:26) {
+  for(j in 1:5) {
+    annotations_list2[[length(annotations_list2) + 1]] <- list(
+      x = x_clay[j], y = y_aae_rev[i],
+      text = as.character(z_aae_rev[i,j]),
+      showarrow = FALSE,
+      font = list(color = ifelse(z_aae_rev[i,j] < 0.5, "white", "black"), size = 9)
+    )
+  }
+}
 
+p3 <- plot_ly(x = x_clay, y = y_aae_rev, z = z_aae_rev, type = "heatmap", colorscale = colorscale, zmin=0, zmax=1.5, showscale=FALSE, height=700) %>%
+  layout(title = "P_AAE10 Flat Heatmap", xaxis = list(title = "Clay %"), yaxis = list(title = "P_AAE10 (mg/kg)", dtick=1), annotations = annotations_list2)
 
-# Define the clean labels for the table
-covariate_labels <- c(
-  "(Intercept)" = "Intercept",
-  "log(soil_0_20_P_CO2)" = "P-CO2",
-  "log(soil_0_20_P_AAE10)" = "P-AAE10",
-  "k" = "k",
-  "log(PS)" = "PS",
-  "k:log(PS)" = "J0",
-  "log(soil_0_20_P_CO2):log(soil_0_20_P_AAE10)" = "P-CO2 * P-AAE10",
-  "R2m" = "marginal R²",
-  "R2c" = "conditional R²")
+p4 <- plot_ly(x = 1:5, y = 1:26, z = z_aae10, type = "surface", colorscale = colorscale, cmin=0, cmax=1.5, showscale=FALSE, height=700) %>%
+  layout(title = "P_AAE10 3D Staircase", scene = list(
+    xaxis = list(title = "Clay %", tickvals=1:5, ticktext=x_clay),
+    yaxis = list(title = "P_AAE10 (mg/kg)", tickvals=seq(1, 26, 2), ticktext=y_aae10[seq(1, 26, 2)]),
+    zaxis = list(title = "Correction Factor C")
+  ))
 
-model_labels_yield <- c(
-  "GRUD" = "GRUD Model",
-  "Kinetic" = "Kinetic Model",
-  "P_CO2" = "P-CO2 only",
-  "P_AAE10" = "P-AAE10 only"
-)
-
-# Create and filter the table
-results_table_yield <- create_coef_table(
-  lmer_models_yield,
-  covariate_labels = covariate_labels,
-  model_labels = model_labels_yield
-)
-results_table_yield <- results_table_yield[-1, ] # Remove intercept
-
-# Display the table
-coef_table_yield_highlighted <- highlight_significant_cells(results_table_yield)
-kable(coef_table_yield_highlighted,
-     escape = FALSE, format = "html", row.names = FALSE,
-    format.args = list(math_method = "mathjax")) %>%
-  kable_styling(full_width = FALSE, position = "left")
-
-
+browsable(tagList(
+  div(style="display:flex; justify-content:space-between;",
+      div(style="width:48%;", p3),
+      div(style="width:48%;", p4)
+  )
+))
 ```
 
-## Predicting P-Export: A mixed Picture
+---
 
-```{r}
-#| label: create-p-export-table-image
-#| echo: false
-#| message: false
-#| warning: false
+## The GRUD-model { .interactive-slide .scrollable }
 
+The GRUD model assumes the soil's buffer power is constant ($Q = b \cdot I$). 
+This ignores the profound chemical turning point at low saturations ($I < 1 \text{ mg/L}$).
 
-# Define models and labels
-# ... (use the same covariate_labels and model_labels as before) ...
-lmer_models_export <- list(
-  "P_CO2" = fit.CO2.Pexport,
-  "P_AAE10" = fit.AAE10.Pexport,
-  "GRUD" = fit.grud.Pexport,
-  "Kinetic" = fit.kin.Pexport
-)
-
-
-
-
-# Create, filter, and highlight the table
-results_table_export <- create_coef_table(lmer_models_export, covariate_labels = covariate_labels, model_labels = model_labels_yield)
-results_table_export <- results_table_export[-1, ]
-coef_table_export_highlighted <- highlight_significant_cells(results_table_export)
-
-# Build the kable object
-kable(coef_table_export_highlighted,
-      escape = FALSE, format = "html",
-      row.names = FALSE,
-      format.args = list(math_method = "mathjax")) %>%
-  kable_styling(full_width = FALSE, position = "left")
-
-# Save the kable object as a PNG image
+```{ojs}
+//| panel: input
+viewof show_CAD = Inputs.toggle({label: "Show Sand (CAD)", value: true})
+viewof show_ELL = Inputs.toggle({label: "Show Loam (ELL)", value: false})
+viewof show_OEN = Inputs.toggle({label: "Show Clay (OEN)", value: false})
+viewof show_custom = Inputs.toggle({label: "Show Custom", value: false})
 ```
 
-## Predicting P-Balance: The Kinetic Model is Superior
-
-```{r}
-
-lmer_models_balance <- list(
-  "P_CO2" = fit.CO2.Pbalance,
-  "P_AAE10" = fit.AAE10.Pbalance,
-  "GRUD" = fit.grud.Pbalance,
-  "Kinetic" = fit.kin.Pbalance
-)
-
-
-
-
-
-coef_table_balance <- create_coef_table(lmer_models_balance, covariate_labels = covariate_labels, model_labels = model_labels_yield)
-coef_table_balance <- coef_table_balance[-1,]
-# Apply formatting
-coef_table_balance_highlighted <- highlight_significant_cells(coef_table_balance)
-
-# Display with kable
-kable(coef_table_balance_highlighted,
-      escape = FALSE,
-      format = "html",
-      row.names = FALSE,
-      ) |>
-  kable_styling(full_width = FALSE, position = "left")
-
-
-
-
+```{ojs}
+//| panel: input
+viewof current_I_grud = Inputs.range([0.05, 5], {value: 0.5, step: 0.05, label: "Current I (mg/L)"})
+viewof custom_K = Inputs.range([10, 100], {value: 30, step: 1, label: "Custom K"})
+viewof custom_n = Inputs.range([0.1, 0.9], {value: 0.35, step: 0.01, label: "Custom n"})
 ```
 
-## Key Findings
+```{ojs}
+grud_quantiles = FileAttachment("site_quantiles.json").json()
+```
 
-1.  **A Robust Kinetic Model was Developed**
-    -   The original linearized method was shown to be invalid for these soils.
-    -   Our non-linear approach provided a superior and statistically robust fit.
-2.  **Predictive Power is Purpose-Dependent**
-    -   For **predicting yield**, the standard soil test ($P_{AAE10}$) was the most effective predictor.
-3.  **Kinetics Excel for Long-Term Assessment**
-    -   For **predicting the P-Balance**, the kinetic parameter `PS` (the P pool) was vastly superior, while standard tests showed no predictive power.
+```{ojs}
+site_dict = ({
+  "CAD": grud_quantiles.find(d => d.site === "CAD"),
+  "ELL": grud_quantiles.find(d => d.site === "ELL"),
+  "OEN": grud_quantiles.find(d => d.site === "OEN")
+})
+```
 
-## The Right Tool for the Right Job
+```{ojs}
+active_sites = [
+  show_CAD ? {name: "Sand (CAD)", color: "#E69F00", K: site_dict["CAD"].K_50, n: site_dict["CAD"].n_50, K25: site_dict["CAD"].K_25, n25: site_dict["CAD"].n_25, K75: site_dict["CAD"].K_75, n75: site_dict["CAD"].n_75} : null,
+  show_ELL ? {name: "Loam (ELL)", color: "#56B4E9", K: site_dict["ELL"].K_50, n: site_dict["ELL"].n_50, K25: site_dict["ELL"].K_25, n25: site_dict["ELL"].n_25, K75: site_dict["ELL"].K_75, n75: site_dict["ELL"].n_75} : null,
+  show_OEN ? {name: "Clay (OEN)", color: "#009E73", K: site_dict["OEN"].K_50, n: site_dict["OEN"].n_50, K25: site_dict["OEN"].K_25, n25: site_dict["OEN"].n_25, K75: site_dict["OEN"].K_75, n75: site_dict["OEN"].n_75} : null,
+  show_custom ? {name: "Custom", color: "#D55E00", K: custom_K, n: custom_n, K25: custom_K, n25: custom_n, K75: custom_K, n75: custom_n} : null
+].filter(d => d !== null)
+```
 
-My research concludes that the ideal soil P test depends on the question being asked:
+```{ojs}
+grud_plot_data = active_sites.flatMap(site => {
+  let K = site.K;
+  let n = site.n;
+  let Q_true = (I) => K * Math.pow(I, n);
+  let m_tangent = n * K * Math.pow(current_I_grud, n - 1);
+  let Q_linear = (I) => m_tangent * (I - current_I_grud) + Q_true(current_I_grud);
+  
+  // Ribbon 25th
+  let Q25 = (I) => site.K25 * Math.pow(I, site.n25);
+  let m25 = site.n25 * site.K25 * Math.pow(current_I_grud, site.n25 - 1);
+  let Q_lin25 = (I) => m25 * (I - current_I_grud) + Q25(current_I_grud);
+  
+  // Ribbon 75th
+  let Q75 = (I) => site.K75 * Math.pow(I, site.n75);
+  let m75 = site.n75 * site.K75 * Math.pow(current_I_grud, site.n75 - 1);
+  let Q_lin75 = (I) => m75 * (I - current_I_grud) + Q75(current_I_grud);
+  
+  let curve_t = d3.range(0.05, 10.1, 0.1).map(i => ({ 
+    I: i, Q: Q_true(i), Q1: Q25(i), Q2: Q75(i), 
+    type: site.name + " (Freundlich)", group: site.name, is_linear: "false", color: site.color 
+  }));
+  
+  let curve_l = d3.range(0, 10.1, 0.1).map(i => ({ 
+    I: i, Q: Q_linear(i), Q1: Q_lin25(i), Q2: Q_lin75(i), 
+    type: site.name + " (Tangent)", group: site.name, is_linear: "true", color: site.color 
+  }));
+  
+  return [...curve_t, ...curve_l];
+})
+```
 
-::::: columns
-::: {.column width="50%"}
-**For Routine Fertilization**
+```{ojs}
+safe_points = active_sites.map(site => {
+  let K = site.K;
+  let n = site.n;
+  let threshold = -1.0; // curvature threshold where linear assumption is "ok"
+  let I_safe = Math.pow(threshold / (K * n * (n - 1)), 1 / (n - 2));
+  let Q_safe = K * Math.pow(I_safe, n);
+  return { I: I_safe, Q: Q_safe, name: site.name };
+})
+```
 
-To answer a farmer's question: *"Is P limiting my yield this year?"*
+```{ojs}
+//| panel: fill
+Plot.plot({
+  width: width,
+  height: 1200,
+  marginLeft: 60,
+  x: { label: "Intensity I (mg P / L)", domain: [0, 5] },
+  y: { label: "Mass Q (mg P / kg soil)", domain: [0, 120] },
+  color: { 
+    legend: true,
+    domain: active_sites.flatMap(s => [s.name + " (Freundlich)", s.name + " (Tangent)"]),
+    range: active_sites.flatMap(s => [s.color, s.color])
+  },
+  strokeDasharray: {
+    domain: ["false", "true"],
+    range: ["1,0", "5,5"]
+  },
+  marks: [
+    Plot.ruleX([1.0], {stroke: "red", strokeWidth: 2, strokeDasharray: "4,4"}),
+    Plot.text([{I: 1.0, Q: 110}], {x: "I", y: "Q", text: () => "GRUD Leaching Risk (I=1.0)", dx: 5, fill: "red", textAnchor: "start", fontSize: 14, fontWeight: "bold"}),
+    
+    // Ribbons
+    Plot.areaY(grud_plot_data.filter(d => d.is_linear === "false"), {x: "I", y1: "Q1", y2: "Q2", fill: "color", fillOpacity: 0.15}),
+    Plot.areaY(grud_plot_data.filter(d => d.is_linear === "true"), {x: "I", y1: "Q1", y2: "Q2", fill: "color", fillOpacity: 0.1}),
+    
+    Plot.line(grud_plot_data.filter(d => d.is_linear === "false"), {x: "I", y: "Q", stroke: "type", strokeWidth: 4}),
+    Plot.line(grud_plot_data.filter(d => d.is_linear === "true"), {x: "I", y: "Q", stroke: "type", strokeWidth: 3, strokeDasharray: "5,5"}),
+    
+    // The safe points (green circles)
+    Plot.dot(safe_points, {x: "I", y: "Q", stroke: "#388e3c", fill: "none", r: 8, strokeWidth: 3}),
+    
+    // The current slider point (black dots)
+    Plot.dot(active_sites, {
+      x: () => current_I_grud, 
+      y: d => d.K * Math.pow(current_I_grud, d.n), 
+      fill: "black", r: 6
+    })
+  ]
+})
+```
 
-**The Standard Soil Tests are effective and well-suited.**
-:::
+## Physical Chemistry over Agronomic Correlation
 
-::: {.column width="50%"}
-**For Long-Term Sustainability**
+- **The Problem:** Heavy Ca, Mg, and K treatments artificially increase the ionic strength ($I$) of the soil solution, confounding raw mass extractions ($P_{CO2}$).
+- **The Solution:** We convert raw mass into thermodynamic effective concentration ($a_{CO2}$) via the Davies equation.
+- **The Metric:** Absolute P-Uptake (Yield $\times C_P$), which reflects true physical mass flux, bypassing the Piper-Steenbjerg effect.
 
-To answer a policymaker's question: *"Is this soil's P status sustainable?"*
+---
 
-**A Kinetic Approach is the superior and necessary tool.**
-:::
-:::::
+## The Q(I) Curve & Physical Buffer Power ($b$)
+
+The availability of Phosphorus is strictly dictated by the dynamic phase equilibrium:
+$$ Q(I) = K \cdot I^n $$
+Where $b = dQ/dI$ represents the true pedochemical buffer power supplying the root sink.
+
+---
+
+## Interactive Q(I) Dynamics
+
+Observe how the instantaneous buffer power ($b = dQ/dI$) collapses at high ionic concentrations. 
+In the next slide, you can explore this interactively across the three physical soil archetypes.
+
+---
+
+## Physical Buffer Collapse { .interactive-slide }
+
+```{ojs}
+//| panel: input
+//| layout-ncol: 3
+viewof K = Inputs.range([10, 100], {value: 40, step: 1, label: "K (Capacity)"})
+viewof n = Inputs.range([0.1, 0.9], {value: 0.5, step: 0.05, label: "n (Intensity Modifier)"})
+viewof current_I = Inputs.range([0.1, 10], {value: 2, step: 0.1, label: "Current I (mg/L)"})
+```
+
+```{ojs}
+quantiles = FileAttachment("site_quantiles.json").json()
+archetypes = quantiles.filter(d => ["CAD", "ELL", "OEN"].includes(d.site))
+
+ribbon_data = archetypes.flatMap(d => {
+  return d3.range(0.1, 10.2, 0.1).map(i => ({
+    site: d.site === "CAD" ? "Sand (CAD)" : d.site === "ELL" ? "Loam (ELL)" : "Clay (OEN)",
+    I: i,
+    Q25: d.K_25 * Math.pow(i, d.n_25),
+    Q50: d.K_50 * Math.pow(i, d.n_50),
+    Q75: d.K_75 * Math.pow(i, d.n_75)
+  }));
+})
+
+color_map = new Map([
+  ["Sand (CAD)", "#E69F00"],
+  ["Loam (ELL)", "#56B4E9"],
+  ["Clay (OEN)", "#009E73"]
+])
+```
+
+```{ojs}
+//| panel: fill
+Q = (I) => K * Math.pow(I, n)
+dQ_dI = (I) => n * K * Math.pow(I, n - 1)
+
+// Generate curve points
+curve_data = d3.range(0.1, 10.1, 0.1).map(i => ({ I: i, Q: Q(i) }))
+
+// Current point
+point_data = [{ I: current_I, Q: Q(current_I) }]
+
+// Tangent line points
+tangent_m = dQ_dI(current_I)
+tangent_data = [
+  { I: Math.max(0, current_I - 2), Q: Q(current_I) - tangent_m * Math.min(current_I, 2) },
+  { I: current_I + 2, Q: Q(current_I) + tangent_m * 2 }
+]
+
+Plot.plot({
+  x: { label: "Equilibrium Concentration I (mg/L)", domain: [0, 10] },
+  y: { label: "Desorbed Phosphorus Q (mg P / kg soil)", domain: [0, 150] },
+  height: 550,
+  width: 1200,
+  color: { domain: Array.from(color_map.keys()), range: Array.from(color_map.values()), legend: true },
+  marks: [
+    // Physical Soil Ribbons
+    Plot.areaY(ribbon_data, {x: "I", y1: "Q25", y2: "Q75", fill: "site", fillOpacity: 0.3}),
+    Plot.lineY(ribbon_data, {x: "I", y: "Q50", stroke: "site", strokeWidth: 2, strokeDasharray: "4"}),
+    
+    // Interactive Curve
+    Plot.line(curve_data, {x: "I", y: "Q", stroke: "#000000", strokeWidth: 4}),
+    Plot.line(tangent_data, {x: "I", y: "Q", stroke: "#E3000F", strokeWidth: 2, strokeDasharray: "4"}),
+    Plot.dot(point_data, {x: "I", y: "Q", fill: "#E3000F", r: 8}),
+    Plot.text(point_data, {
+      x: "I", y: "Q", 
+      text: d => `b = ${tangent_m.toFixed(2)}`, 
+      dy: -20, 
+      dx: 20,
+      fill: "#E3000F", 
+      fontWeight: "bold",
+      fontSize: 18
+    }),
+    Plot.gridY({stroke: "#eee"})
+  ]
+})
+```
+
+
+---
+
+## The Yield Model
+
+(Details on the Mitscherlich Yield curve and deriving $P_{crit}$ will go here.)
+
+---
+
+## The Dual Framework
+
+(Details on Economic $\Delta Q_{yield}$ vs Environmental Capacity $K$ will go here.)
+
+---
+
+## Policy Recommendation
+
+(Final recommendations and soil-crop suitability conclusions will go here.)

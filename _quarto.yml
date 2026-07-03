@@ -6,9 +6,10 @@ project:
     - index.qmd
     - "notebooks/qi_modelling1.qmd"  # Explicitly render this specific notebook
     - "notebooks/sanity_checks.qmd"
+    - "presentation/index.qmd"
 
 execute:
-  freeze: true
+  freeze: auto
 
 # --- Website Navigation ---
 website:
@@ -25,9 +26,14 @@ website:
             href: notebooks/qi_modelling1.html
           - text: "Data Sanity Checks"
             href: notebooks/sanity_checks.html
+      
+      - text: "Presentation"
+        href: presentation/index.html
 
 # --- Top-level settings ---
-bibliography: references.bib
+bibliography: 
+  - references.bib
+  - packages.bib
 csl: apa.csl
 
 # --- Format-specific settings ---

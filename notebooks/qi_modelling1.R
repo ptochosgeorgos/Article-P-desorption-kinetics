@@ -47,6 +47,46 @@ suppressPackageStartupMessages({
     library(robustlmm)
     library(performance)
     library(kableExtra)
+    library(MuMIn)
+
+    get_metrics_lmer <- function(model, model_name, data, response) {
+        r2 <- suppressWarnings(MuMIn::r.squaredGLMM(model))
+        r2m <- round(r2[1, "R2m"], 3)
+        r2c <- round(r2[1, "R2c"], 3)
+        
+        pred_m <- predict(model, re.form = NA)
+        rmse_m <- round(sqrt(mean((data[[response]] - pred_m)^2, na.rm=TRUE)), 3)
+        
+        pred_c <- predict(model)
+        rmse_c <- round(sqrt(mean((data[[response]] - pred_c)^2, na.rm=TRUE)), 3)
+        
+        data.frame(
+            Model = model_name,
+            R2_m = r2m, R2_c = r2c,
+            RMSE_m = rmse_m, RMSE_c = rmse_c,
+            AIC = round(AIC(model), 1),
+            BIC = round(BIC(model), 1)
+        )
+    }
+
+    get_metrics_nlme <- function(model, model_name, data, response) {
+        pred_c <- predict(model, level = 2) # Plot level
+        pred_m <- predict(model, level = 0) # Fixed effects only
+        
+        r2_c <- round(cor(data[[response]], pred_c)^2, 3)
+        r2_m <- round(cor(data[[response]], pred_m)^2, 3)
+        
+        rmse_c <- round(sqrt(mean((data[[response]] - pred_c)^2, na.rm=TRUE)), 3)
+        rmse_m <- round(sqrt(mean((data[[response]] - pred_m)^2, na.rm=TRUE)), 3)
+        
+        data.frame(
+            Model = model_name,
+            R2_m = r2_m, R2_c = r2_c,
+            RMSE_m = rmse_m, RMSE_c = rmse_c,
+            AIC = round(AIC(model), 1),
+            BIC = round(BIC(model), 1)
+        )
+    }
 })
 
 options(warn = -1)
@@ -192,14 +232,11 @@ ptf_geo_raw <- lmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_C
 ptf_geo_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf)
 
 # Performance Extraction
-get_r2 <- function(model, name) {
-    perf <- performance::r2_nakagawa(model)
-    data.frame(Model = name, Marginal_R2 = round(as.numeric(perf$R2_marginal), 3), Conditional_R2 = round(as.numeric(perf$R2_conditional), 3))
-}
-
 ptf_results <- bind_rows(
-    get_r2(ptf_agro_raw, "Agronomic (Raw P_CO2)"), get_r2(ptf_agro_thm, "Agronomic (Thermo a_CO2)"),
-    get_r2(ptf_geo_raw, "Geochemical (Raw P_CO2)"), get_r2(ptf_geo_thm, "Geochemical (Thermo a_CO2)")
+    get_metrics_lmer(ptf_agro_raw, "Agronomic (Raw P_CO2)", D_ptf, "ln_P_AAE"),
+    get_metrics_lmer(ptf_agro_thm, "Agronomic (Thermo a_CO2)", D_ptf, "ln_P_AAE"),
+    get_metrics_lmer(ptf_geo_raw, "Geochemical (Raw P_CO2)", D_ptf, "ln_P_AAE"),
+    get_metrics_lmer(ptf_geo_thm, "Geochemical (Thermo a_CO2)", D_ptf, "ln_P_AAE")
 )
 
 # Table with Caption
@@ -236,12 +273,12 @@ ptf_practical_raw <- lmer(ln_P_AAE ~ ln_P_CO2 * (z_ln_FineTexture + z_pH + z_ln_
 ptf_practical_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + z_ln_Mg + z_ln_K + z_ln_Corg + z_Temp_Anom + z_Prec_Anom) + z_Temp_Mean + (1 | site:plot_nr), data = D_ptf_agro)
 
 # Present Performance
-prac_results <- bind_rows(
-    get_r2(ptf_practical_raw, "Practical Agro (Raw P_CO2)"),
-    get_r2(ptf_practical_thm, "Practical Agro (Thermo a_CO2)")
+ptf_results_agro <- bind_rows(
+    get_metrics_lmer(ptf_practical_raw, "Practical Agro (Raw P_CO2)", D_ptf_agro, "ln_P_AAE"),
+    get_metrics_lmer(ptf_practical_thm, "Practical Agro (Thermo a_CO2)", D_ptf_agro, "ln_P_AAE")
 )
 
-prac_results |>
+ptf_results_agro |>
     kbl(caption = "**Table 2: Variance Explained by Practical Agronomic Models.** Trained on the maximum available long-term trials.") |>
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
 
@@ -308,7 +345,7 @@ get_int_agro <- function(v1, v2) {
 
 # 2. Prepare the Longitudinal Dataset (2010-2022, Drop 0-uptake)
 D_Long <- D_ready |>
-    filter(year >= 2010, annual_P_uptake > 0, !is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
+    filter(annual_P_uptake > 0, !is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
 
     # Calculate Geochemical Physical Highway (1/b)
     mutate(
@@ -323,7 +360,7 @@ D_Long <- D_ready |>
             get_int_geo("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_geo("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
 
-        ln_K_pred_geo = C_geo("(Intercept)") + C_geo("z_ln_Feox") * z_ln_Feox + C_geo("z_ln_Alox") * z_ln_Alox + C_geo("z_pH") * z_pH + C_geo("z_ln_Ca") * z_ln_Ca + C_geo("z_ln_Mg") * z_ln_Mg + C_geo("z_ln_K") * z_ln_K + C_geo("z_ln_Corg") * z_ln_Corg + C_geo("z_Temp_Anom") * z_Temp_Anom + C_geo("z_Prec_Anom") * z_Prec_Anom + C_geo("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_geo = C_geo(1) + C_geo("z_ln_Feox") * z_ln_Feox + C_geo("z_ln_Alox") * z_ln_Alox + C_geo("z_pH") * z_pH + C_geo("z_ln_Ca") * z_ln_Ca + C_geo("z_ln_Mg") * z_ln_Mg + C_geo("z_ln_K") * z_ln_K + C_geo("z_ln_Corg") * z_ln_Corg + C_geo("z_Temp_Anom") * z_Temp_Anom + C_geo("z_Prec_Anom") * z_Prec_Anom + C_geo("z_Temp_Mean") * z_Temp_Mean,
 
         b_power_geo = n_pred_geo * exp(ln_K_pred_geo) * (soil_0_20_P_CO2^(n_pred_geo - 1)),
         inv_b_geo = 1 / b_power_geo
@@ -341,7 +378,7 @@ D_Long <- D_ready |>
             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
 
-        ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_agro = C_agro(1) + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
 
         b_power_agro = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
         inv_b_agro = 1 / b_power_agro
@@ -523,7 +560,7 @@ print(as.data.frame(all_effects), row.names = FALSE)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 D_Yield <- D_ready |>
-    filter(year >= 2010, !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
+    filter(!is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
 
     # Calculate the Physical Highway (1/b) using Agro PTF (consistent with uptake models)
     mutate(
@@ -536,11 +573,11 @@ D_Yield <- D_ready |>
             get_int_agro("ln_P_CO2", "z_ln_Corg") * z_ln_Corg +
             get_int_agro("ln_P_CO2", "z_Temp_Anom") * z_Temp_Anom +
             get_int_agro("ln_P_CO2", "z_Prec_Anom") * z_Prec_Anom,
-        ln_K_pred_agro = C_agro("(Intercept)") + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
+        ln_K_pred_agro = C_agro(1) + C_agro("z_ln_FineTexture") * z_ln_FineTexture + C_agro("z_pH") * z_pH + C_agro("z_ln_Ca") * z_ln_Ca + C_agro("z_ln_Mg") * z_ln_Mg + C_agro("z_ln_K") * z_ln_K + C_agro("z_ln_Corg") * z_ln_Corg + C_agro("z_Temp_Anom") * z_Temp_Anom + C_agro("z_Prec_Anom") * z_Prec_Anom + C_agro("z_Temp_Mean") * z_Temp_Mean,
         b_power = n_pred_agro * exp(ln_K_pred_agro) * (soil_0_20_P_CO2^(n_pred_agro - 1)),
         inv_b = 1 / b_power,
         # Safely sum Main Product and Byproduct
-        total_yield = tidyr::replace_na(annual_yield_mp_DM, 0) + tidyr::replace_na(annual_yield_bp_DM, 0)
+        total_yield = tidyr::replace_na(annual_yield_mp_DM, 0)
     ) |>
 
     # Normalize TOTAL YIELD by Site, Crop, and Year
@@ -554,7 +591,7 @@ D_Yield <- D_ready |>
         z_fert_N = as.numeric(scale(fert_N_tot)),
         site = as.factor(site),
         year_f = as.factor(year),
-        plot_nr = as.factor(plot_nr)
+        plot_nr = as.factor(plot_nr), crop = droplevels(as.factor(crop))
     )
 
 cat("Total Harvest Years Evaluated for Yield (2010-2022):", nrow(D_Yield), "\n")
@@ -581,18 +618,20 @@ m_yield_nlme <- nlme(
         beta_N * z_fert_N +
         beta_Temp * z_Temp_Mean + 
         beta_Prec * z_Prec_Anom
-    )) * soil_0_20_P_CO2),
+    )) * (soil_0_20_P_CO2 + E_base)),
     data = D_Yield,
-    fixed = c_base + beta_invb + beta_pH + beta_K + beta_Mg + beta_N + beta_Temp + beta_Prec ~ 1,
-    random = c_base ~ 1 | site,
-    start = c(c_base = 1.2, beta_invb = 0, beta_pH = 0, beta_K = 0, beta_Mg = 0, beta_N = 0, beta_Temp = 0, beta_Prec = 0),
+    fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_K ~ 1, beta_Mg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+    random = c_base ~ 1 | site/plot_nr,
+    start = c(1.2, rep(0, length(unique(D_Yield$crop)) - 1), 0, 0, 0, 0, 0, 0, 0, 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
 cat("### Yield ~ P_CO2 (Mitscherlich NLME with 1/b and Pedoclimatic drivers) ###\n")
 print(round(summary(m_yield_nlme)$tTable, 4))
-cat("\nPseudo-R2:", round(cor(D_Yield$Relative_Yield, predict(m_yield_nlme))^2, 3), "\n")
-cat("RMSE:", round(sqrt(mean(residuals(m_yield_nlme)^2)), 3), "\n")
+cat("\n### Yield Model Performance Metrics ###\n")
+df_yield_metrics <- get_metrics_nlme(m_yield_nlme, "Yield ~ P_CO2 (Mitscherlich NLME)", D_Yield, "Relative_Yield")
+print(kable(df_yield_metrics, format = "markdown"))
+cat("\n")
 
 # --- Visualization: 4-Panel Partial Effects ---
 cf <- fixef(m_yield_nlme)
@@ -609,7 +648,8 @@ make_curves <- function(var, beta_name, title) {
             ),
             Driver = title,
             # Predict holding other covariates at 0 (their standardized mean)
-            Predicted = 1 - exp(-cf["c_base"] * exp(cf[[beta_name]] * val) * P)
+            c_base_mean = mean(cf[grep("c_base", names(cf))]),
+            Predicted = 1 - exp(-c_base_mean * exp(cf[[beta_name]] * val) * (P + cf["E_base"]))
         )
 }
 
@@ -670,7 +710,7 @@ p_box <- ggplot(D_Yield, aes(x = site, y = Residual, fill = site)) +
 (p_resid | p_box)
 
 
-## ----pcrit-analysis, fig.width=10, fig.height=5-------------------------------
+## ----pcrit-analysis, fig.width=14, fig.height=5-------------------------------
 # ---------------------------------------------------------------------------
 # P_crit = STP at which Y = 95% of maximum yield
 #
@@ -683,8 +723,12 @@ re <- ranef(m_yield_nlme)
 
 D_Pcrit <- D_Yield |>
     mutate(
-        year_re = re[as.character(year), "c_base"],
-        c_eff  = (cf["c_base"] + year_re) * exp(
+        c_base_crop = cf["c_base.(Intercept)"] + tidyr::replace_na(cf[paste0("c_base.crop", crop)], 0),
+        plot_full_id = paste0(site, "/", plot_nr),
+        re_total = ranef(m_yield_nlme)$site[as.character(site), 1] + ranef(m_yield_nlme)$plot_nr[plot_full_id, 1],
+        c_eff  = (c_base_crop + tidyr::replace_na(re_total, 0)) * exp(
+
+
             cf["beta_invb"] * z_inv_b + 
             cf["beta_pH"] * z_pH + 
             cf["beta_K"] * z_ln_K +
@@ -693,7 +737,7 @@ D_Pcrit <- D_Yield |>
             cf["beta_Temp"] * z_Temp_Mean + 
             cf["beta_Prec"] * z_Prec_Anom
         ),
-        P_crit = log(20) / c_eff,               # mg/L P_CO2 at 95% max yield
+        P_crit = (log(20) / c_eff) - cf['E_base'],               # mg/L P_CO2 at 95% max yield
         ln_P_crit = log(P_crit),
         crop   = as.factor(crop)
     ) |>
@@ -751,7 +795,28 @@ p_pcrit_forest <- ggplot(nlme_effects, aes(x = estimate, y = reorder(term_clean,
     theme_minimal(base_size = 11) +
     theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
 
-(p_pcrit_box | p_pcrit_forest) + plot_layout(widths = c(1, 1.5))
+
+# 3. Forest plot: drivers of P_crit (1/c)
+nlme_effects_inv <- nlme_effects |>
+    dplyr::mutate(
+        estimate_inv = -estimate,
+        lower_inv = -upper,
+        upper_inv = -lower
+    )
+
+p_pcrit_forest_inv <- ggplot(nlme_effects_inv, aes(x = estimate_inv, y = reorder(term_clean, estimate_inv), color = sig)) +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+    geom_errorbarh(aes(xmin = lower_inv, xmax = upper_inv), height = 0.2, linewidth = 0.9) +
+    geom_point(size = 4) +
+    scale_color_manual(values = c("p < 0.05" = "#d73027", "p ≥ 0.05" = "gray60")) +
+    labs(title = "Drivers of the Critical P Threshold (P_crit)",
+        subtitle = "Positive = Increases the required P_crit (worse foraging)",
+        x = "Standardised Coefficient (effect on P_crit)", y = "", color = "") +
+    theme_minimal(base_size = 11) +
+    theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+
+(p_pcrit_box | p_pcrit_forest | p_pcrit_forest_inv) + plot_layout(widths = c(1, 1.2, 1.2))
+
 
 
 ## ----loso-cv------------------------------------------------------------------
@@ -817,4 +882,282 @@ cv_results <- bind_rows(
 cv_results |>
     kbl(caption = "**Table 4: Spatial Leave-One-Site-Out Cross-Validation (LOSO-CV).** Variance explained by fixed effects only. The Geochemical models maintain a vastly superior predictive capability on completely unseen environments, confirming that amorphous metal oxides are the true physical drivers of soil buffering capacity.") |>
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
+
+
+
+## ----pcrit-quadrant-analysis, fig.width=10, fig.height=6----------------------
+# 1. Prepare function to do LOOCV and quadrant classification
+run_loocv_quadrants <- function(data, p_col, inv_b_col) {
+    sites <- unique(as.character(data$site))
+    results <- list()
+    
+    for (test_site in sites) {
+        train_data <- data |> dplyr::filter(site != test_site) |> dplyr::mutate(P_test = .data[[p_col]], z_inv_b_test = .data[[inv_b_col]])
+        
+        # Drop rare crops that cause rank deficiency/singularity during LOOCV when their only site is left out
+        train_data <- train_data |> dplyr::group_by(crop) |> dplyr::filter(dplyr::n() > 200) |> dplyr::ungroup()
+        
+        test_data  <- data |> dplyr::filter(site == test_site) |> dplyr::mutate(P_test = .data[[p_col]], z_inv_b_test = .data[[inv_b_col]])
+        
+        train_data$crop <- droplevels(train_data$crop)
+        start_vals <- c(1.2, rep(0, length(levels(train_data$crop)) - 1), 0, 0, 0, 0, 0, 0, 0, 0)
+        
+        # Fit Model on Training Data (n-1)
+        fit <- tryCatch({
+            nlme(
+                Relative_Yield ~ 1 - exp(-(c_base * exp(
+                    beta_invb * z_inv_b_test + 
+                    beta_pH * z_pH + 
+                    beta_K * z_ln_K +
+                    beta_Mg * z_ln_Mg +
+                    beta_N * z_fert_N +
+                    beta_Temp * z_Temp_Mean + 
+                    beta_Prec * z_Prec_Anom
+                )) * (P_test + E_base)),
+                data = train_data,
+                fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_K ~ 1, beta_Mg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
+                random = c_base ~ 1 | site/plot_nr,
+                start = start_vals,
+                control = nlmeControl(maxIter = 1000, returnObject = TRUE)
+            )
+        }, error = function(e) {
+            cat("Error for site", test_site, ":\n")
+            print(e)
+            NULL
+        })
+        
+        if (!is.null(fit)) {
+            cf <- fixef(fit)
+            
+            # Predict P_crit for the TEST SITE
+            test_res <- test_data |>
+                dplyr::mutate(
+                    c_base_crop = cf["c_base.(Intercept)"] + tidyr::replace_na(cf[paste0("c_base.crop", crop)], 0),
+                    c_eff_loo = c_base_crop * exp(
+                        cf["beta_invb"] * z_inv_b_test + 
+                        cf["beta_pH"] * z_pH + 
+                        cf["beta_K"] * z_ln_K +
+                        cf["beta_Mg"] * z_ln_Mg +
+                        cf["beta_N"] * z_fert_N +
+                        cf["beta_Temp"] * z_Temp_Mean + 
+                        cf["beta_Prec"] * z_Prec_Anom
+                    ),
+                    P_crit_loo = (log(20) / c_eff_loo) - cf["E_base"],
+                    
+                    Quadrant = dplyr::case_when(
+                        P_test >= P_crit_loo & Relative_Yield >= 0.95 ~ "True Positive (Success)",
+                        P_test <  P_crit_loo & Relative_Yield <  0.95 ~ "True Negative (Correct Warning)",
+                        P_test >= P_crit_loo & Relative_Yield <  0.95 ~ "False Positive (Failure)",
+                        P_test <  P_crit_loo & Relative_Yield >= 0.95 ~ "False Negative (Over-fertilized)",
+                        TRUE ~ "NA"
+                    )
+                )
+            results[[test_site]] <- test_res
+        }
+    }
+    
+    dplyr::bind_rows(results)
+}
+
+# 2. Run Quadrant Analysis for P_CO2 and P_AAE10
+cat("Running LOOCV Quadrant Analysis... This may take a minute...\n")
+
+quad_co2 <- run_loocv_quadrants(D_Yield, "soil_0_20_P_CO2", "z_inv_b")
+quad_aae <- run_loocv_quadrants(D_Yield, "soil_0_20_P_AAE10", "z_inv_b")
+
+# 3. Summarize the Results
+sum_quads <- function(quad_data, extractant_name) {
+    total <- nrow(quad_data)
+    quad_data |>
+        dplyr::group_by(Quadrant) |>
+        dplyr::summarise(Count = n(), .groups = 'drop') |>
+        dplyr::mutate(
+            Extractant = extractant_name,
+            Percentage = round((Count / total) * 100, 1)
+        )
+}
+
+res_co2 <- sum_quads(quad_co2, "P_CO2 (Intensity)")
+res_aae <- sum_quads(quad_aae, "P_AAE10 (Legacy Pool)")
+
+quad_summary <- dplyr::bind_rows(res_co2, res_aae) |>
+    dplyr::select(Extractant, Quadrant, Count, Percentage) |>
+    dplyr::arrange(Quadrant, Extractant)
+
+quad_summary |>
+    kbl(caption = "**Table 5: Predictive Quadrant Analysis (LOOCV).** Evaluating the agronomic safety of dynamic P_crit predictions on fully unseen sites.") |>
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = F)
+
+# 4. Visualization
+p_quad <- ggplot(quad_summary, aes(x = Quadrant, y = Percentage, fill = Extractant)) +
+    geom_bar(stat = "identity", position = "dodge", color = "black", alpha = 0.8) +
+    scale_fill_manual(values = c("P_CO2 (Intensity)" = "#2c7bb6", "P_AAE10 (Legacy Pool)" = "#d7191c")) +
+    geom_text(aes(label = paste0(Percentage, "%")), position = position_dodge(width = 0.9), vjust = -0.5, size = 3.5, fontface = "bold") +
+    labs(
+        title = "Agronomic Safety Check: Out-of-Sample P_crit Quadrants",
+        subtitle = "False Positive = Predicted P was sufficient, but yield was actually < 0.95 (Most dangerous error!)",
+        x = "Agronomic Outcome Quadrant", y = "Percentage of Left-out Plots (%)"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+        plot.title = element_text(face = "bold"),
+        legend.position = "bottom",
+        axis.text.x = element_text(angle = 15, hjust = 1, face = "bold")
+    )
+
+print(p_quad)
+
+
+# 5. Scatter Plot of Quadrants (Normalized by P_crit)
+quad_co2_plot <- quad_co2 |> dplyr::mutate(P_Ratio = P_test / P_crit_loo, Extractant = "P_CO2 (Intensity)")
+quad_aae_plot <- quad_aae |> dplyr::mutate(P_Ratio = P_test / P_crit_loo, Extractant = "P_AAE10 (Legacy Pool)")
+quad_all <- dplyr::bind_rows(quad_co2_plot, quad_aae_plot)
+
+p_scatter <- ggplot(quad_all, aes(x = P_Ratio, y = Relative_Yield, color = Quadrant)) +
+    geom_point(alpha = 0.3, size = 1) +
+    geom_hline(yintercept = 0.95, linetype = "dashed", color = "black", linewidth = 0.8) +
+    geom_vline(xintercept = 1.0, linetype = "dashed", color = "black", linewidth = 0.8) +
+    scale_color_manual(values = c(
+        "True Positive (Success)" = "#1a9641",
+        "True Negative (Correct Warning)" = "#a6d96a",
+        "False Positive (Failure)" = "#d7191c",
+        "False Negative (Over-fertilized)" = "#fdae61",
+        "NA" = "gray"
+    )) +
+    facet_wrap(~Extractant, scales = "free_x") +
+    scale_x_log10(labels = scales::comma) +
+    labs(
+        title = "Predictive Quadrant Analysis: Normalized P vs Yield",
+        subtitle = "Vertical line: Predicted P_crit threshold. Horizontal line: 95% Yield Target.",
+        x = "Ratio: Actual Soil P / Predicted P_crit (Log Scale)", 
+        y = "Relative Yield"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        plot.title = element_text(face = "bold"),
+        strip.text = element_text(face = "bold", size = 11)
+    ) +
+    guides(color = guide_legend(override.aes = list(alpha = 1, size = 3), nrow = 2))
+
+print(p_scatter)
+
+
+## ----delta-q-analysis, fig.width=8, fig.height=6------------------------------
+# 6. Translating Intensity (P_crit) into a Practical Fertilizer Prescription (Delta Q)
+# We focus on the "True Negative" quadrant (soils correctly identified as deficient).
+# We want to calculate exactly how much P_AAE10 (Quantity) needs to be built up 
+# to reach the target P_CO2 (Intensity).
+
+def_data <- quad_co2 |>
+    dplyr::filter(Quadrant == "True Negative (Correct Warning)")
+
+# Join full model P_crit
+def_data <- def_data |> dplyr::left_join(D_Pcrit |> dplyr::select(site, plot_nr, year, P_crit_full = P_crit), by = c("site", "plot_nr", "year"))
+
+# Safely predict the target Quantity by overriding the ln_P_CO2 column temporarily
+# and using the established PTF fixed-effects (re.form = NA).
+def_data$ln_P_CO2_actual <- def_data$ln_P_CO2
+
+# Predict target legacy pool using Full Model P_crit
+def_data$ln_P_CO2 <- log(def_data$P_crit_full)
+def_data$pred_ln_Q_full <- predict(ptf_practical_raw, newdata = def_data, re.form = NA)
+
+# Predict target legacy pool using LOOCV P_crit
+def_data$ln_P_CO2 <- log(def_data$P_crit_loo)
+def_data$pred_ln_Q_loo <- predict(ptf_practical_raw, newdata = def_data, re.form = NA)
+
+# Restore original column and calculate both Delta Qs
+def_data$ln_P_CO2 <- def_data$ln_P_CO2_actual
+def_data <- def_data |>
+    dplyr::mutate(
+        Delta_Q_Full = exp(pred_ln_Q_full) - soil_0_20_P_AAE10,
+        Delta_Q_LOO = exp(pred_ln_Q_loo) - soil_0_20_P_AAE10,
+        Yield_Gap = 0.95 - Relative_Yield
+    )
+    
+# We will still plot Delta_Q_LOO for the validation curve since it's the strict one
+def_data$Delta_Q <- def_data$Delta_Q_LOO
+
+# Display a summary
+cat("### Calculated P Deficit (Delta Q) Summary for Deficient Plots ###\n")
+print(summary(def_data$Delta_Q))
+
+# Plot the Prescription Validation
+p_delta_q <- ggplot(def_data, aes(x = Delta_Q, y = Yield_Gap, color = site)) +
+    geom_point(alpha = 0.6, size = 2) +
+    geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+    geom_hline(yintercept = 0, color = "gray50", linetype = "dotted") +
+    geom_vline(xintercept = 0, color = "gray50", linetype = "dotted") +
+    labs(
+        title = "Agronomic Prescription Validation: P Deficit vs Yield Penalty",
+        subtitle = "Focusing on correctly identified deficient plots (True Negatives).",
+        x = expression(Delta*Q~" (Target "*P[AAE10]*" - Actual "*P[AAE10]*", mg/kg)"),
+        y = "Yield Gap (0.95 - Relative Yield)",
+        color = "Site"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+        plot.title = element_text(face = "bold"),
+        legend.position = "bottom"
+    )
+
+print(p_delta_q)
+
+
+# 7. Geochemical Boundary Condition: Filtering for pH < 7.0
+# In highly alkaline/calcareous soils (pH > 7.0), P dynamics are governed by calcium phosphate precipitation 
+# (e.g., apatite) rather than simple Fe/Al oxide adsorption. Our Fe/Al buffer-based model (1/b) correctly extrapolates
+# that to reach high solution P in such calcareous soils, you would need absurd amounts of P (equivalent to pure apatite).
+# Therefore, we bound the agronomic prescription model to acidic-to-neutral soils where the Fe/Al buffer primarily operates.
+
+def_data_acidic <- def_data |> dplyr::filter(rollMean_soil_0_20_pH_H2O < 7.0)
+
+# Display a summary for acidic/neutral soils
+cat("\n### Calculated P Deficit (Delta Q) Summary for Deficient Acidic/Neutral Plots (pH < 7) ###\n")
+print(summary(def_data_acidic$Delta_Q))
+
+p_delta_q_acidic <- ggplot(def_data_acidic, aes(x = Delta_Q, y = Yield_Gap, color = site)) +
+    geom_point(alpha = 0.8, size = 2) +
+    geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+    geom_hline(yintercept = 0, color = "gray50", linetype = "dotted") +
+    geom_vline(xintercept = 0, color = "gray50", linetype = "dotted") +
+    labs(
+        title = "Agronomic Prescription Validation (pH < 7.0)",
+        subtitle = "Geochemically bounded: P Deficit vs Yield Penalty in Acidic-to-Neutral soils.",
+        x = expression(Delta*Q~" (Target "*P[AAE10]*" - Actual "*P[AAE10]*", mg/kg)"),
+        y = "Yield Gap (0.95 - Relative Yield)",
+        color = "Site"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+        plot.title = element_text(face = "bold"),
+        legend.position = "bottom"
+    )
+
+print(p_delta_q_acidic)
+
+# 8. Dual-Histogram: Full Model vs LOOCV Fertilizer Prescription Explosion
+# This visually demonstrates the danger of interpolating the non-linear integral on unanchored extreme soils (OEN clay).
+plot_df <- def_data |> 
+    dplyr::select(site, Delta_Q_Full, Delta_Q_LOO) |>
+    tidyr::pivot_longer(cols = c(Delta_Q_Full, Delta_Q_LOO), names_to = "Model", values_to = "Delta_Q") |>
+    dplyr::mutate(Model = ifelse(Model == "Delta_Q_Full", "Full Model", "LOOCV (Unseen Site)"))
+
+p_hist <- ggplot(plot_df, aes(x = Delta_Q, fill = Model)) +
+    geom_histogram(alpha = 0.5, position = "identity", bins = 50) +
+    scale_x_log10(labels = scales::comma) +
+    facet_wrap(~site, scales = "free_y") +
+    scale_fill_manual(values = c("Full Model" = "#2c7bb6", "LOOCV (Unseen Site)" = "#d7191c")) +
+    labs(
+        title = "Fertilizer Prescription (Delta Q) Explosion on Unseen Sites",
+        subtitle = "Comparing Full Model vs LOOCV. Note the extreme multi-million kg/ha extrapolation artifact on OEN.",
+        x = expression(Delta*Q~" Prescription (mg/kg) [Log10 Scale]"),
+        y = "Count"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "bottom", plot.title = element_text(face="bold"))
+
+print(p_hist)
 
