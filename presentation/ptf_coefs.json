@@ -1,0 +1,79 @@
+{
+  "coefficients": {
+    "(Intercept)": 3.8052,
+    "ln_P_CO2": 0.5122,
+    "z_ln_FineTexture": 0.0075,
+    "z_pH": 0.2543,
+    "z_ln_Ca": -0.1263,
+    "z_ln_Mg": -0.1035,
+    "z_ln_K": -0.0198,
+    "z_ln_Corg": 0.0722,
+    "z_Temp_Anom": 0.0035,
+    "z_Prec_Anom": -0.0051,
+    "z_Temp_Mean": 0.0954,
+    "ln_P_CO2:z_ln_FineTexture": 0.0642,
+    "ln_P_CO2:z_pH": -0.0068,
+    "ln_P_CO2:z_ln_Ca": 0.1012,
+    "ln_P_CO2:z_ln_Mg": 0.0067,
+    "ln_P_CO2:z_ln_K": 0.0586,
+    "ln_P_CO2:z_ln_Corg": -0.0247,
+    "ln_P_CO2:z_Temp_Anom": 0.001,
+    "ln_P_CO2:z_Prec_Anom": 0.0025
+  },
+  "scales": {
+    "FineTexture": {
+      "mean": 4.1537,
+      "sd": 0.184,
+      "min": 3.3069,
+      "max": 4.452
+    },
+    "pH": {
+      "mean": 7.2851,
+      "sd": 0.8729,
+      "min": 4.8,
+      "max": 8.8
+    },
+    "Ca": {
+      "mean": 4.8814,
+      "sd": 0.356,
+      "min": 3.1781,
+      "max": 5.7236
+    },
+    "Mg": {
+      "mean": 2.3259,
+      "sd": 0.2665,
+      "min": 0.8329,
+      "max": 3.4012
+    },
+    "K": {
+      "mean": 2.546,
+      "sd": 0.3897,
+      "min": 1.1314,
+      "max": 4.4152
+    },
+    "Corg": {
+      "mean": 0.6458,
+      "sd": 0.293,
+      "min": -0.5798,
+      "max": 1.78
+    },
+    "Temp_Anom": {
+      "mean": -0.0133,
+      "sd": 0.8059,
+      "min": -2.5595,
+      "max": 2.445
+    },
+    "Prec_Anom": {
+      "mean": -0.7894,
+      "sd": 32.7292,
+      "min": -177.3038,
+      "max": 156.0962
+    },
+    "Temp_Mean": {
+      "mean": 2.46,
+      "sd": 2.958,
+      "min": 1.1805,
+      "max": 10.1961
+    }
+  }
+}
