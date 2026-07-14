@@ -12,15 +12,13 @@ While these concepts are theoretically robust, measuring them in natural soils i
 
 Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - **Olsen P (**$NaHCO_3$, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces [@Olsen1954]. - **P-AAE10 (Ammonium Acetate EDTA, pH 4.65):** A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption [@FAL1996Methodenbuch]. - **Water Extractions (**$P_{H_2O}$ and $P_{CO_2}$): Weak extractions using distilled or $CO_2$-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.
 
-## The Thermodynamic Flaw: Ionic Strength and Activity
+## The Analytical Flaw: The Piper-Steenbjerg Effect
 
-The reliance on operational definitions introduces an analytical limitation when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its **chemical activity (**$a$), not its total stoichiometric concentration ($c$).
+The reliance on operational definitions introduces a severe analytical limitation when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. For decades, agronomic models have attempted to use simple plant tissue concentrations ($C_P$) to predict phosphorus limitation. However, these models routinely fail in the field due to the **Piper-Steenbjerg effect** (carbon dilution).
 
-In the native soil solution, phosphate anions are electrostatically shielded by a cloud of background ions ($Ca^{2+}, Mg^{2+}, K^+, NO_3^-, SO_4^{2-}$). This native ionic strength ($I$) physically reduces the effective activity of the phosphate. The magnitude of this shielding is defined by the activity coefficient ($\gamma$), where true chemical activity is $a = c \cdot \gamma$.
+When a severely P-starved plant finally receives Phosphorus, it rapidly generates new biomass (carbon). This burst of growth paradoxically *dilutes* the tissue $C_P$ concentration, causing the measured concentration to drop even though the total Phosphorus mass in the plant increased. 
 
-For strong extractants like Olsen or P-AAE10, the extractant solution has an overwhelmingly high ionic strength (e.g., $I \approx 0.5 \text{ M}$ for Olsen). This artificial salt load overwhelms the native ionic strength of the soil. Consequently, while these methods successfully quantify the physical mass of phosphorus ($Q$), they alter the natural chemical environment, providing no information regarding the true thermodynamic Intensity ($I$) perceived by the root.
-
-Conversely, while weak water extractions successfully preserve the native soil matrix, reading their variable activity against a standard $I \approx 0$ calibration curve renders the values mathematically incomparable across different pedoclimatic sites. For example, in heavily fertilized Swiss agricultural soils (such as the long-term STYCS 167% P-treatments), the dissolution of accumulated amendments can elevate pore water ionic strength to $0.02 \text{ M}$. At a neutral pH, a large portion of P exists as the divalent $HPO_4^{2-}$ ion. Applying the Davies equation to this ionic strength yields an activity coefficient ($\gamma$) of approximately $0.58$. Therefore, over 40% of the chemically extracted mass is thermodynamically inactive to the root. To resolve this, raw stoichiometric concentrations derived from water extractions must be mathematically corrected via the Davies equation to yield true thermodynamic activity.
+Because of this dilution effect, empirical concentration measurements are fundamentally blind. As demonstrated by @hirteYieldResponseSoil2021, interpreting plant availability is impossible without knowing the underlying sorption capacity of the soil. We must transition from empirical concentrations to mechanistic mass-flux: Uptake ($Yield \times C_P$).
 
 ## Unifying Quantity, Intensity, and the Kinetic Bottleneck
 
@@ -34,9 +32,9 @@ To address this, we define a dynamic predictor: the **Initial Activity Flux (**$
 
 | Approach / Framework | Intensity Factor | Quantity (Capacity) Factor | Kinetic Factor |
 |:-----------------|:-----------------|:-----------------|:-----------------|
-| **Theoretical Concept (@Frossard2000Processes)** | Chemical activity of P in the soil solution | Pool of solid-phase P that can replenish the solution | Rate of P transfer from the solid to the liquid phase |
+| **Theoretical Concept (@Frossard2000Processes)** | Concentration of P in the soil solution | Pool of solid-phase P that can replenish the solution | Rate of P transfer from the solid to the liquid phase |
 | **Traditional / Static Proxy (GRUD)** | $P_{CO_2}$ (Raw Water-soluble Concentration) | $P_{AAE10}$ (Chelate-extractable Mass) | *Not Measured* |
-| **Dynamic / Thermodynamic Proxy (This Study)** | Maximum Thermodynamic Activity ($a_{max}$) | $P_{AAE10}$ | Initial Activity Flux ($J_0 = k \cdot a_{max}$) |
+| **Dynamic / Kinetic Proxy (This Study)** | Raw Intensity ($P_{CO_2}$) | $P_{AAE10}$ | Dynamic Desorption Velocity ($v_0 = k \cdot P_{CO_2}$) |
 
 : Conceptual mapping of fundamental phosphorus availability factors to their analytical proxies. {#tbl-terminology}
 
@@ -65,15 +63,13 @@ To address this, we define a dynamic predictor: the **Initial Activity Flux (**$
 ]
 
 % 1. The Nodes (Pools & Sinks)
-\node[measured_pool] (soluble) {\textbf{Soluble P} \\ Intensity ($a_{max}$)};
+\node[measured_pool] (soluble) {\textbf{Soluble P} \\ Intensity ($P_{CO2}$)};
 
 \node[solid_pool, right=of soluble] (solid) {\textbf{Solid Phase P} \\ (Sorbed \& Mineral) \\ Quantity ($P_{AAE10}$)};
 
 \node[unmeasured_pool, left=of soluble] (organic) {Organic P \\ (Unmeasured)};
 
 \node[sink, above=of soluble, yshift=1.5cm] (plant) {\textbf{Plant Uptake} \\ ($Y_{rel\_hist}$)};
-
-\node[modifier, below left=1cm and 0.2cm of soluble] (ionic) {Pore Water \\ Ionic Strength ($I$)};
 
 % 2. The Arrows (Processes)
 \draw[measured_arrow] (solid.160) -- node[above, font=\bfseries] {Desorption/Dissolution($k$)} (soluble.20);
@@ -82,9 +78,7 @@ To address this, we define a dynamic predictor: the **Initial Activity Flux (**$
 \draw[unmeasured_arrow] (organic.20) -- node[above, text=gray] {Mineralization} (soluble.160);
 \draw[unmeasured_arrow] (soluble.200) -- node[below, text=gray] {Immobilization} (organic.340);
 
-\draw[measured_arrow, draw=green!60!black] (soluble.north) -- node[right, align=left] {\textbf{Activity Flux ($J_0$)} \\ \textit{+ Diffusion Limit ($D_e$)}} (plant.south);
-
-\draw[modifier_arrow] (ionic.north) -- node[left, font=\footnotesize, text=purple, xshift=-0.1cm] {Shielding ($\gamma$)} (soluble.200);
+\draw[measured_arrow, draw=green!60!black] (soluble.north) -- node[right, align=left] {\textbf{Desorption Velocity ($v_0$)} \\ \textit{+ Diffusion Limit ($D_e$)}} (plant.south);
 
 % 3. Buffering Capacity (PBC) Overarching Relationship
 \draw[<->, dashed, very thick, draw=purple] (solid.south) -- ++(0,-1) -| node[pos=0.25, below, font=\bfseries, text=purple] {Phosphorus Buffering Capacity (PBC = $dQ/dI$)} (soluble.south);
@@ -128,10 +122,10 @@ graph TD
     end
 
     %% Phase 3: The Crossing
-    subgraph Phase 3: The Thermodynamic Crossing
-        F --> H{Davies Equation Correction}:::thermo
+    subgraph Phase 3: The Kinetic Crossing
+        F --> H{Dynamic Desorption}:::thermo
         G --> H
-        H --> I[True Thermodynamic Activities]:::thermo
+        H --> I[Historical Desorption Velocity v0]:::thermo
         H --> J[Raw Empirical Concentrations]:::thermo
     end
 
@@ -141,7 +135,7 @@ graph TD
         K --> L(Field Inverse Buffer Power: 1/b):::uptake
         
         L --> M
-        G --> M
+        I --> M
         J --> M
         
         M((Non-Linear Mixed Models<br>Plant P-Uptake)):::uptake

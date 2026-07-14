@@ -42,35 +42,25 @@ To capture the desorption process with high temporal resolution while preserving
 2.  **Kinetic Extraction**: The remaining soil pellet was resuspended in 200 ml of fresh deionized water. The suspension was shaken continuously, and subsamples were taken at eight time points: 2, 4, 10, 15, 20, 30, 45, and 60 minutes.
 3.  **Analysis**: Subsamples were immediately filtered, and the stoichiometric concentration of orthophosphate ($c_i$) was determined colorimetrically using the malachite green method [@VanVeldhoven1987Malachite].
 
-### Thermodynamic Correction to Chemical Activity {#sec-thermodynamic-correction}
+### Temporal Stability of Amorphous Metal Oxides
 
-Although the kinetic extraction utilized deionized water, the immediate dissolution of native soil salts ($Ca^{2+}, Mg^{2+}, K^+$, etc.) generates a non-zero ionic strength ($I$) in the suspension. Because plant roots respond to thermodynamic energy rather than physical mass, the stoichiometric concentration of the extract ($c_i$) must be corrected to its true chemical activity ($a_i$).
-
-The activity coefficient ($\gamma$) for the divalent phosphate ion ($HPO_4^{2-}$, $z = -2$) was calculated for each site-specific matrix using the **Davies Equation**, which is robust for agricultural soil solutions up to $I \approx 0.1 \text{ M}$:
-
-$$\log_{10}(\gamma) = -0.5 \cdot z^2 \left( \frac{\sqrt{I}}{1+\sqrt{I}} - 0.3 I \right)$$
-
-The true thermodynamic activity ($a_i$) of the phosphorus in the extract was then calculated as the product of the raw stoichiometric concentration and the activity coefficient:
-
-$$a_i = c_i \cdot \gamma$$
-
-This correction accounts for pedochemical variances caused by differing native background salinities and pH levels across the STYCS sites, converting the raw data into a universal thermodynamic Intensity ($I$) metric.
+Although the kinetic parameters ($k$) and geochemical structural variables ($Fe_{ox}$, $Al_{ox}$) were measured comprehensively in the year 2023, they were applied to the entire 26-year historical dataset. This is justified because oxalate-extractable iron and aluminum represent native, poorly-crystalline structural minerals rather than highly dynamic labile nutrient pools. Under constant arable management, these amorphous phases are widely recognized as pedologically stable over decadal timescales [@schwertmann1964differenzierung; @lookman1995geostatistical]. Thus, the 2023 measurements serve as robust, invariant site-means to characterize the fundamental sorption capacity of each experimental field.
 
 ## Statistical Analysis and Modeling {#sec-statistical-analysis}
 
 All data processing, mathematical modeling, and visualization were conducted using the R programming language (v. 4.3.1) [@R-base]. Primary packages included `nlme` [@R-nlme] for non-linear kinetic modeling, `lme4` [@R-lme4] for linear mixed-effects modeling, and `deSolve` and `ReacTran` for partial differential equation solving.
 
-### 1. Modeling of Desorption Kinetics and the Activity Flux ($J_0$)
+### 1. Modeling of Desorption Kinetics and the Desorption Velocity ($v_0$)
 
-To derive the kinetic parameters, a non-linear mixed-effects model (`nlme`) was fitted to the exact solution of the first-order rate equation, utilizing the thermodynamically corrected activities:
+To derive the kinetic parameters, a non-linear mixed-effects model (`nlme`) was fitted to the exact solution of the first-order rate equation, utilizing the raw stoichiometric concentrations ($P_{CO_2}$):
 
-$$a(t) = a_{max} \times (1 - e^{-k \times t'})$$
+$$c(t) = c_{max} \times (1 - e^{-k \times t'})$$
 
-Where $a(t)$ is the P activity at time $t$, $a_{max}$ is the maximum thermodynamic activity of the desorbable P pool (the asymptote), $k$ is the first-order desorption rate constant, and $t'$ is an adjusted time ($t_{min} + 3 \text{ min}$) accounting for initial dissolution. Sample-specific deviations were modeled as random effects to capture the unique desorption characteristics of each soil.
+Where $c(t)$ is the P concentration at time $t$, $c_{max}$ is the maximum concentration of the desorbable P pool (the asymptote), $k$ is the first-order desorption rate constant, and $t'$ is an adjusted time ($t_{min} + 3 \text{ min}$) accounting for initial dissolution. Sample-specific deviations were modeled as random effects to capture the unique desorption characteristics of each soil.
 
-From these parameters, a novel predictor for agronomic availability, the **Initial Activity Flux ($J_0$)**, was defined mathematically as the product of the rate constant and the maximum thermodynamic activity:
+Because the rate constant ($k$) is structurally invariant, it can be mathematically coupled with the historical Intensity data. From these parameters, a novel predictor for agronomic availability, the **Dynamic Desorption Velocity ($v_0$)**, was defined mathematically as the product of the rate constant and the historical static concentration:
 
-$$J_0 = k \cdot a_{max}$$
+$$v_0 = k \cdot P_{CO_2}$$
 
 ### 2. Thermodynamic $Q(I)$ Isotherms and Buffering Capacity
 
@@ -106,21 +96,21 @@ To test the core hypothesis, two competing sets of linear mixed-effects models (
 
 variables_df <- data.frame(
   Abbreviation = c("$Y_{rel\\_hist}$", "$Uptake_{rel}$", "$P_{bal}$", 
-                   "$k$", "$a_{max}$", "$J_0$", 
+                   "$k$", "$c_{max}$", "$v_0$", 
                    "$P_{AAE10}$", "$\\text{PBC}$"),
   `Variable` = c("Relative Yield (Historic)", "Relative P Uptake", "Cumulative P Balance", 
-                 "Rate Constant", "Maximum Activity (Intensity)", "Activity Flux", 
+                 "Rate Constant", "Maximum Concentration (Intensity)", "Desorption Velocity", 
                  "Standard Mass (Quantity)", "Phosphorus Buffering Capacity"),
   Unit = c("unitless", "unitless", "kg P ha⁻¹", 
-           "min⁻¹", "µM", "µM min⁻¹", 
-           "mg P kg⁻¹", "mg kg⁻¹ µM⁻¹"),
+           "min⁻¹", "mg P L⁻¹", "mg P L⁻¹ min⁻¹", 
+           "mg P kg⁻¹", "mg kg⁻¹ (mg L⁻¹)⁻¹"),
   Description = c(
     "Plot yield normalized by the site/crop-specific 95th percentile of historical well-fertilized yields.",
     "Plot P-uptake normalized by historical maximum uptake for the specific site and crop.",
     "Long-term net P budget (inputs minus outputs).",
     "First-order rate constant of P desorption.",
-    "Davies-corrected thermodynamic activity asymptote of the water-desorbable P pool.",
-    "Initial thermodynamic supply rate, calculated as $k \\times a_{max}$.",
+    "Maximum empirical concentration of the water-desorbable P pool.",
+    "Dynamic initial supply rate, calculated as $k \\times P_{CO2}$.",
     "Physical mass of extractable P (AAE10 method), acting as the Q-factor.",
     "The mathematical derivative ($dQ/dI$) of the site-specific Freundlich isotherm."
   )
@@ -133,16 +123,16 @@ knitr::kable(variables_df)
 
 To mechanistically validate the field-scale statistical findings and visualize the limitations of static buffering capacity, a modified radial transport model based on Barber-Cushman principles was constructed. Standard iterations of the Barber-Cushman model calculate radial diffusion using stoichiometric concentration ($C_l$) and a static buffer power ($b = \Delta Q / \Delta I$), effectively assuming instantaneous soil-solution equilibrium.
 
-To reflect the kinetic bottlenecks identified in this study, the partial differential equation (PDE) for radial transport in cylindrical coordinates was modified. The driving gradient was shifted to thermodynamic activity ($a_l$), and the static buffer power was replaced with a dynamic, first-order kinetic source term ($R_{desorption}$):
+To reflect the kinetic bottlenecks identified in this study, the partial differential equation (PDE) for radial transport in cylindrical coordinates was modified. The driving gradient was kept as empirical concentration ($c_l$), and the static buffer power was replaced with a dynamic, first-order kinetic source term ($R_{desorption}$):
 
-$$\frac{\partial a_l}{\partial t} = D_e \left( \frac{\partial^2 a_l}{\partial r^2} + \frac{1}{r} \frac{\partial a_l}{\partial r} \right) + \frac{r_0 v_0}{r} \frac{\partial a_l}{\partial r} + R_{desorption}$$
+$$\frac{\partial c_l}{\partial t} = D_e \left( \frac{\partial^2 c_l}{\partial r^2} + \frac{1}{r} \frac{\partial c_l}{\partial r} \right) + \frac{r_0 v_0}{r} \frac{\partial c_l}{\partial r} + R_{desorption}$$
 
 Where $D_e$ is the effective diffusion coefficient, $r$ is the radial distance, $r_0$ is the root radius, and $v_0$ is the water flux at the root surface. The kinetic source term resupplying the solution was defined using the experimentally derived parameters:
 
-$$R_{desorption} = k \cdot (a_{max} - a_l)$$
+$$R_{desorption} = k \cdot (c_{max} - c_l)$$
 
-Furthermore, the inner boundary condition at the root surface ($r = r_0$) was upgraded to reflect a dual-affinity Michaelis-Menten uptake system, accounting for both high-affinity (PHT1) and low-affinity (LATS) transporter kinetics responding directly to chemical activity:
+Furthermore, the inner boundary condition at the root surface ($r = r_0$) was upgraded to reflect a dual-affinity Michaelis-Menten uptake system, accounting for both high-affinity (PHT1) and low-affinity (LATS) transporter kinetics:
 
-$$J_r = \frac{V_{max1} \cdot (a_l - a_{min})}{K_{m1} + (a_l - a_{min})} + \frac{V_{max2} \cdot (a_l - a_{min})}{K_{m2} + (a_l - a_{min})}$$
+$$J_r = \frac{V_{max1} \cdot (c_l - c_{min})}{K_{m1} + (c_l - c_{min})} + \frac{V_{max2} \cdot (c_l - c_{min})}{K_{m2} + (c_l - c_{min})}$$
 
 The modified PDEs were solved numerically in R utilizing the `ReacTran` and `deSolve` packages to generate dynamic spatial profiles of the P-depletion zone over time.
