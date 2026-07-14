@@ -9,7 +9,7 @@
 <meta name="author" content="Marc Jerónimo Pérez y Ropero">
 <meta name="author" content="Frank Liebisch">
 <meta name="author" content="Emmanuel Frossard">
-<meta name="dcterms.date" content="2026-07-10">
+<meta name="dcterms.date" content="2026-07-14">
 
 <title>P-release kinetics as a predictor for P-availability in Swiss cropping systems – STYCS P-Kinetics Manuscript</title>
 <style>
@@ -267,7 +267,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 10, 2026</p>
+      <p class="date">July 14, 2026</p>
     </div>
   </div>
   
@@ -289,13 +289,13 @@ window.Quarto = {
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
 <section id="the-agronomic-dilemma-of-phosphorus" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="the-agronomic-dilemma-of-phosphorus"><span class="header-section-number">1.1</span> The Agronomic Dilemma of Phosphorus</h2>
-<p>Phosphorus (P) is an essential macronutrient for all life, yet its management in agricultural systems presents a significant challenge. In the soil solution, P exists predominantly as highly reactive orthophosphate anions (<span class="math inline">\(HPO_4^{2-}\)</span> or <span class="math inline">\(H_2PO_4^{-}\)</span>). These dissolved species are rapidly immobilized—either adsorbed onto the surfaces of clays and metal oxides or precipitated with cations like calcium, iron, and aluminum to form minerals of low solubility <span class="citation" data-cites="Brady2016Soils Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref"><strong>Brady2016Soils?</strong></a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref"><strong>Sposito2008Chemistry?</strong></a>)</span>. Consequently, the total soil P stock is vast, but the minute fraction dissolved in the soil solution—the only form directly available to plant roots—is highly transient.</p>
+<p>Phosphorus (P) is an essential macronutrient for all life, yet its management in agricultural systems presents a significant challenge. In the soil solution, P exists predominantly as highly reactive orthophosphate anions (<span class="math inline">\(HPO_4^{2-}\)</span> or <span class="math inline">\(H_2PO_4^{-}\)</span>). These dissolved species are rapidly immobilized—either adsorbed onto the surfaces of clays and metal oxides or precipitated with cations like calcium, iron, and aluminum to form minerals of low solubility <span class="citation" data-cites="Brady2016Soils Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref">Sposito, 2008</a>)</span>. Consequently, the total soil P stock is vast, but the minute fraction dissolved in the soil solution—the only form directly available to plant roots—is highly transient.</p>
 </section>
 <section id="conceptual-frameworks-vs.-operational-definitions" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</h2>
-<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref"><strong>Frossard2000Processes?</strong></a>)</span>: 1. <strong>P-Intensity (</strong><span class="math inline">\(I\)</span>): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (</strong><span class="math inline">\(Q\)</span>): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
+<p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (</strong><span class="math inline">\(I\)</span>): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (</strong><span class="math inline">\(Q\)</span>): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
 <p>While these concepts are theoretically robust, measuring them in natural soils is methodologically challenging. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
-<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref"><strong>Olsen1954?</strong></a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref"><strong>FAL1996Methodenbuch?</strong></a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
+<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref">Olsen et al., 1954</a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">FAL &amp; FAW, 1996</a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
 </section>
 <section id="the-thermodynamic-flaw-ionic-strength-and-activity" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</h2>
@@ -307,7 +307,7 @@ window.Quarto = {
 <section id="unifying-quantity-intensity-and-the-kinetic-bottleneck" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</h2>
 <p>Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction (<span class="math inline">\(Q\)</span>, such as <span class="math inline">\(P_{AAE10}\)</span>) to construct a purely thermodynamic <span class="math inline">\(Q(I)\)</span> framework. By parameterizing this relationship using a Freundlich isotherm (<span class="math inline">\(Q = K_f \cdot I^{1/n}\)</span>), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative (<span class="math inline">\(\frac{dQ}{dI}\)</span>).</p>
-<p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref"><strong>Nye2000Solute?</strong></a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
+<p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
 <p>To address this, we define a dynamic predictor: the <strong>Initial Activity Flux (</strong><span class="math inline">\(J_0\)</span>). This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant (<span class="math inline">\(k\)</span>) by the maximum thermodynamic activity (<span class="math inline">\(a_{max}\)</span>): <span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
 <p><a href="#tbl-terminology" class="quarto-xref">Table&nbsp;1</a> maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.</p>
 <div id="tbl-terminology" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -333,7 +333,7 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref"><strong>Frossard2000Processes?</strong></a>)</span>)</strong></td>
+<td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">Frossard et al. (<a href="#ref-Frossard2000Processes" role="doc-biblioref">2000</a>)</span>)</strong></td>
 <td style="text-align: left;">Chemical activity of P in the soil solution</td>
 <td style="text-align: left;">Pool of solid-phase P that can replenish the solution</td>
 <td style="text-align: left;">Rate of P transfer from the solid to the liquid phase</td>
@@ -544,7 +544,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <ol type="1">
 <li><strong>Pre-washing to Remove Soluble P</strong>: 10 g of air-dried soil was suspended in 200 ml of deionized water and shaken for 60 minutes at 120 Hz. The suspension was centrifuged for 15 minutes at 4000 rpm, and the supernatant containing the readily soluble P was discarded.</li>
 <li><strong>Kinetic Extraction</strong>: The remaining soil pellet was resuspended in 200 ml of fresh deionized water. The suspension was shaken continuously, and subsamples were taken at eight time points: 2, 4, 10, 15, 20, 30, 45, and 60 minutes.</li>
-<li><strong>Analysis</strong>: Subsamples were immediately filtered, and the stoichiometric concentration of orthophosphate (<span class="math inline">\(c_i\)</span>) was determined colorimetrically using the malachite green method <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref"><strong>VanVeldhoven1987Malachite?</strong></a>)</span>.</li>
+<li><strong>Analysis</strong>: Subsamples were immediately filtered, and the stoichiometric concentration of orthophosphate (<span class="math inline">\(c_i\)</span>) was determined colorimetrically using the malachite green method <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref">Van Veldhoven &amp; Mannaerts, 1987</a>)</span>.</li>
 </ol>
 </section>
 <section id="sec-thermodynamic-correction" class="level3" data-number="2.3.2">
@@ -697,17 +697,38 @@ Table&nbsp;3: Description of key variables used in the thermodynamic and agronom
 <div id="ref-R-lme4" class="csl-entry" role="listitem">
 Bates, D., Maechler, M., Bolker, B., Walker, S., Jagan, M., &amp; Ly, A. (2026). <em>lme4: Linear mixed-effects models using eigen and S4</em>. <a href="https://github.com/lme4/lme4/">https://github.com/lme4/lme4/</a>
 </div>
+<div id="ref-Brady2016Soils" class="csl-entry" role="listitem">
+Brady, N. C., &amp; Weil, R. R. (2016). <em>The nature and properties of soils</em>. Pearson.
+</div>
+<div id="ref-FAL1996Methodenbuch" class="csl-entry" role="listitem">
+FAL, R., &amp; FAW, R. (1996). <em>Schweizerisches landwirtschaftliches methodenbuch</em>. Forschungsanstalten Agroscope.
+</div>
 <div id="ref-flossmannExtractionMethodCharacterizing1982" class="csl-entry" role="listitem">
 Flossmann, R., &amp; Richter, D. (1982). <em>Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution.</em>
 </div>
+<div id="ref-Frossard2000Processes" class="csl-entry" role="listitem">
+Frossard, E., Condron, L. M., Oberson, A., Sinaj, S., &amp; Fardeau, J.-C. (2000). Processes governing phosphorus availability in temperate soils. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 15–23.
+</div>
 <div id="ref-hirteYieldResponseSoil2021" class="csl-entry" role="listitem">
 Hirte, J., Richner, W., Orth, B., Liebisch, F., &amp; Flisch, R. (2021). Yield response to soil test phosphorus in <span>Switzerland</span>: <span>Pedoclimatic</span> drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Science of The Total Environment</em>, <em>755</em>, 143453. <a href="https://doi.org/10.1016/j.scitotenv.2020.143453">https://doi.org/10.1016/j.scitotenv.2020.143453</a>
+</div>
+<div id="ref-Nye2000Solute" class="csl-entry" role="listitem">
+Nye, P. H., &amp; Tinker, P. B. (2000). <em>Solute movement in the soil-root system</em>. Univ of California Press.
+</div>
+<div id="ref-Olsen1954" class="csl-entry" role="listitem">
+Olsen, S. R., Cole, C., Watanabe, F. S., &amp; Dean, L. (1954). <em>Estimation of available phosphorus in soils by extraction with sodium bicarbonate</em>.
 </div>
 <div id="ref-R-nlme" class="csl-entry" role="listitem">
 Pinheiro, J., Bates, D., &amp; R Core Team. (2026). <em>Nlme: Linear and nonlinear mixed effects models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>
 </div>
 <div id="ref-R-base" class="csl-entry" role="listitem">
 R Core Team. (2026). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals">https://doi.org/10.32614/R.manuals</a>
+</div>
+<div id="ref-Sposito2008Chemistry" class="csl-entry" role="listitem">
+Sposito, G. (2008). <em>The chemistry of soils</em>. Oxford university press.
+</div>
+<div id="ref-VanVeldhoven1987Malachite" class="csl-entry" role="listitem">
+Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosphate measurements in the nanomolar range. <em>Analytical Biochemistry</em>, <em>161</em>(1), 45–48.
 </div>
 </div>
 <div style="page-break-after: always;"></div>
