@@ -1,0 +1,113 @@
+{
+  "uptake_coefs": {
+    "U_base": 1.0113,
+    "beta_temp": 0.009,
+    "beta_N": -0.0025,
+    "beta_v0": 0.0299,
+    "beta_invb": 0.0276,
+    "K_base_crops": {
+      "CH": 0.0419,
+      "FR": 0.0679,
+      "KA": 0.0331,
+      "KM": 0.0466,
+      "KW": 0.0555,
+      "RA": 0.0904,
+      "SJ": 0.0282,
+      "SM": -0.0195,
+      "SW": 0.0032,
+      "WG": 0.0675,
+      "WS": 0.116,
+      "WW": 0.0261,
+      "ZF": 0.058,
+      "ZR": 0.0823
+    }
+  },
+  "scales": {
+    "inv_b_geo": {
+      "mean": 0.0574,
+      "sd": 0.0491
+    }
+  },
+  "crop_norms": {
+    "WW": {
+      "name": "Winterweizen (Brot)",
+      "N": 140,
+      "P": 27
+    },
+    "SW": {
+      "name": "Sommerweizen",
+      "N": 120,
+      "P": 23
+    },
+    "WG": {
+      "name": "Wintergerste",
+      "N": 110,
+      "P": 28
+    },
+    "KM": {
+      "name": "Körnermais",
+      "N": 110,
+      "P": 46
+    },
+    "SM": {
+      "name": "Silomais",
+      "N": 110,
+      "P": 46
+    },
+    "KA": {
+      "name": "Kartoffeln",
+      "N": 120,
+      "P": 36
+    },
+    "ZR": {
+      "name": "Zuckerrüben",
+      "N": 100,
+      "P": 40
+    },
+    "RA": {
+      "name": "Winterraps",
+      "N": 150,
+      "P": 28
+    }
+  },
+  "yield_coefs": {
+    "E_base": 0.8169,
+    "beta_invb": -0.0408,
+    "beta_pH": -0.2258,
+    "beta_K": 0.3217,
+    "beta_Mg": -0.7322,
+    "beta_N": 0.0213,
+    "beta_Temp": -0.1043,
+    "beta_Prec": 0.0029,
+    "c_base_crops": {
+      "CH": 1.8984,
+      "FR": 4.0962,
+      "KA": 4.6729,
+      "KM": 5.9581,
+      "KW": 4.1524,
+      "RA": 4.0175,
+      "SJ": 8.3747,
+      "SM": 5.3426,
+      "SW": 4.7322,
+      "WG": 4.366,
+      "WS": 3.202,
+      "WW": 4.3004,
+      "ZF": 3.8154,
+      "ZR": 4.5379
+    }
+  },
+  "yield_scales": {
+    "pH": {
+      "mean": 7.3003,
+      "sd": 0.8568
+    },
+    "K": {
+      "mean": 4.565,
+      "sd": 0.6071
+    },
+    "Mg": {
+      "mean": 5.5513,
+      "sd": 0.6671
+    }
+  }
+}

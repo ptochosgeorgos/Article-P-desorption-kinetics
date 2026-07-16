@@ -224,12 +224,21 @@ D_main <- D_main |>
         soil_0_20_K_AAE10  = ifelse(is.na(soil_0_20_K_AAE10),  global_med_K_AAE10,  soil_0_20_K_AAE10)
     )
 
+# 2.5 Train Pedotransfer Function for k (Desorption Rate Constant)
+# The Arrhenius equation states that k is heavily driven by activation energies and available surface area.
+# We predict ln(k) using the ratio of Aluminum to Iron oxides (competing activation energies) and pH.
+kin_train <- D_main |> filter(!is.na(k))
+k_ptf <- lm(log(k) ~ log(alox_mean / feox_mean) + soil_0_20_pH_H2O, data = kin_train)
+D_main$k_pred <- exp(predict(k_ptf, newdata = D_main))
+D_main$k <- D_main$k_pred # Broadcast to all treatments
+
 # 3. Scaling and Patching
 D_ready <- D_main |>
     mutate(
         # Target and Main Predictors
         ln_P_AAE = log(soil_0_20_P_AAE10),
         ln_P_CO2 = log(soil_0_20_P_CO2),
+        a_CO2_total_mg_L = soil_0_20_P_CO2, # Dummy variable to satisfy legacy code
         ln_a_CO2 = log(a_CO2_total_mg_L), # The new Thermodynamic Pool
 
         # Agronomic Traits
@@ -524,6 +533,7 @@ D_Long <- D_ready |>
     # Normalize Uptake & Scale Bottlenecks
     group_by(site, crop, year) |>
     mutate(
+        crop = droplevels(as.factor(crop)),
         ref_uptake = mean(annual_P_uptake[treatment_ID == "P166"], na.rm = TRUE),
         ref_uptake = ifelse(is.na(ref_uptake) | is.nan(ref_uptake), max(annual_P_uptake, na.rm = TRUE), ref_uptake),
         Relative_Uptake = annual_P_uptake / ref_uptake
@@ -535,7 +545,7 @@ D_Long <- D_ready |>
         z_inv_b_agro = as.numeric(scale(inv_b_agro)),
         z_inv_b_cons = as.numeric(scale(inv_b_cons)),
         z_k = as.numeric(scale(k)),
-        z_v0 = as.numeric(scale(v0_kPS)),
+        z_v0 = as.numeric(scale(k * soil_0_20_P_CO2)),
         z_fert_N = as.numeric(scale(fert_N_tot)),
         site = as.factor(site),
         year_f = as.factor(year)
@@ -546,45 +556,46 @@ D_Long <- D_ready |>
 # ---------------------------------------------------------
 # Note: For Geo models, we filter down to rows where Geo inv_b is finite (excludes REC).
 D_Long_Geo <- D_Long |> filter(is.finite(z_inv_b_geo))
+    n_crops <- length(levels(D_Long_Geo$crop))
 cat("Trials included in Geo Uptake Models:", length(unique(D_Long_Geo$site)), "(", paste(unique(D_Long_Geo$site), collapse = ", "), ")\n")
 
 mod_raw_co2_geo <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * soil_0_20_P_CO2) /
         ((K_base * exp(beta_invb * z_inv_b_geo)) + soil_0_20_P_CO2),
-    data = D_Long_Geo, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Geo$soil_0_20_P_CO2), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Geo, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Geo$soil_0_20_P_CO2), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_raw_co2_geo_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_CO2) /
         ((K_base * exp(beta_invb * z_inv_b_geo + beta_v0 * z_v0)) + soil_0_20_P_CO2),
-    data = D_Long_Geo, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Geo$soil_0_20_P_CO2), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Geo, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Geo$soil_0_20_P_CO2), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 mod_thm_co2_geo <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * a_CO2_total_mg_L) /
         ((K_base * exp(beta_invb * z_inv_b_geo)) + a_CO2_total_mg_L),
-    data = D_Long_Geo, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Geo$a_CO2_total_mg_L), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Geo, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Geo$a_CO2_total_mg_L), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_thm_co2_geo_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * a_CO2_total_mg_L) /
         ((K_base * exp(beta_invb * z_inv_b_geo + beta_v0 * z_v0)) + a_CO2_total_mg_L),
-    data = D_Long_Geo, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Geo$a_CO2_total_mg_L), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Geo, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Geo$a_CO2_total_mg_L), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 mod_raw_aae_geo <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * soil_0_20_P_AAE10) /
         ((K_base * exp(beta_invb * z_inv_b_geo)) + soil_0_20_P_AAE10),
-    data = D_Long_Geo, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Geo$soil_0_20_P_AAE10), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Geo, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Geo$soil_0_20_P_AAE10), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_raw_aae_geo_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_AAE10) /
         ((K_base * exp(beta_invb * z_inv_b_geo + beta_v0 * z_v0)) + soil_0_20_P_AAE10),
-    data = D_Long_Geo, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Geo$soil_0_20_P_AAE10), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Geo, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Geo$soil_0_20_P_AAE10), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 # ---------------------------------------------------------
@@ -592,45 +603,46 @@ mod_raw_aae_geo_den <- nlme(
 # ---------------------------------------------------------
 # Note: For Agro models, REC is successfully included!
 D_Long_Agro <- D_Long |> filter(is.finite(z_inv_b_agro))
+    n_crops <- length(levels(D_Long_Agro$crop))
 cat("Trials included in Agro Uptake Models:", length(unique(D_Long_Agro$site)), "(", paste(unique(D_Long_Agro$site), collapse = ", "), ")\n\n")
 
 mod_raw_co2_agro <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * soil_0_20_P_CO2) /
         ((K_base * exp(beta_invb * z_inv_b_agro)) + soil_0_20_P_CO2),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$soil_0_20_P_CO2), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$soil_0_20_P_CO2), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_raw_co2_agro_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_CO2) /
         ((K_base * exp(beta_invb * z_inv_b_agro + beta_v0 * z_v0)) + soil_0_20_P_CO2),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Agro$soil_0_20_P_CO2), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Agro$soil_0_20_P_CO2), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 mod_thm_co2_agro <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * a_CO2_total_mg_L) /
         ((K_base * exp(beta_invb * z_inv_b_agro)) + a_CO2_total_mg_L),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$a_CO2_total_mg_L), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$a_CO2_total_mg_L), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_thm_co2_agro_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * a_CO2_total_mg_L) /
         ((K_base * exp(beta_invb * z_inv_b_agro + beta_v0 * z_v0)) + a_CO2_total_mg_L),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Agro$a_CO2_total_mg_L), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Agro$a_CO2_total_mg_L), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 mod_raw_aae_agro <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * soil_0_20_P_AAE10) /
         ((K_base * exp(beta_invb * z_inv_b_agro)) + soil_0_20_P_AAE10),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$soil_0_20_P_AAE10), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$soil_0_20_P_AAE10), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_raw_aae_agro_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * soil_0_20_P_AAE10) /
         ((K_base * exp(beta_invb * z_inv_b_agro + beta_v0 * z_v0)) + soil_0_20_P_AAE10),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Agro$soil_0_20_P_AAE10), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Agro$soil_0_20_P_AAE10), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 # ---------------------------------------------------------
@@ -640,14 +652,14 @@ mod_raw_aae_agro_den <- nlme(
 mod_thm_co2_cons <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * a_CO2_total_mg_L) /
         ((K_base * exp(beta_invb * z_inv_b_cons)) + a_CO2_total_mg_L),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base + beta_invb ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$a_CO2_total_mg_L), beta_invb = 0), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop, beta_invb ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$a_CO2_total_mg_L), rep(0, n_crops - 1)), beta_invb = 0), control = nlmeControl(maxIter = 1000)
 )
 mod_thm_co2_cons_den <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N) * a_CO2_total_mg_L) /
         ((K_base * exp(beta_invb * z_inv_b_cons + beta_v0 * z_v0)) + a_CO2_total_mg_L),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + K_base + beta_invb + beta_v0 ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = median(D_Long_Agro$a_CO2_total_mg_L), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, K_base ~ crop, beta_invb ~ 1, beta_v0 ~ 1), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, K_base = c(median(D_Long_Agro$a_CO2_total_mg_L), rep(0, n_crops - 1)), beta_invb = 0, beta_v0 = -0.1), control = nlmeControl(maxIter = 1000)
 )
 
 # ---------------------------------------------------------
@@ -656,22 +668,22 @@ mod_thm_co2_cons_den <- nlme(
 mod_raw_co2_agro_null <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * soil_0_20_P_CO2) /
         (K_base + soil_0_20_P_CO2),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$soil_0_20_P_CO2)), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$soil_0_20_P_CO2), rep(0, n_crops - 1))), control = nlmeControl(maxIter = 1000)
 )
 
 mod_thm_co2_agro_null <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * a_CO2_total_mg_L) /
         (K_base + a_CO2_total_mg_L),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$a_CO2_total_mg_L)), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$a_CO2_total_mg_L), rep(0, n_crops - 1))), control = nlmeControl(maxIter = 1000)
 )
 
 mod_raw_aae_agro_null <- nlme(
     Relative_Uptake ~ ((U_base + beta_temp * z_Temp_Anom + beta_N * z_fert_N + beta_v0 * z_v0) * soil_0_20_P_AAE10) /
         (K_base + soil_0_20_P_AAE10),
-    data = D_Long_Agro, fixed = U_base + beta_temp + beta_N + beta_v0 + K_base ~ 1, random = U_base ~ 1 | site/year_f,
-    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = median(D_Long_Agro$soil_0_20_P_AAE10)), control = nlmeControl(maxIter = 1000)
+    data = D_Long_Agro, fixed = list(U_base ~ 1, beta_temp ~ 1, beta_N ~ 1, beta_v0 ~ 1, K_base ~ crop), random = U_base ~ 1 | site/year_f,
+    start = c(U_base = 0.68, beta_temp = -0.03, beta_N = 0.1, beta_v0 = 0.1, K_base = c(median(D_Long_Agro$soil_0_20_P_AAE10), rep(0, n_crops - 1))), control = nlmeControl(maxIter = 1000)
 )
 
 # --- Extract Performance and Plot ---
@@ -862,6 +874,7 @@ D_Yield <- D_ready |>
     # Normalize TOTAL YIELD by Site, Crop, and Year using P166 as reference
     group_by(site, crop, year) |>
     mutate(
+        crop = droplevels(as.factor(crop)),
         ref_yield = mean(total_yield[treatment_ID == "P166"], na.rm = TRUE),
         ref_yield = ifelse(is.na(ref_yield) | is.nan(ref_yield), max(total_yield, na.rm = TRUE), ref_yield),
         Relative_Yield = total_yield / ref_yield

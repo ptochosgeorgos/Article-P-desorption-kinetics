@@ -58,9 +58,11 @@ $$c(t) = c_{max} \times (1 - e^{-k \times t'})$$
 
 Where $c(t)$ is the P concentration at time $t$, $c_{max}$ is the maximum concentration of the desorbable P pool (the asymptote), $k$ is the first-order desorption rate constant, and $t'$ is an adjusted time ($t_{min} + 3 \text{ min}$) accounting for initial dissolution. Sample-specific deviations were modeled as random effects to capture the unique desorption characteristics of each soil.
 
-Because the rate constant ($k$) is structurally invariant, it can be mathematically coupled with the historical Intensity data. From these parameters, a novel predictor for agronomic availability, the **Dynamic Desorption Velocity ($v_0$)**, was defined mathematically as the product of the rate constant and the historical static concentration:
+Because the rate constant ($k$) is structurally invariant, it can be mathematically coupled with the historical Intensity data. To extrapolate this kinetic property to all treatments—including those where $k$ was not empirically measured (e.g., control plots and unmeasured sites like Grabs)—we developed a fundamental **Pedotransfer Function (PTF)** based on the Arrhenius equation. We modeled $\ln(k)$ utilizing the ratio of amorphous aluminum to iron oxides ($\ln(Al_{ox} / Fe_{ox})$) and soil pH. This ratio elegantly captures the competing activation energies of the dominant sorption surfaces, allowing us to accurately predict a rate constant ($k_{pred}$) for every plot in the dataset.
 
-$$v_0 = k \cdot P_{CO_2}$$
+From these parameters, a novel predictor for agronomic availability, the **Dynamic Desorption Velocity ($v_0$)**, was defined mathematically as the product of the predicted rate constant and the historical static concentration:
+
+$$v_0 = k_{pred} \cdot P_{CO_2}$$
 
 ### 2. Thermodynamic $Q(I)$ Isotherms and Buffering Capacity
 
