@@ -526,39 +526,47 @@ window.Quarto = {
 <span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">soil_0_20_K_AAE10  =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(soil_0_20_K_AAE10),  global_med_K_AAE10,  soil_0_20_K_AAE10)</span>
 <span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Scaling and Patching</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>D_ready <span class="ot">&lt;-</span> D_main <span class="sc">|&gt;</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Target and Main Predictors</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">ln_P_AAE =</span> <span class="fu">log</span>(soil_0_20_P_AAE10),</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">ln_P_CO2 =</span> <span class="fu">log</span>(soil_0_20_P_CO2),</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">a_CO2_total_mg_L =</span> soil_0_20_P_CO2, <span class="co"># Dummy variable to satisfy legacy code</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>        <span class="at">ln_a_CO2 =</span> <span class="fu">log</span>(a_CO2_total_mg_L), <span class="co"># The new Thermodynamic Pool</span></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Agronomic Traits</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_FineTexture =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_clay <span class="sc">+</span> rollMean_soil_0_20_silt))),</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Ca =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_Ca_AAE10))),</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Mg =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_Mg_AAE10))),</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_K  =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_K_AAE10))),</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_pH    =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(rollMean_soil_0_20_pH_H2O)),</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Corg =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_Corg))),</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co"># 2.5 Train Pedotransfer Function for k (Desorption Rate Constant)</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="co"># The Arrhenius equation states that k is heavily driven by activation energies and available surface area.</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="co"># We predict ln(k) using the ratio of Aluminum to Iron oxides (competing activation energies) and pH.</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>kin_train <span class="ot">&lt;-</span> D_main <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(k))</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>k_ptf <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(k) <span class="sc">~</span> <span class="fu">log</span>(alox_mean <span class="sc">/</span> feox_mean) <span class="sc">+</span> soil_0_20_pH_H2O, <span class="at">data =</span> kin_train)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>D_main<span class="sc">$</span>k_pred <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">predict</span>(k_ptf, <span class="at">newdata =</span> D_main))</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>D_main<span class="sc">$</span>k <span class="ot">&lt;-</span> D_main<span class="sc">$</span>k_pred <span class="co"># Broadcast to all treatments</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Scaling and Patching</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>D_ready <span class="ot">&lt;-</span> D_main <span class="sc">|&gt;</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Target and Main Predictors</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        <span class="at">ln_P_AAE =</span> <span class="fu">log</span>(soil_0_20_P_AAE10),</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">ln_P_CO2 =</span> <span class="fu">log</span>(soil_0_20_P_CO2),</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>        <span class="at">a_CO2_total_mg_L =</span> soil_0_20_P_CO2, <span class="co"># Dummy variable to satisfy legacy code</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>        <span class="at">ln_a_CO2 =</span> <span class="fu">log</span>(a_CO2_total_mg_L), <span class="co"># The new Thermodynamic Pool</span></span>
 <span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Geochemical Traits</span></span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Feox =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(feox_mean))),</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Alox =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(alox_mean))),</span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Climate &amp; Kinetics</span></span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_Temp_Mean =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(site_juv_temp_mean)), <span class="at">z_Temp_Anom =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(temp_anomaly)),</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_Prec_Anom =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(prec_anomaly)), <span class="at">z_k =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(k))</span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Patch stable traits with site means</span></span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site) <span class="sc">|&gt;</span></span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Corg =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_Corg), <span class="fu">mean</span>(z_ln_Corg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_Corg),</span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Feox =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_Feox), <span class="fu">mean</span>(z_ln_Feox, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_Feox),</span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Alox =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_Alox), <span class="fu">mean</span>(z_ln_Alox, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_Alox),</span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_FineTexture =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_FineTexture), <span class="fu">mean</span>(z_ln_FineTexture, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_FineTexture)</span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Agronomic Traits</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_FineTexture =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_clay <span class="sc">+</span> rollMean_soil_0_20_silt))),</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Ca =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_Ca_AAE10))),</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Mg =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_Mg_AAE10))),</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_K  =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_K_AAE10))),</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_pH    =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(rollMean_soil_0_20_pH_H2O)),</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Corg =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(rollMean_soil_0_20_Corg))),</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Geochemical Traits</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Feox =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(feox_mean))),</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Alox =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(<span class="fu">log</span>(alox_mean))),</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Climate &amp; Kinetics</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_Temp_Mean =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(site_juv_temp_mean)), <span class="at">z_Temp_Anom =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(temp_anomaly)),</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_Prec_Anom =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(prec_anomaly)), <span class="at">z_k =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(k))</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Patch stable traits with site means</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site) <span class="sc">|&gt;</span></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Corg =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_Corg), <span class="fu">mean</span>(z_ln_Corg, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_Corg),</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Feox =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_Feox), <span class="fu">mean</span>(z_ln_Feox, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_Feox),</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_Alox =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_Alox), <span class="fu">mean</span>(z_ln_Alox, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_Alox),</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_ln_FineTexture =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(z_ln_FineTexture), <span class="fu">mean</span>(z_ln_FineTexture, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), z_ln_FineTexture)</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -1118,29 +1126,31 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Normalize Uptake &amp; Scale Bottlenecks</span></span>
 <span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, crop, year) <span class="sc">|&gt;</span></span>
 <span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_uptake =</span> <span class="fu">mean</span>(annual_P_uptake[treatment_ID <span class="sc">==</span> <span class="st">"P166"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_uptake =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(ref_uptake) <span class="sc">|</span> <span class="fu">is.nan</span>(ref_uptake), <span class="fu">max</span>(annual_P_uptake, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), ref_uptake),</span>
-<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>        <span class="at">Relative_Uptake =</span> annual_P_uptake <span class="sc">/</span> ref_uptake</span>
-<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">is.finite</span>(Relative_Uptake)) <span class="sc">|&gt;</span></span>
-<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_geo =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_geo)),</span>
-<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_agro =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_agro)),</span>
-<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_cons =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_cons)),</span>
-<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_k =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(k)),</span>
-<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_v0 =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(v0_kPS)),</span>
-<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_fert_N =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(fert_N_tot)),</span>
-<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a>        <span class="at">site =</span> <span class="fu">as.factor</span>(site),</span>
-<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a>        <span class="at">year_f =</span> <span class="fu">as.factor</span>(year)</span>
-<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
-<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a><span class="co"># GEOCHEMICAL PBC PENALTY MODELS</span></span>
-<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
-<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: For Geo models, we filter down to rows where Geo inv_b is finite (excludes REC).</span></span>
-<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a>D_Long_Geo <span class="ot">&lt;-</span> D_Long <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">is.finite</span>(z_inv_b_geo))</span>
-<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Trials included in Geo Uptake Models:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(D_Long_Geo<span class="sc">$</span>site)), <span class="st">"("</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(D_Long_Geo<span class="sc">$</span>site), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a>        <span class="at">crop =</span> <span class="fu">droplevels</span>(<span class="fu">as.factor</span>(crop)),</span>
+<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_uptake =</span> <span class="fu">mean</span>(annual_P_uptake[treatment_ID <span class="sc">==</span> <span class="st">"P166"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_uptake =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(ref_uptake) <span class="sc">|</span> <span class="fu">is.nan</span>(ref_uptake), <span class="fu">max</span>(annual_P_uptake, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), ref_uptake),</span>
+<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a>        <span class="at">Relative_Uptake =</span> annual_P_uptake <span class="sc">/</span> ref_uptake</span>
+<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">is.finite</span>(Relative_Uptake)) <span class="sc">|&gt;</span></span>
+<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_geo =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_geo)),</span>
+<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_agro =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_agro)),</span>
+<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_cons =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_cons)),</span>
+<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_k =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(k)),</span>
+<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_v0 =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(k <span class="sc">*</span> soil_0_20_P_CO2)),</span>
+<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_fert_N =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(fert_N_tot)),</span>
+<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a>        <span class="at">site =</span> <span class="fu">as.factor</span>(site),</span>
+<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a>        <span class="at">year_f =</span> <span class="fu">as.factor</span>(year)</span>
+<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
+<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a><span class="co"># GEOCHEMICAL PBC PENALTY MODELS</span></span>
+<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
+<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: For Geo models, we filter down to rows where Geo inv_b is finite (excludes REC).</span></span>
+<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a>D_Long_Geo <span class="ot">&lt;-</span> D_Long <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">is.finite</span>(z_inv_b_geo))</span>
+<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a>    n_crops <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">levels</span>(D_Long_Geo<span class="sc">$</span>crop))</span>
+<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Trials included in Geo Uptake Models:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(D_Long_Geo<span class="sc">$</span>site)), <span class="st">"("</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(D_Long_Geo<span class="sc">$</span>site), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Trials included in Geo Uptake Models: 4 ( ALT, CAD, ELL, OEN )</code></pre>
@@ -1150,40 +1160,40 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mod_raw_co2_geo <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> soil_0_20_P_CO2) <span class="sc">/</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_geo)) <span class="sc">+</span> soil_0_20_P_CO2),</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_CO2), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_CO2), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>mod_raw_co2_geo_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> soil_0_20_P_CO2) <span class="sc">/</span></span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_geo <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> soil_0_20_P_CO2),</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_CO2), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_CO2), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_geo <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_geo)) <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>a_CO2_total_mg_L), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_geo_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_geo <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>a_CO2_total_mg_L), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>mod_raw_aae_geo <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> soil_0_20_P_AAE10) <span class="sc">/</span></span>
 <span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_geo)) <span class="sc">+</span> soil_0_20_P_AAE10),</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_AAE10), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_AAE10), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>mod_raw_aae_geo_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> soil_0_20_P_AAE10) <span class="sc">/</span></span>
 <span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_geo <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> soil_0_20_P_AAE10),</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_AAE10), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Geo, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Geo<span class="sc">$</span>soil_0_20_P_AAE10), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
@@ -1191,7 +1201,8 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
 <span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: For Agro models, REC is successfully included!</span></span>
 <span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>D_Long_Agro <span class="ot">&lt;-</span> D_Long <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">is.finite</span>(z_inv_b_agro))</span>
-<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Trials included in Agro Uptake Models:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(D_Long_Agro<span class="sc">$</span>site)), <span class="st">"("</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(D_Long_Agro<span class="sc">$</span>site), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>    n_crops <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">levels</span>(D_Long_Agro<span class="sc">$</span>crop))</span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Trials included in Agro Uptake Models:"</span>, <span class="fu">length</span>(<span class="fu">unique</span>(D_Long_Agro<span class="sc">$</span>site)), <span class="st">"("</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(D_Long_Agro<span class="sc">$</span>site), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="st">")</span><span class="sc">\n\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Trials included in Agro Uptake Models: 4 ( ALT, CAD, ELL, OEN )</code></pre>
@@ -1201,40 +1212,40 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mod_raw_co2_agro <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> soil_0_20_P_CO2) <span class="sc">/</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_agro)) <span class="sc">+</span> soil_0_20_P_CO2),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_CO2), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_CO2), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>mod_raw_co2_agro_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> soil_0_20_P_CO2) <span class="sc">/</span></span>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_agro <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> soil_0_20_P_CO2),</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_CO2), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_CO2), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_agro <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_agro)) <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_agro_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_agro <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>mod_raw_aae_agro <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> soil_0_20_P_AAE10) <span class="sc">/</span></span>
 <span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_agro)) <span class="sc">+</span> soil_0_20_P_AAE10),</span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_AAE10), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_AAE10), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>mod_raw_aae_agro_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> soil_0_20_P_AAE10) <span class="sc">/</span></span>
 <span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_agro <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> soil_0_20_P_AAE10),</span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_AAE10), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_AAE10), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
@@ -1244,14 +1255,14 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_cons <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_cons)) <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_cons_den <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a>        ((K_base <span class="sc">*</span> <span class="fu">exp</span>(beta_invb <span class="sc">*</span> z_inv_b_cons <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0)) <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> K_base <span class="sc">+</span> beta_invb <span class="sc">+</span> beta_v0 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop, beta_invb <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>)), <span class="at">beta_invb =</span> <span class="dv">0</span>, <span class="at">beta_v0 =</span> <span class="sc">-</span><span class="fl">0.1</span>), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------</span></span>
@@ -1260,22 +1271,22 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a>mod_raw_co2_agro_null <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> soil_0_20_P_CO2) <span class="sc">/</span></span>
 <span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a>        (K_base <span class="sc">+</span> soil_0_20_P_CO2),</span>
-<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_CO2)), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_CO2), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>))), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-65"><a href="#cb23-65" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-66"><a href="#cb23-66" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-67"><a href="#cb23-67" aria-hidden="true" tabindex="-1"></a>mod_thm_co2_agro_null <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-68"><a href="#cb23-68" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> a_CO2_total_mg_L) <span class="sc">/</span></span>
 <span id="cb23-69"><a href="#cb23-69" aria-hidden="true" tabindex="-1"></a>        (K_base <span class="sc">+</span> a_CO2_total_mg_L),</span>
-<span id="cb23-70"><a href="#cb23-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-71"><a href="#cb23-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L)), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-70"><a href="#cb23-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-71"><a href="#cb23-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>a_CO2_total_mg_L), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>))), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-72"><a href="#cb23-72" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-73"><a href="#cb23-73" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-74"><a href="#cb23-74" aria-hidden="true" tabindex="-1"></a>mod_raw_aae_agro_null <span class="ot">&lt;-</span> <span class="fu">nlme</span>(</span>
 <span id="cb23-75"><a href="#cb23-75" aria-hidden="true" tabindex="-1"></a>    Relative_Uptake <span class="sc">~</span> ((U_base <span class="sc">+</span> beta_temp <span class="sc">*</span> z_Temp_Anom <span class="sc">+</span> beta_N <span class="sc">*</span> z_fert_N <span class="sc">+</span> beta_v0 <span class="sc">*</span> z_v0) <span class="sc">*</span> soil_0_20_P_AAE10) <span class="sc">/</span></span>
 <span id="cb23-76"><a href="#cb23-76" aria-hidden="true" tabindex="-1"></a>        (K_base <span class="sc">+</span> soil_0_20_P_AAE10),</span>
-<span id="cb23-77"><a href="#cb23-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> U_base <span class="sc">+</span> beta_temp <span class="sc">+</span> beta_N <span class="sc">+</span> beta_v0 <span class="sc">+</span> K_base <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
-<span id="cb23-78"><a href="#cb23-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_AAE10)), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-77"><a href="#cb23-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> D_Long_Agro, <span class="at">fixed =</span> <span class="fu">list</span>(U_base <span class="sc">~</span> <span class="dv">1</span>, beta_temp <span class="sc">~</span> <span class="dv">1</span>, beta_N <span class="sc">~</span> <span class="dv">1</span>, beta_v0 <span class="sc">~</span> <span class="dv">1</span>, K_base <span class="sc">~</span> crop), <span class="at">random =</span> U_base <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> site<span class="sc">/</span>year_f,</span>
+<span id="cb23-78"><a href="#cb23-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> <span class="fu">c</span>(<span class="at">U_base =</span> <span class="fl">0.68</span>, <span class="at">beta_temp =</span> <span class="sc">-</span><span class="fl">0.03</span>, <span class="at">beta_N =</span> <span class="fl">0.1</span>, <span class="at">beta_v0 =</span> <span class="fl">0.1</span>, <span class="at">K_base =</span> <span class="fu">c</span>(<span class="fu">median</span>(D_Long_Agro<span class="sc">$</span>soil_0_20_P_AAE10), <span class="fu">rep</span>(<span class="dv">0</span>, n_crops <span class="sc">-</span> <span class="dv">1</span>))), <span class="at">control =</span> <span class="fu">nlmeControl</span>(<span class="at">maxIter =</span> <span class="dv">1000</span>)</span>
 <span id="cb23-79"><a href="#cb23-79" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-80"><a href="#cb23-80" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-81"><a href="#cb23-81" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Extract Performance and Plot ---</span></span>
@@ -1354,162 +1365,162 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1. Geo PBC - Raw P_CO2 (Num J0)</td>
-<td style="text-align: right;">0.353</td>
-<td style="text-align: right;">0.602</td>
-<td style="text-align: right;">-3432.9</td>
-<td style="text-align: right;">-1.2689</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17410.7</td>
+<td style="text-align: right;">-0.0063</td>
+<td style="text-align: right;">0.2125</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1. Geo PBC - Raw P_CO2 (Den J0)</td>
-<td style="text-align: right;">0.388</td>
-<td style="text-align: right;">0.594</td>
-<td style="text-align: right;">-3411.0</td>
-<td style="text-align: right;">-0.6637</td>
-<td style="text-align: right;">0.0000</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.153</td>
+<td style="text-align: right;">0.497</td>
+<td style="text-align: right;">-17338.2</td>
+<td style="text-align: right;">-0.0066</td>
+<td style="text-align: right;">0.1823</td>
+<td style="text-align: right;">0.0064</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1. Agro PBC - Raw P_CO2 (Num J0)</td>
-<td style="text-align: right;">0.382</td>
-<td style="text-align: right;">0.603</td>
-<td style="text-align: right;">-3441.5</td>
-<td style="text-align: right;">-0.9246</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17416.4</td>
+<td style="text-align: right;">-0.0194</td>
+<td style="text-align: right;">0.0373</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1. Agro PBC - Raw P_CO2 (Den J0)</td>
-<td style="text-align: right;">0.412</td>
-<td style="text-align: right;">0.594</td>
-<td style="text-align: right;">-3415.1</td>
-<td style="text-align: right;">-0.4440</td>
-<td style="text-align: right;">0.0000</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.152</td>
+<td style="text-align: right;">0.498</td>
+<td style="text-align: right;">-17341.7</td>
+<td style="text-align: right;">-0.0186</td>
+<td style="text-align: right;">0.1081</td>
+<td style="text-align: right;">0.0082</td>
 </tr>
 <tr class="even" data-grouplength="6">
 <td colspan="7" style="border-bottom: 1px solid"><strong>Thermodynamic (a_CO2)</strong></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. Geo PBC - Thermo a_CO2 (Num J0)</td>
-<td style="text-align: right;">0.353</td>
-<td style="text-align: right;">0.602</td>
-<td style="text-align: right;">-3432.9</td>
-<td style="text-align: right;">-1.2689</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17410.7</td>
+<td style="text-align: right;">-0.0063</td>
+<td style="text-align: right;">0.2125</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. Geo PBC - Thermo a_CO2 (Den J0)</td>
-<td style="text-align: right;">0.388</td>
-<td style="text-align: right;">0.594</td>
-<td style="text-align: right;">-3411.0</td>
-<td style="text-align: right;">-0.6637</td>
-<td style="text-align: right;">0.0000</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.153</td>
+<td style="text-align: right;">0.497</td>
+<td style="text-align: right;">-17338.2</td>
+<td style="text-align: right;">-0.0066</td>
+<td style="text-align: right;">0.1823</td>
+<td style="text-align: right;">0.0064</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. Agro PBC - Thermo a_CO2 (Num J0)</td>
-<td style="text-align: right;">0.382</td>
-<td style="text-align: right;">0.603</td>
-<td style="text-align: right;">-3441.5</td>
-<td style="text-align: right;">-0.9246</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17416.4</td>
+<td style="text-align: right;">-0.0194</td>
+<td style="text-align: right;">0.0373</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. Agro PBC - Thermo a_CO2 (Den J0)</td>
-<td style="text-align: right;">0.412</td>
-<td style="text-align: right;">0.594</td>
-<td style="text-align: right;">-3415.1</td>
-<td style="text-align: right;">-0.4440</td>
-<td style="text-align: right;">0.0000</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.152</td>
+<td style="text-align: right;">0.498</td>
+<td style="text-align: right;">-17341.7</td>
+<td style="text-align: right;">-0.0186</td>
+<td style="text-align: right;">0.1081</td>
+<td style="text-align: right;">0.0082</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. CONS PBC - Thermo a_CO2 (Num J0)</td>
-<td style="text-align: right;">0.388</td>
-<td style="text-align: right;">0.588</td>
-<td style="text-align: right;">-3376.2</td>
-<td style="text-align: right;">0.0040</td>
-<td style="text-align: right;">0.7887</td>
+<td style="text-align: right;">0.146</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17414.8</td>
+<td style="text-align: right;">0.0511</td>
+<td style="text-align: right;">0.0102</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. CONS PBC - Thermo a_CO2 (Den J0)</td>
-<td style="text-align: right;">0.431</td>
-<td style="text-align: right;">0.588</td>
-<td style="text-align: right;">-3396.7</td>
-<td style="text-align: right;">0.0027</td>
-<td style="text-align: right;">0.8680</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.152</td>
+<td style="text-align: right;">0.498</td>
+<td style="text-align: right;">-17342.9</td>
+<td style="text-align: right;">0.0514</td>
+<td style="text-align: right;">0.0050</td>
+<td style="text-align: right;">0.0068</td>
 </tr>
 <tr class="odd" data-grouplength="4">
 <td colspan="7" style="border-bottom: 1px solid"><strong>Bound Legacy (P_AAE10)</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3. Geo PBC - Legacy P_AAE10 (Num J0)</td>
-<td style="text-align: right;">0.323</td>
-<td style="text-align: right;">0.562</td>
-<td style="text-align: right;">-3311.8</td>
-<td style="text-align: right;">-3.4870</td>
-<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.107</td>
+<td style="text-align: right;">0.444</td>
+<td style="text-align: right;">-16165.6</td>
+<td style="text-align: right;">-0.0025</td>
+<td style="text-align: right;">0.7358</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3. Geo PBC - Legacy P_AAE10 (Den J0)</td>
-<td style="text-align: right;">0.309</td>
-<td style="text-align: right;">0.531</td>
-<td style="text-align: right;">-3222.5</td>
-<td style="text-align: right;">-2.3985</td>
+<td style="text-align: right;">0.113</td>
+<td style="text-align: right;">0.452</td>
+<td style="text-align: right;">-16339.5</td>
+<td style="text-align: right;">-0.0036</td>
+<td style="text-align: right;">0.5969</td>
 <td style="text-align: right;">0.0000</td>
-<td style="text-align: right;">0.0011</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3. Agro PBC - Legacy P_AAE10 (Num J0)</td>
-<td style="text-align: right;">0.219</td>
-<td style="text-align: right;">0.433</td>
-<td style="text-align: right;">-2921.6</td>
-<td style="text-align: right;">0.9898</td>
-<td style="text-align: right;">0.2723</td>
+<td style="text-align: right;">0.106</td>
+<td style="text-align: right;">0.445</td>
+<td style="text-align: right;">-16174.4</td>
+<td style="text-align: right;">-0.0255</td>
+<td style="text-align: right;">0.0193</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3. Agro PBC - Legacy P_AAE10 (Den J0)</td>
-<td style="text-align: right;">0.360</td>
-<td style="text-align: right;">0.537</td>
-<td style="text-align: right;">-3244.6</td>
-<td style="text-align: right;">-1.6218</td>
+<td style="text-align: right;">0.113</td>
+<td style="text-align: right;">0.453</td>
+<td style="text-align: right;">-16341.1</td>
+<td style="text-align: right;">-0.0217</td>
+<td style="text-align: right;">0.4099</td>
 <td style="text-align: right;">0.0000</td>
-<td style="text-align: right;">0.0011</td>
 </tr>
 <tr class="even" data-grouplength="3">
 <td colspan="7" style="border-bottom: 1px solid"><strong>Null Models (No 1/b Penalty)</strong></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">1. Null Model - Raw P_CO2 (No 1/b)</td>
-<td style="text-align: right;">0.389</td>
-<td style="text-align: right;">0.588</td>
-<td style="text-align: right;">-3378.2</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17411.8</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">2. Null Model - Thermo a_CO2 (No 1/b)</td>
-<td style="text-align: right;">0.389</td>
-<td style="text-align: right;">0.588</td>
-<td style="text-align: right;">-3378.2</td>
+<td style="text-align: right;">0.147</td>
+<td style="text-align: right;">0.501</td>
+<td style="text-align: right;">-17411.8</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">0.0000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">3. Null Model - Legacy P_AAE10 (No 1/b)</td>
-<td style="text-align: right;">0.279</td>
-<td style="text-align: right;">0.482</td>
-<td style="text-align: right;">-3073.5</td>
+<td style="text-align: right;">0.107</td>
+<td style="text-align: right;">0.444</td>
+<td style="text-align: right;">-16167.5</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: right;">0.0000</td>
@@ -1601,43 +1612,236 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">as.data.frame</span>(all_effects), <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>                        Model      term estimate std.error statistic p.value
-       1. Geo PBC - Raw P_CO2    U_base   1.0193    0.0256   39.8637  0.0000
-       1. Geo PBC - Raw P_CO2 beta_temp   0.0019    0.0044    0.4346  0.6639
-       1. Geo PBC - Raw P_CO2    beta_N   0.0051    0.0029    1.7505  0.0803
-       1. Geo PBC - Raw P_CO2   beta_v0   0.0203    0.0030    6.8253  0.0000
-       1. Geo PBC - Raw P_CO2    K_base   0.0309    0.0052    5.9124  0.0000
-       1. Geo PBC - Raw P_CO2 beta_invb  -1.2689    0.1967   -6.4514  0.0000
-      1. Agro PBC - Raw P_CO2    U_base   1.0079    0.0213   47.2195  0.0000
-      1. Agro PBC - Raw P_CO2 beta_temp   0.0028    0.0043    0.6583  0.5104
-      1. Agro PBC - Raw P_CO2    beta_N   0.0048    0.0028    1.6873  0.0918
-      1. Agro PBC - Raw P_CO2   beta_v0   0.0215    0.0029    7.4072  0.0000
-      1. Agro PBC - Raw P_CO2    K_base   0.0269    0.0046    5.8407  0.0000
-      1. Agro PBC - Raw P_CO2 beta_invb  -0.9246    0.1347   -6.8658  0.0000
-    2. Geo PBC - Thermo a_CO2    U_base   1.0193    0.0256   39.8637  0.0000
-    2. Geo PBC - Thermo a_CO2 beta_temp   0.0019    0.0044    0.4346  0.6639
-    2. Geo PBC - Thermo a_CO2    beta_N   0.0051    0.0029    1.7505  0.0803
-    2. Geo PBC - Thermo a_CO2   beta_v0   0.0203    0.0030    6.8253  0.0000
-    2. Geo PBC - Thermo a_CO2    K_base   0.0309    0.0052    5.9124  0.0000
-    2. Geo PBC - Thermo a_CO2 beta_invb  -1.2689    0.1967   -6.4514  0.0000
-   2. Agro PBC - Thermo a_CO2    U_base   1.0079    0.0213   47.2195  0.0000
-   2. Agro PBC - Thermo a_CO2 beta_temp   0.0028    0.0043    0.6583  0.5104
-   2. Agro PBC - Thermo a_CO2    beta_N   0.0048    0.0028    1.6873  0.0918
-   2. Agro PBC - Thermo a_CO2   beta_v0   0.0215    0.0029    7.4072  0.0000
-   2. Agro PBC - Thermo a_CO2    K_base   0.0269    0.0046    5.8407  0.0000
-   2. Agro PBC - Thermo a_CO2 beta_invb  -0.9246    0.1347   -6.8658  0.0000
-  3. Geo PBC - Legacy P_AAE10    U_base   0.9910    0.0230   43.0073  0.0000
-  3. Geo PBC - Legacy P_AAE10 beta_temp   0.0013    0.0041    0.3149  0.7529
-  3. Geo PBC - Legacy P_AAE10    beta_N   0.0048    0.0029    1.6639  0.0963
-  3. Geo PBC - Legacy P_AAE10   beta_v0   0.0303    0.0028   10.9563  0.0000
-  3. Geo PBC - Legacy P_AAE10    K_base   0.3290    0.0752    4.3772  0.0000
-  3. Geo PBC - Legacy P_AAE10 beta_invb  -3.4870    0.2905  -12.0047  0.0000
- 3. Agro PBC - Legacy P_AAE10    U_base   0.9352    0.0183   50.9805  0.0000
- 3. Agro PBC - Legacy P_AAE10 beta_temp   0.0031    0.0043    0.7235  0.4695
- 3. Agro PBC - Legacy P_AAE10    beta_N   0.0030    0.0031    0.9739  0.3303
- 3. Agro PBC - Legacy P_AAE10   beta_v0   0.0594    0.0024   24.5487  0.0000
- 3. Agro PBC - Legacy P_AAE10    K_base  -0.0649    0.2093   -0.3099  0.7567
- 3. Agro PBC - Legacy P_AAE10 beta_invb   0.9898    0.9014    1.0981  0.2723</code></pre>
+<pre><code>                        Model               term estimate std.error statistic
+       1. Geo PBC - Raw P_CO2             U_base   1.0914    0.0306   35.6591
+       1. Geo PBC - Raw P_CO2          beta_temp   0.0089    0.0113    0.7939
+       1. Geo PBC - Raw P_CO2             beta_N   0.0025    0.0031    0.8012
+       1. Geo PBC - Raw P_CO2            beta_v0   0.0182    0.0017   10.9170
+       1. Geo PBC - Raw P_CO2 K_base.(Intercept)   0.0169    0.0026    6.4328
+       1. Geo PBC - Raw P_CO2      K_base.cropKM   0.0703    0.0065   10.8942
+       1. Geo PBC - Raw P_CO2      K_base.cropKW   0.1121    0.0053   21.1020
+       1. Geo PBC - Raw P_CO2      K_base.cropRA   0.1402    0.0119   11.8083
+       1. Geo PBC - Raw P_CO2      K_base.cropSJ   0.3267    0.0177   18.4959
+       1. Geo PBC - Raw P_CO2      K_base.cropSM  -0.0074    0.0143   -0.5142
+       1. Geo PBC - Raw P_CO2      K_base.cropSW   0.1256    0.0101   12.4247
+       1. Geo PBC - Raw P_CO2      K_base.cropWG   0.0991    0.0058   16.9631
+       1. Geo PBC - Raw P_CO2      K_base.cropWS   0.1965    0.0170   11.5783
+       1. Geo PBC - Raw P_CO2      K_base.cropWW   0.0461    0.0045   10.3076
+       1. Geo PBC - Raw P_CO2      K_base.cropZF   0.1164    0.0068   17.1189
+       1. Geo PBC - Raw P_CO2      K_base.cropCH   0.0283    0.0271    1.0448
+       1. Geo PBC - Raw P_CO2      K_base.cropFR   0.0154    0.0191    0.8060
+       1. Geo PBC - Raw P_CO2      K_base.cropZR   0.0297    0.0119    2.4998
+       1. Geo PBC - Raw P_CO2          beta_invb  -0.0063    0.0051   -1.2467
+      1. Agro PBC - Raw P_CO2             U_base   1.0914    0.0307   35.5945
+      1. Agro PBC - Raw P_CO2          beta_temp   0.0090    0.0113    0.7986
+      1. Agro PBC - Raw P_CO2             beta_N   0.0025    0.0031    0.8030
+      1. Agro PBC - Raw P_CO2            beta_v0   0.0182    0.0017   10.9204
+      1. Agro PBC - Raw P_CO2 K_base.(Intercept)   0.0169    0.0026    6.4289
+      1. Agro PBC - Raw P_CO2      K_base.cropKM   0.0699    0.0064   10.8473
+      1. Agro PBC - Raw P_CO2      K_base.cropKW   0.1120    0.0053   21.1003
+      1. Agro PBC - Raw P_CO2      K_base.cropRA   0.1401    0.0119   11.8120
+      1. Agro PBC - Raw P_CO2      K_base.cropSJ   0.3294    0.0177   18.6476
+      1. Agro PBC - Raw P_CO2      K_base.cropSM  -0.0074    0.0143   -0.5136
+      1. Agro PBC - Raw P_CO2      K_base.cropSW   0.1257    0.0101   12.4424
+      1. Agro PBC - Raw P_CO2      K_base.cropWG   0.0991    0.0058   16.9666
+      1. Agro PBC - Raw P_CO2      K_base.cropWS   0.1964    0.0170   11.5812
+      1. Agro PBC - Raw P_CO2      K_base.cropWW   0.0460    0.0045   10.3141
+      1. Agro PBC - Raw P_CO2      K_base.cropZF   0.1164    0.0068   17.1217
+      1. Agro PBC - Raw P_CO2      K_base.cropCH   0.0283    0.0270    1.0452
+      1. Agro PBC - Raw P_CO2      K_base.cropFR   0.0154    0.0191    0.8039
+      1. Agro PBC - Raw P_CO2      K_base.cropZR   0.0297    0.0119    2.5011
+      1. Agro PBC - Raw P_CO2          beta_invb  -0.0194    0.0093   -2.0828
+    2. Geo PBC - Thermo a_CO2             U_base   1.0914    0.0306   35.6591
+    2. Geo PBC - Thermo a_CO2          beta_temp   0.0089    0.0113    0.7939
+    2. Geo PBC - Thermo a_CO2             beta_N   0.0025    0.0031    0.8012
+    2. Geo PBC - Thermo a_CO2            beta_v0   0.0182    0.0017   10.9170
+    2. Geo PBC - Thermo a_CO2 K_base.(Intercept)   0.0169    0.0026    6.4328
+    2. Geo PBC - Thermo a_CO2      K_base.cropKM   0.0703    0.0065   10.8942
+    2. Geo PBC - Thermo a_CO2      K_base.cropKW   0.1121    0.0053   21.1020
+    2. Geo PBC - Thermo a_CO2      K_base.cropRA   0.1402    0.0119   11.8083
+    2. Geo PBC - Thermo a_CO2      K_base.cropSJ   0.3267    0.0177   18.4959
+    2. Geo PBC - Thermo a_CO2      K_base.cropSM  -0.0074    0.0143   -0.5142
+    2. Geo PBC - Thermo a_CO2      K_base.cropSW   0.1256    0.0101   12.4247
+    2. Geo PBC - Thermo a_CO2      K_base.cropWG   0.0991    0.0058   16.9631
+    2. Geo PBC - Thermo a_CO2      K_base.cropWS   0.1965    0.0170   11.5783
+    2. Geo PBC - Thermo a_CO2      K_base.cropWW   0.0461    0.0045   10.3076
+    2. Geo PBC - Thermo a_CO2      K_base.cropZF   0.1164    0.0068   17.1189
+    2. Geo PBC - Thermo a_CO2      K_base.cropCH   0.0283    0.0271    1.0448
+    2. Geo PBC - Thermo a_CO2      K_base.cropFR   0.0154    0.0191    0.8060
+    2. Geo PBC - Thermo a_CO2      K_base.cropZR   0.0297    0.0119    2.4998
+    2. Geo PBC - Thermo a_CO2          beta_invb  -0.0063    0.0051   -1.2467
+   2. Agro PBC - Thermo a_CO2             U_base   1.0914    0.0307   35.5945
+   2. Agro PBC - Thermo a_CO2          beta_temp   0.0090    0.0113    0.7986
+   2. Agro PBC - Thermo a_CO2             beta_N   0.0025    0.0031    0.8030
+   2. Agro PBC - Thermo a_CO2            beta_v0   0.0182    0.0017   10.9204
+   2. Agro PBC - Thermo a_CO2 K_base.(Intercept)   0.0169    0.0026    6.4289
+   2. Agro PBC - Thermo a_CO2      K_base.cropKM   0.0699    0.0064   10.8473
+   2. Agro PBC - Thermo a_CO2      K_base.cropKW   0.1120    0.0053   21.1003
+   2. Agro PBC - Thermo a_CO2      K_base.cropRA   0.1401    0.0119   11.8120
+   2. Agro PBC - Thermo a_CO2      K_base.cropSJ   0.3294    0.0177   18.6476
+   2. Agro PBC - Thermo a_CO2      K_base.cropSM  -0.0074    0.0143   -0.5136
+   2. Agro PBC - Thermo a_CO2      K_base.cropSW   0.1257    0.0101   12.4424
+   2. Agro PBC - Thermo a_CO2      K_base.cropWG   0.0991    0.0058   16.9666
+   2. Agro PBC - Thermo a_CO2      K_base.cropWS   0.1964    0.0170   11.5812
+   2. Agro PBC - Thermo a_CO2      K_base.cropWW   0.0460    0.0045   10.3141
+   2. Agro PBC - Thermo a_CO2      K_base.cropZF   0.1164    0.0068   17.1217
+   2. Agro PBC - Thermo a_CO2      K_base.cropCH   0.0283    0.0270    1.0452
+   2. Agro PBC - Thermo a_CO2      K_base.cropFR   0.0154    0.0191    0.8039
+   2. Agro PBC - Thermo a_CO2      K_base.cropZR   0.0297    0.0119    2.5011
+   2. Agro PBC - Thermo a_CO2          beta_invb  -0.0194    0.0093   -2.0828
+  3. Geo PBC - Legacy P_AAE10             U_base   1.0313    0.0298   34.5978
+  3. Geo PBC - Legacy P_AAE10          beta_temp   0.0132    0.0100    1.3178
+  3. Geo PBC - Legacy P_AAE10             beta_N   0.0131    0.0033    4.0254
+  3. Geo PBC - Legacy P_AAE10            beta_v0   0.0459    0.0015   30.7649
+  3. Geo PBC - Legacy P_AAE10 K_base.(Intercept)   2.2046    0.2688    8.2015
+  3. Geo PBC - Legacy P_AAE10      K_base.cropKM  -0.8536    0.3527   -2.4205
+  3. Geo PBC - Legacy P_AAE10      K_base.cropKW   0.7198    0.3422    2.1036
+  3. Geo PBC - Legacy P_AAE10      K_base.cropRA   7.3399    0.9201    7.9776
+  3. Geo PBC - Legacy P_AAE10      K_base.cropSJ   9.8174    1.0698    9.1770
+  3. Geo PBC - Legacy P_AAE10      K_base.cropSM  -1.4588    1.4639   -0.9965
+  3. Geo PBC - Legacy P_AAE10      K_base.cropSW   3.4732    0.6620    5.2462
+  3. Geo PBC - Legacy P_AAE10      K_base.cropWG   1.4946    0.3633    4.1141
+  3. Geo PBC - Legacy P_AAE10      K_base.cropWS   3.6011    0.9644    3.7342
+  3. Geo PBC - Legacy P_AAE10      K_base.cropWW  -1.3359    0.3159   -4.2293
+  3. Geo PBC - Legacy P_AAE10      K_base.cropZF   1.5271    0.4290    3.5598
+  3. Geo PBC - Legacy P_AAE10      K_base.cropCH  -2.5702    0.8593   -2.9910
+  3. Geo PBC - Legacy P_AAE10      K_base.cropFR  -2.5598    0.9063   -2.8245
+  3. Geo PBC - Legacy P_AAE10      K_base.cropZR  -1.4173    0.5187   -2.7323
+  3. Geo PBC - Legacy P_AAE10          beta_invb  -0.0025    0.0073   -0.3375
+ 3. Agro PBC - Legacy P_AAE10             U_base   1.0315    0.0300   34.3941
+ 3. Agro PBC - Legacy P_AAE10          beta_temp   0.0134    0.0101    1.3244
+ 3. Agro PBC - Legacy P_AAE10             beta_N   0.0130    0.0033    4.0032
+ 3. Agro PBC - Legacy P_AAE10            beta_v0   0.0459    0.0015   30.7857
+ 3. Agro PBC - Legacy P_AAE10 K_base.(Intercept)   2.2061    0.2688    8.2065
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropKM  -0.9221    0.3508   -2.6287
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropKW   0.7124    0.3422    2.0818
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropRA   7.3392    0.9201    7.9768
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropSJ  10.2172    1.0757    9.4983
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropSM  -1.4630    1.4638   -0.9995
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropSW   3.4789    0.6607    5.2658
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropWG   1.4885    0.3632    4.0977
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropWS   3.5950    0.9637    3.7303
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropWW  -1.3383    0.3158   -4.2373
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropZF   1.5298    0.4290    3.5660
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropCH  -2.5756    0.8588   -2.9990
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropFR  -2.5705    0.9060   -2.8372
+ 3. Agro PBC - Legacy P_AAE10      K_base.cropZR  -1.4221    0.5184   -2.7431
+ 3. Agro PBC - Legacy P_AAE10          beta_invb  -0.0255    0.0109   -2.3402
+ p.value
+  0.0000
+  0.4272
+  0.4230
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.6071
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.2961
+  0.4203
+  0.0124
+  0.2125
+  0.0000
+  0.4245
+  0.4220
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.6075
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.2959
+  0.4214
+  0.0124
+  0.0373
+  0.0000
+  0.4272
+  0.4230
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.6071
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.2961
+  0.4203
+  0.0124
+  0.2125
+  0.0000
+  0.4245
+  0.4220
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.6075
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.0000
+  0.2959
+  0.4214
+  0.0124
+  0.0373
+  0.0000
+  0.1876
+  0.0001
+  0.0000
+  0.0000
+  0.0155
+  0.0354
+  0.0000
+  0.0000
+  0.3190
+  0.0000
+  0.0000
+  0.0002
+  0.0000
+  0.0004
+  0.0028
+  0.0047
+  0.0063
+  0.7358
+  0.0000
+  0.1854
+  0.0001
+  0.0000
+  0.0000
+  0.0086
+  0.0374
+  0.0000
+  0.0000
+  0.3176
+  0.0000
+  0.0000
+  0.0002
+  0.0000
+  0.0004
+  0.0027
+  0.0046
+  0.0061
+  0.0193</code></pre>
 </div>
 </div>
 </section>
@@ -1701,23 +1905,24 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 <span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Normalize TOTAL YIELD by Site, Crop, and Year using P166 as reference</span></span>
 <span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(site, crop, year) <span class="sc">|&gt;</span></span>
 <span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_yield =</span> <span class="fu">mean</span>(total_yield[treatment_ID <span class="sc">==</span> <span class="st">"P166"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_yield =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(ref_yield) <span class="sc">|</span> <span class="fu">is.nan</span>(ref_yield), <span class="fu">max</span>(total_yield, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), ref_yield),</span>
-<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">Relative_Yield =</span> total_yield <span class="sc">/</span> ref_yield</span>
-<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
-<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">is.finite</span>(inv_b), <span class="fu">is.finite</span>(inv_b_cons), <span class="fu">is.finite</span>(Relative_Yield), Relative_Yield <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
-<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b)),</span>
-<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_cons =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_cons)),</span>
-<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_fert_N =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(fert_N_tot)),</span>
-<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>        <span class="at">site =</span> <span class="fu">as.factor</span>(site),</span>
-<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a>        <span class="at">year_f =</span> <span class="fu">as.factor</span>(year),</span>
-<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot_nr =</span> <span class="fu">as.factor</span>(plot_nr), <span class="at">crop =</span> <span class="fu">droplevels</span>(<span class="fu">as.factor</span>(crop))</span>
-<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb28-58"><a href="#cb28-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-59"><a href="#cb28-59" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total Harvest Years Evaluated for Yield (2010-2022):"</span>, <span class="fu">nrow</span>(D_Yield), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">crop =</span> <span class="fu">droplevels</span>(<span class="fu">as.factor</span>(crop)),</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_yield =</span> <span class="fu">mean</span>(total_yield[treatment_ID <span class="sc">==</span> <span class="st">"P166"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_yield =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(ref_yield) <span class="sc">|</span> <span class="fu">is.nan</span>(ref_yield), <span class="fu">max</span>(total_yield, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), ref_yield),</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>        <span class="at">Relative_Yield =</span> total_yield <span class="sc">/</span> ref_yield</span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">is.finite</span>(inv_b), <span class="fu">is.finite</span>(inv_b_cons), <span class="fu">is.finite</span>(Relative_Yield), Relative_Yield <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b)),</span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_inv_b_cons =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(inv_b_cons)),</span>
+<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>        <span class="at">z_fert_N =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(fert_N_tot)),</span>
+<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a>        <span class="at">site =</span> <span class="fu">as.factor</span>(site),</span>
+<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>        <span class="at">year_f =</span> <span class="fu">as.factor</span>(year),</span>
+<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot_nr =</span> <span class="fu">as.factor</span>(plot_nr), <span class="at">crop =</span> <span class="fu">droplevels</span>(<span class="fu">as.factor</span>(crop))</span>
+<span id="cb28-58"><a href="#cb28-58" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-59"><a href="#cb28-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-60"><a href="#cb28-60" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Total Harvest Years Evaluated for Yield (2010-2022):"</span>, <span class="fu">nrow</span>(D_Yield), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Total Harvest Years Evaluated for Yield (2010-2022): 15522 </code></pre>
@@ -1825,20 +2030,20 @@ ln_a_CO2:z_Prec_Anom        0.0028     0.0036   0.4378</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     Value Std.Error    DF  t-value p-value
-c_base.(Intercept)  1.3995    0.9351 14973   1.4966  0.1345
-c_base.cropFR       1.1097    0.1467 14973   7.5635  0.0000
-c_base.cropKA       1.5195    0.1582 14973   9.6066  0.0000
-c_base.cropKM       2.0331    0.2111 14973   9.6300  0.0000
-c_base.cropKW       1.1476    0.1386 14973   8.2779  0.0000
-c_base.cropRA       1.0568    0.1400 14973   7.5491  0.0000
-c_base.cropSJ       3.7580    0.8781 14973   4.2796  0.0000
-c_base.cropSM       1.9038    0.2431 14973   7.8301  0.0000
-c_base.cropSW       1.5706    0.2239 14973   7.0134  0.0000
-c_base.cropWG       1.3056    0.1466 14973   8.9045  0.0000
-c_base.cropWS       0.4922    0.1274 14973   3.8634  0.0001
-c_base.cropWW       1.2562    0.1424 14973   8.8190  0.0000
-c_base.cropZF       0.9059    0.1329 14973   6.8185  0.0000
-c_base.cropZR       1.5267    0.2159 14973   7.0727  0.0000
+c_base.(Intercept)  2.9191    0.9376 14973   3.1133  0.0019
+c_base.cropKM       0.5136    0.1311 14973   3.9177  0.0001
+c_base.cropKW      -0.3720    0.0535 14973  -6.9537  0.0000
+c_base.cropRA      -0.4628    0.0654 14973  -7.0703  0.0000
+c_base.cropSJ       2.2385    0.8548 14973   2.6187  0.0088
+c_base.cropSM       0.3843    0.1752 14973   2.1929  0.0283
+c_base.cropSW       0.0510    0.1710 14973   0.2983  0.7655
+c_base.cropWG      -0.2139    0.0580 14973  -3.6911  0.0002
+c_base.cropWS      -1.0273    0.0917 14973 -11.2031  0.0000
+c_base.cropWW      -0.2634    0.0520 14973  -5.0629  0.0000
+c_base.cropZF      -0.6136    0.0650 14973  -9.4458  0.0000
+c_base.cropCH      -1.5195    0.1582 14973  -9.6066  0.0000
+c_base.cropFR      -0.4099    0.0795 14973  -5.1530  0.0000
+c_base.cropZR       0.0071    0.1664 14973   0.0428  0.9659
 beta_invb          -0.0398    0.0080 14973  -5.0031  0.0000
 beta_pH            -0.1953    0.0219 14973  -8.9061  0.0000
 beta_K              0.2704    0.0213 14973  12.7137  0.0000
@@ -1864,20 +2069,20 @@ E_base              1.0560    0.0661 14973  15.9787  0.0000</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     Value Std.Error    DF  t-value p-value
-c_base.(Intercept)  1.3995    0.9351 14973   1.4966  0.1345
-c_base.cropFR       1.1097    0.1467 14973   7.5635  0.0000
-c_base.cropKA       1.5195    0.1582 14973   9.6066  0.0000
-c_base.cropKM       2.0331    0.2111 14973   9.6300  0.0000
-c_base.cropKW       1.1476    0.1386 14973   8.2779  0.0000
-c_base.cropRA       1.0568    0.1400 14973   7.5491  0.0000
-c_base.cropSJ       3.7580    0.8781 14973   4.2796  0.0000
-c_base.cropSM       1.9038    0.2431 14973   7.8301  0.0000
-c_base.cropSW       1.5706    0.2239 14973   7.0134  0.0000
-c_base.cropWG       1.3056    0.1466 14973   8.9045  0.0000
-c_base.cropWS       0.4922    0.1274 14973   3.8634  0.0001
-c_base.cropWW       1.2562    0.1424 14973   8.8190  0.0000
-c_base.cropZF       0.9059    0.1329 14973   6.8185  0.0000
-c_base.cropZR       1.5267    0.2159 14973   7.0727  0.0000
+c_base.(Intercept)  2.9191    0.9376 14973   3.1133  0.0019
+c_base.cropKM       0.5136    0.1311 14973   3.9177  0.0001
+c_base.cropKW      -0.3720    0.0535 14973  -6.9537  0.0000
+c_base.cropRA      -0.4628    0.0654 14973  -7.0703  0.0000
+c_base.cropSJ       2.2385    0.8548 14973   2.6187  0.0088
+c_base.cropSM       0.3843    0.1752 14973   2.1929  0.0283
+c_base.cropSW       0.0510    0.1710 14973   0.2983  0.7655
+c_base.cropWG      -0.2139    0.0580 14973  -3.6911  0.0002
+c_base.cropWS      -1.0273    0.0917 14973 -11.2031  0.0000
+c_base.cropWW      -0.2634    0.0520 14973  -5.0629  0.0000
+c_base.cropZF      -0.6136    0.0650 14973  -9.4458  0.0000
+c_base.cropCH      -1.5195    0.1582 14973  -9.6066  0.0000
+c_base.cropFR      -0.4099    0.0795 14973  -5.1530  0.0000
+c_base.cropZR       0.0071    0.1664 14973   0.0428  0.9659
 beta_invb          -0.0398    0.0080 14973  -5.0031  0.0000
 beta_pH            -0.1953    0.0219 14973  -8.9061  0.0000
 beta_K              0.2704    0.0213 14973  12.7137  0.0000
@@ -1900,29 +2105,29 @@ E_base              1.0560    0.0661 14973  15.9787  0.0000</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(<span class="fu">summary</span>(m_yield_raw_aae)<span class="sc">$</span>tTable, <span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>                        Value Std.Error    DF  t-value p-value
-c_base.(Intercept)    -0.0011    0.0003 14973  -3.3412  0.0008
-c_base.cropFR          0.0000    0.0000 14973  -0.6881  0.4914
-c_base.cropKA          0.0000    0.0001 14973  -0.6910  0.4896
-c_base.cropKM          0.0000    0.0000 14973  -0.6908  0.4897
-c_base.cropKW          0.0000    0.0000 14973  -0.6872  0.4920
-c_base.cropRA          0.0000    0.0000 14973  -0.6820  0.4952
-c_base.cropSJ          0.0000    0.0000 14973  -0.6906  0.4898
-c_base.cropSM          0.0000    0.0001 14973  -0.6877  0.4916
-c_base.cropSW          0.0000    0.0000 14973  -0.6886  0.4911
-c_base.cropWG          0.0000    0.0000 14973  -0.6893  0.4906
-c_base.cropWS          0.0000    0.0000 14973   0.6301  0.5286
-c_base.cropWW          0.0000    0.0000 14973  -0.6889  0.4909
-c_base.cropZF          0.0000    0.0000 14973  -0.6728  0.5011
-c_base.cropZR          0.0000    0.0001 14973  -0.6930  0.4883
-beta_invb             -0.0095    0.0054 14973  -1.7633  0.0779
-beta_pH               -0.0953    0.0075 14973 -12.6357  0.0000
-beta_K                 0.0596    0.0103 14973   5.7931  0.0000
-beta_Mg               -0.1089    0.0111 14973  -9.8118  0.0000
-beta_N                -0.0112    0.0051 14973  -2.1747  0.0297
-beta_Temp             -1.6087    0.5624 14973  -2.8604  0.0042
-beta_Prec             -0.0077    0.0046 14973  -1.6833  0.0923
-E_base             -5897.7242 6781.9487 14973  -0.8696  0.3845</code></pre>
+<pre><code>                        Value  Std.Error    DF t-value p-value
+c_base.(Intercept)     0.0000     0.0001 14973  0.2671  0.7894
+c_base.cropKM          0.0000     0.0000 14973 -0.2683  0.7885
+c_base.cropKW          0.0000     0.0000 14973 -0.2683  0.7884
+c_base.cropRA          0.0000     0.0000 14973 -0.2449  0.8066
+c_base.cropSJ          0.0000     0.0000 14973 -0.2681  0.7886
+c_base.cropSM          0.0000     0.0000 14973  0.1468  0.8833
+c_base.cropSW          0.0000     0.0000 14973 -0.2638  0.7919
+c_base.cropWG          0.0000     0.0000 14973 -0.2644  0.7915
+c_base.cropWS          0.0000     0.0000 14973 -0.2684  0.7884
+c_base.cropWW          0.0000     0.0000 14973 -0.2411  0.8095
+c_base.cropZF          0.0000     0.0000 14973 -0.2671  0.7894
+c_base.cropCH          0.0000     0.0000 14973 -0.2657  0.7904
+c_base.cropFR          0.0000     0.0000 14973 -0.2658  0.7904
+c_base.cropZR          0.0000     0.0000 14973 -0.2681  0.7886
+beta_invb             -0.0055     0.0042 14973 -1.3235  0.1857
+beta_pH               -0.0811     0.0099 14973 -8.2048  0.0000
+beta_K                 0.0342     0.0133 14973  2.5723  0.0101
+beta_Mg               -0.0511     0.0142 14973 -3.5940  0.0003
+beta_N                 0.0079     0.0069 14973  1.1488  0.2507
+beta_Temp             -0.1269     0.1093 14973 -1.1611  0.2456
+beta_Prec              0.0149     0.0070 14973  2.1373  0.0326
+E_base             12741.9044 47575.8543 14973  0.2678  0.7888</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -1948,7 +2153,7 @@ E_base             -5897.7242 6781.9487 14973  -0.8696  0.3845</code></pre>
 |:----------------------|-----:|-----:|------:|------:|--------:|--------:|
 |Yield ~ Raw P_CO2      | 0.016| 0.188|  0.196|  0.165| -11788.4| -11597.1|
 |Yield ~ Thermo a_CO2   | 0.016| 0.188|  0.196|  0.165| -11788.4| -11597.1|
-|Yield ~ Legacy P_AAE10 | 0.002| 0.108|  0.324|  0.300| -11105.9| -10914.6|</code></pre>
+|Yield ~ Legacy P_AAE10 | 0.014| 0.014|  0.607|  0.607| -11049.8| -10858.6|</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -2549,9 +2754,9 @@ Random effect variances not available. Returned R2 does not account for random e
 </tr>
 <tr class="even">
 <td style="text-align: left;">Legacy P_AAE10</td>
-<td style="text-align: right;">0.108</td>
-<td style="text-align: right;">0.300</td>
-<td style="text-align: right;">0.324</td>
+<td style="text-align: right;">0.014</td>
+<td style="text-align: right;">0.607</td>
+<td style="text-align: right;">0.607</td>
 </tr>
 </tbody>
 </table>
