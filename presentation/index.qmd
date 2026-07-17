@@ -44,11 +44,7 @@ m_uptake_raw_co2 <- final_artifacts$models$uptake_raw_co2
 
 ## Graphical Abstract: The Phosphorus Supply Chain { .center .smaller }
 
-::: {.r-stack}
-![](../scratch/step1.svg){.fragment .fade-out fragment-index=1 width=800}
-![](../scratch/step2.svg){.fragment .fade-in-then-out fragment-index=1 width=800}
-![](../scratch/step3.svg){.fragment .fade-in fragment-index=2 width=800}
-:::
+![](../scratch/step_all.svg){fig-align="center" width=1000}
 
 <details>
 <summary>Detailed Explanation</summary>
@@ -71,25 +67,6 @@ Simultaneously, pioneering work at Agroscope by Hirte et al. (2021) has proven t
 We aim to bridge these two findings. We build upon the pedoclimatic dependencies identified by Hirte et al. (2021) by providing the explicit mechanistic "missing link" called for by Steinfurth et al. (2024). We directly model the soil's **P sorption capacity** ($K_f$) via the Freundlich isotherm, and the resulting non-linear **Buffer Power** ($b$), to calculate exactly *how* pedoclimates restrict P diffusion and crop uptake.
 
 ---
-
-
-## The Piper-Steenbjerg Paradox & Sorption Capacity { .scrollable .smaller }
-
-<details>
-<summary>The Paradox Explained</summary>
-For decades, agronomic models have attempted to use simple plant tissue concentrations ($C_P$) to predict phosphorus limitation. However, these empirical models routinely fail in the field due to the **Piper-Steenbjerg effect** (carbon dilution).
-
-When a severely P-starved plant finally receives Phosphorus, it rapidly generates new biomass (carbon). This burst of growth paradoxically *dilutes* the tissue $C_P$ concentration, causing the measured concentration to drop even though the total Phosphorus mass in the plant increased. 
-
-Because of this dilution effect, empirical concentration measurements are fundamentally blind. As demonstrated by Hirte et al. (2021), **interpreting plant availability is impossible without knowing the underlying sorption capacity of the soil.** 
-</details>
-
-**The Failure of Empirical Concentrations:**
-
-- **Carbon Dilution:** P-starved plants dilute their tissue P concentration when growth resumes.
-- **Blind Diagnostics:** A low $C_P$ does not always mean low soil supply.
-- **The Solution:** We must abandon simple empirical concentrations and physically model the absolute mass-flux: **Uptake ($Yield \times C_P$)**.
-
 
 
 ## Conceptual Foundation: The Physical Chemistry { .scrollable .smaller }
@@ -137,7 +114,7 @@ In the next slide, you can explore this interactively across the three physical 
 ---
 
 
-## Physical Buffer Collapse { .interactive-slide .smaller }
+## Physical Buffer Collapse { .interactive-slide .scrollable .smaller }
 
 ```{ojs}
 //| panel: input
@@ -264,6 +241,23 @@ Because Phosphorus binds strongly to soil particles, its transport is almost ent
 
 ---
 
+
+## The Target Variable: The Piper-Steenbjerg Paradox { .scrollable .smaller }
+
+<details>
+<summary>Why model Uptake and Yield instead of Concentration?</summary>
+Statistically speaking, modeling plant tissue concentration ($C_P$) directly would be much cleaner. It is a direct measurement of the plant's chemical state. However, the biological reality of the **Piper-Steenbjerg effect** (growth dilution) destroys this statistical convenience. 
+
+When a P-starved plant finally absorbs Phosphorus, it rapidly generates new biomass. This sudden flush of carbon paradoxically *dilutes* the $C_P$ measurement, causing the concentration to drop even though the absolute mass of Phosphorus in the plant increased. 
+</details>
+
+**The necessity of cumulative flow:**
+
+- **The Illusion of $C_P$:** Because of the dilution effect, a low $C_P$ is biologically ambiguous. It could mean severe starvation, or it could mean explosive, healthy growth.
+- **The Solution:** We are forced to abandon $C_P$ as a direct target. Instead, we must model the cumulative physical flow: **Absolute Uptake ($P_{up} = Y \times C_P$)** or **Relative Yield ($Y$)**. 
+- **The Trade-off:** While absolute Uptake and Yield are fundamentally correct biological targets, Yield ($Y$) is extremely noisy because it integrates every other environmental factor (weather, nitrogen, pests) across the entire season. Our mechanistic models must explicitly account for this noise.
+
+---
 
 ## The Mechanistic Uptake Model { .scrollable .smaller }
 
@@ -670,143 +664,6 @@ $$Q_{legacy} = K \cdot |P_{crit\_yd}|^n$$
 4. **Transition to the Dual Framework:** By separating the biological $P_{crit}$ from the physical environmental $Q_{safe}$, we can modernize fertilizer recommendations to ensure maximum yield while mathematically preventing watershed leaching.
 
 # Annex
-
-
-
-## Annex (Methodological Details) { .center }
-
-## 1. Desorption Kinetics Model { .scrollable .smaller }
-
-```{r annex-kinetic}
-#| echo: false
-#| message: false
-#| warning: false
-library(kableExtra)
-library(ggplot2)
-library(MuMIn)
-
-summary_models <- readRDS("data/Summary_Models.rds")
-m_kin <- summary_models$k_ptf
-
-# Coefficients
-cf <- summary(m_kin)$coefficients
-kable(cf, digits = 4, caption = "Kinetic Desorption Model Fixed Effects") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"))
-
-# Metrics
-r2 <- r.squaredGLMM(m_kin)
-rmse <- sqrt(mean(residuals(m_kin)^2))
-metrics <- data.frame(Metric = c("Marginal R2", "Conditional R2", "RMSE"), Value = c(r2[1,1], r2[1,2], rmse))
-kable(metrics, digits = 3, caption = "Performance Metrics") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
-
-# Plot
-plot_kin <- m_kin$model
-plot_kin$Predicted <- predict(m_kin)
-
-ggplot(plot_kin, aes(x = Predicted, y = `log(k)`)) +
-  geom_point(alpha = 0.5) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
-  theme_minimal() +
-  labs(title="Predicted vs Observed (Kinetic Model)", x="Predicted log(k)", y="Observed log(k)")
-```
-
-## 2. Conservative PTF for Phosphorus (pH <= 7.3) { .scrollable .smaller }
-
-```{r annex-ptf}
-#| echo: false
-#| message: false
-#| warning: false
-m_ptf <- summary_models$ptf
-
-# Coefficients
-cf <- summary(m_ptf)$coefficients
-kable(cf, digits = 4, caption = "PTF Coefficients (Conservative)") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"))
-
-# Metrics
-r2 <- r.squaredGLMM(m_ptf)
-rmse <- sqrt(mean(residuals(m_ptf)^2))
-metrics <- data.frame(Metric = c("Marginal R2", "Conditional R2", "RMSE"), Value = c(r2[1,1], r2[1,2], rmse))
-kable(metrics, digits = 3, caption = "Performance Metrics") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
-
-# Plot
-plot_ptf <- m_ptf@frame
-plot_ptf$Predicted <- predict(m_ptf)
-
-ggplot(plot_ptf, aes(x = Predicted, y = ln_P_AAE)) +
-  geom_point(alpha = 0.5, color="darkgreen") +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
-  theme_minimal() +
-  labs(title="Predicted vs Observed (PTF)", x="Predicted ln(P_AAE)", y="Observed ln(P_AAE)")
-```
-
-## 3. Mechanistic Yield Model { .scrollable .smaller }
-
-```{r annex-yield}
-#| echo: false
-#| message: false
-#| warning: false
-m_yield <- summary_models$yield
-
-# Coefficients
-cf <- summary(m_yield)$tTable
-kable(cf, digits = 4, caption = "Yield Model Fixed Effects") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"))
-
-# Metrics
-rmse <- sqrt(mean(residuals(m_yield)^2))
-plot_yield <- final_artifacts$data$D_Yield
-plot_yield <- plot_yield[, c("Relative_Yield", "soil_0_20_P_CO2", "z_inv_b", "site")]
-plot_yield <- plot_yield[complete.cases(plot_yield), ]
-plot_yield$Predicted <- predict(m_yield, level=0)
-
-r2 <- cor(plot_yield$Predicted, plot_yield$Relative_Yield)^2
-metrics <- data.frame(Metric = c("Pseudo R2", "RMSE"), Value = c(r2, rmse))
-kable(metrics, digits = 3, caption = "Performance Metrics") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
-
-# Plot
-ggplot(plot_yield, aes(x = Predicted, y = Relative_Yield, color=site)) +
-  geom_point(alpha = 0.5, size=2) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
-  theme_minimal() +
-  labs(title="Predicted vs Observed (Yield Model)", x="Predicted Relative Yield", y="Observed Relative Yield")
-```
-
-## 4. Mechanistic Uptake Model { .scrollable .smaller }
-
-```{r annex-uptake}
-#| echo: false
-#| message: false
-#| warning: false
-m_uptake <- summary_models$uptake
-
-# Coefficients
-cf <- summary(m_uptake)$tTable
-kable(cf, digits = 4, caption = "Uptake Model Fixed Effects") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"))
-
-# Metrics
-rmse <- sqrt(mean(residuals(m_uptake)^2))
-plot_uptake <- final_artifacts$data$D_Long_Agro
-plot_uptake <- plot_uptake[, c("Relative_Uptake", "soil_0_20_P_CO2", "z_inv_b_agro", "z_Temp_Anom", "z_fert_N", "z_v0", "crop", "site")]
-plot_uptake <- plot_uptake[complete.cases(plot_uptake), ]
-plot_uptake$Predicted <- predict(m_uptake, level=0)
-
-r2 <- cor(plot_uptake$Predicted, plot_uptake$Relative_Uptake)^2
-metrics <- data.frame(Metric = c("Pseudo R2", "RMSE"), Value = c(r2, rmse))
-kable(metrics, digits = 3, caption = "Performance Metrics") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
-
-# Plot
-ggplot(plot_uptake, aes(x = Predicted, y = Relative_Uptake, color=site)) +
-  geom_point(alpha = 0.5, size=2) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
-  theme_minimal() +
-  labs(title="Predicted vs Observed (Uptake Model)", x="Predicted Relative Uptake", y="Observed Relative Uptake")
-```
 
 
 
@@ -1255,9 +1112,12 @@ Plot.plot({
 
 ## Mechanistic Validation of GRUD Supply Classes { .scrollable .smaller }
 
+<details>
+<summary>Context: Projecting Physical Limits</summary>
 Here we project our physically derived safety limit ($Q_{safe}$) over the continuous soil gradients used by the GRUD (Fine Texture vs Organic Matter). The GRUD assumes these gradients uniformly control supply. 
 
 Our mechanistic model proves this is broadly true: Fine Texture (Clay + Silt) massively increases the soil's physical capacity to buffer Phosphorus before leaching occurs, effectively creating the safe space for higher $Q_{yield}$.
+</details>
 
 ```{r}
 #| echo: false
@@ -1265,7 +1125,7 @@ Our mechanistic model proves this is broadly true: Fine Texture (Clay + Silt) ma
 #| warning: false
 #| fig-align: center
 #| fig-width: 10
-#| fig-height: 6
+#| fig-height: 5
 
 D_env <- D_Long_Agro
 D_env$ln_P_CO2 <- 0
@@ -1282,7 +1142,8 @@ scale_scale_ft <- 0.62  # Approximate log(clay+silt) scale
 D_env$FineTexture_Pct <- exp(D_env$z_ln_FineTexture * scale_scale_ft + scale_center_ft)
 D_env$Corg_Class <- cut(D_env$rollMean_soil_0_20_Corg, breaks=c(0, 1.5, 2.5, 5), labels=c("Low Corg (<1.5%)", "Med Corg (1.5-2.5%)", "High Corg (>2.5%)"))
 
-ggplot(D_env |> filter(!is.na(Corg_Class)), aes(x = FineTexture_Pct, y = Q_safe, color = Corg_Class)) +
+library(plotly)
+p <- ggplot(D_env |> filter(!is.na(Corg_Class)), aes(x = FineTexture_Pct, y = Q_safe, color = Corg_Class)) +
     geom_smooth(method="lm", se=FALSE, linewidth=1.5) +
     geom_point(alpha=0.3) +
     labs(
@@ -1297,25 +1158,31 @@ ggplot(D_env |> filter(!is.na(Corg_Class)), aes(x = FineTexture_Pct, y = Q_safe,
       plot.background = element_rect(fill = "white", color = NA),
       text = element_text(size = 14)
     )
+ggplotly(p)
 ```
 
-**The Argument Explained:**
+<details>
+<summary>The Argument Explained</summary>
 1. Our thermodynamic model dictates that Phosphorus availability is bottlenecked by the chemical buffer power ($b = dQ/dI$).
 2. As Intensity ($I$) increases, buffer power drops exponentially. At $I \approx 1.0 \text{ mg/L}$, buffer power collapses—the soil can no longer retain P safely.
 3. We calculated $Q_{safe}$: the total mass $Q$ inside the soil exactly at this collapse point ($I=1.0$).
 4. The result? $Q_{safe}$ scales perfectly linearly with clay. 
 5. **Conclusion:** The GRUD's empirical clay matrix was actually a rough, unconscious approximation of the true thermodynamic buffer capacity of the soil!
+</details>
 
 ---
 
 
 ## The Illusion of Bijection: GRUD Correction Factors { .smaller }
 
+<details>
+<summary>Context: The Contradiction of Empirical Tests</summary>
 Since the GRUD uses two distinct methods ($P_{CO2}$ and $P_{AAE10}$) to output a final fertilizer correction factor $v \in [0, 1.5]$, we tested if there is a **linear bijection** between these two decision maps. 
 
 If both extractants were truly measuring the same underlying physical supply state, their final recommendation factors $v$ should be perfectly correlated. Instead, we found an $R^2$ of only **0.19** ($r = 0.43$).
 
 Because there is no linear bijection between the maps, the GRUD will frequently give completely contradictory fertilizer recommendations for the exact same soil depending entirely on which laboratory extraction was used.
+</details>
 
 ```{r}
 #| echo: false
@@ -1323,7 +1190,7 @@ Because there is no linear bijection between the maps, the GRUD will frequently 
 #| warning: false
 #| fig-align: center
 #| fig-width: 8
-#| fig-height: 6
+#| fig-height: 5
 
 # Helper to find bin
 get_clay_bin <- function(clay) {
@@ -1357,7 +1224,8 @@ D_eval <- D_eval |> rowwise() |> mutate(
   bias = v_co2 - v_aae10
 ) |> ungroup()
 
-ggplot(D_eval, aes(x = v_co2, y = v_aae10)) +
+library(plotly)
+p <- ggplot(D_eval, aes(x = v_co2, y = v_aae10)) +
     geom_jitter(alpha = 0.05, width=0.03, height=0.03, color="#1f77b4") +
     geom_smooth(method = "lm", color = "red", linewidth = 1.2) +
     labs(
@@ -1370,16 +1238,20 @@ ggplot(D_eval, aes(x = v_co2, y = v_aae10)) +
     theme(
       plot.background = element_rect(fill = "white", color = NA)
     )
+ggplotly(p)
 ```
 
 ---
 
 
-## Systematic Bias in Fertilizer Recommendations { .smaller }
+## Systematic Bias in Fertilizer Recommendations { .scrollable .smaller }
 
+<details>
+<summary>Context: Structural Discrimination</summary>
 Not only do the two methods disagree 61% of the time, but the discrepancy is entirely systematic. The $P_{CO2}$ method recommends a higher fertilizer dose 40% of the time, while the $P_{AAE10}$ method recommends a higher dose only 21% of the time.
 
 When mapping this bias ($\Delta v = v_{CO2} - v_{AAE10}$) against the underlying soil properties, we discover severe structural flaws: the bias is highly dependent on both **Clay** and **Organic Carbon (Corg)** content. This means the choice of laboratory method does not just introduce random noise—it systematically discriminates against specific soil types, forcing over-fertilization on certain farms while under-fertilizing others!
+</details>
 
 ```{r}
 #| echo: false
@@ -1387,11 +1259,12 @@ When mapping this bias ($\Delta v = v_{CO2} - v_{AAE10}$) against the underlying
 #| warning: false
 #| fig-align: center
 #| fig-width: 10
-#| fig-height: 6
+#| fig-height: 5
 
 D_eval$Corg_Class <- cut(D_eval$rollMean_soil_0_20_Corg, breaks=c(0, 1.5, 2.5, 5), labels=c("Low Corg (<1.5%)", "Med Corg (1.5-2.5%)", "High Corg (>2.5%)"))
 
-ggplot(D_eval |> filter(!is.na(Corg_Class)), aes(x = rollMean_soil_0_20_clay, y = bias, color = Corg_Class)) +
+library(plotly)
+p <- ggplot(D_eval |> filter(!is.na(Corg_Class)), aes(x = rollMean_soil_0_20_clay, y = bias, color = Corg_Class)) +
     geom_point(alpha = 0.3) +
     geom_smooth(method = "loess", span=1) +
     geom_hline(yintercept = 0, linetype="dashed") +
@@ -1406,6 +1279,7 @@ ggplot(D_eval |> filter(!is.na(Corg_Class)), aes(x = rollMean_soil_0_20_clay, y 
       legend.position = "bottom",
       plot.background = element_rect(fill = "white", color = NA)
     )
+ggplotly(p)
 ```
 
 ---
@@ -1448,7 +1322,7 @@ plot_ly(x = clay_seq, y = corg_seq, z = bias_matrix, type = "surface",
 ---
 
 
-## The Calcareous pH Artifact in AAE10 { .smaller }
+## The Calcareous pH Artifact in AAE10 { .scrollable .smaller }
 
 The systematic bias between the extractions is heavily driven by a known chemical artifact: **AAE10 drastically underestimates Phosphorus in alkaline, calcareous soils.** 
 
@@ -1487,7 +1361,7 @@ ggplot(D_plot, aes(x = soil_0_20_P_CO2, y = soil_0_20_P_AAE10, color = rollMean_
 ---
 
 
-## The AAE10 Calcareous Artifact & Filtered Model {.smaller}
+## The AAE10 Calcareous Artifact & Filtered Model { .scrollable .smaller }
 
 **The Problem: A Chemical Artifact**
 The legacy AAE10 extraction uses EDTA, which physically saturates when placed in highly calcareous soils ($pH > 7.3$). This causes a non-linear collapse in extraction efficiency, artificially inflating the measured $P_{AAE10}$ values and corrupting our Pedotransfer Functions (PTFs) on alkaline soils.
@@ -1499,3 +1373,147 @@ To prove that our physical models were structurally sound (and only the chemical
 
 **Why stick to the Complete Model?**
 For the main presentation and policy implications, we retain the **Complete Model** (trained on all data) to represent the entirety of the Swiss agricultural landscape. The ultimate solution is not to mathematically filter out alkaline soils, but to transition to **Olsen P** extractions to solve the chemical artifact physically.
+
+---
+
+## Annex (Methodological Details) { .center }
+
+## 1. Desorption Kinetics Model { .scrollable .smaller }
+
+```{r annex-kinetic}
+#| echo: false
+#| message: false
+#| warning: false
+library(kableExtra)
+library(ggplot2)
+library(MuMIn)
+
+summary_models <- readRDS("data/Summary_Models.rds")
+m_kin <- summary_models$k_ptf
+
+# Coefficients
+cf <- summary(m_kin)$coefficients
+colnames(cf)[colnames(cf) == "Pr(>|t|)"] <- "p-value"
+kable(cf, digits = 4, caption = "Kinetic Desorption Model Fixed Effects") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"))
+
+# Metrics
+r2 <- r.squaredGLMM(m_kin)
+rmse <- sqrt(mean(residuals(m_kin)^2))
+metrics <- data.frame(Metric = c("Marginal R2", "Conditional R2", "RMSE"), Value = c(r2[1,1], r2[1,2], rmse))
+kable(metrics, digits = 3, caption = "Performance Metrics") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
+
+# Plot
+plot_kin <- m_kin$model
+plot_kin$Predicted <- predict(m_kin)
+
+ggplot(plot_kin, aes(x = Predicted, y = `log(k)`)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
+  theme_minimal() +
+  labs(title="Predicted vs Observed (Kinetic Model)", x="Predicted log(k)", y="Observed log(k)")
+```
+
+## 2. Conservative PTF for Phosphorus (pH <= 7.3) { .scrollable .smaller }
+
+```{r annex-ptf}
+#| echo: false
+#| message: false
+#| warning: false
+m_ptf <- summary_models$ptf
+
+# Coefficients
+cf <- summary(m_ptf)$coefficients
+colnames(cf)[colnames(cf) == "Pr(>|t|)"] <- "p-value"
+kable(cf, digits = 4, caption = "PTF Coefficients (Conservative)") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"))
+
+# Metrics
+r2 <- r.squaredGLMM(m_ptf)
+rmse <- sqrt(mean(residuals(m_ptf)^2))
+metrics <- data.frame(Metric = c("Marginal R2", "Conditional R2", "RMSE"), Value = c(r2[1,1], r2[1,2], rmse))
+kable(metrics, digits = 3, caption = "Performance Metrics") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
+
+# Plot
+plot_ptf <- m_ptf@frame
+plot_ptf$Predicted <- predict(m_ptf)
+
+ggplot(plot_ptf, aes(x = Predicted, y = ln_P_AAE)) +
+  geom_point(alpha = 0.5, color="darkgreen") +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
+  theme_minimal() +
+  labs(title="Predicted vs Observed (PTF)", x="Predicted ln(P_AAE)", y="Observed ln(P_AAE)")
+```
+
+## 3. Mechanistic Yield Model { .scrollable .smaller }
+
+```{r annex-yield}
+#| echo: false
+#| message: false
+#| warning: false
+m_yield <- summary_models$yield
+
+# Coefficients
+cf <- summary(m_yield)$tTable
+colnames(cf)[colnames(cf) == "Pr(>|t|)"] <- "p-value"
+kable(cf, digits = 4, caption = "Yield Model Fixed Effects") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"))
+
+# Metrics
+rmse <- sqrt(mean(residuals(m_yield)^2))
+plot_yield <- final_artifacts$data$D_Yield
+plot_yield <- plot_yield[, c("Relative_Yield", "soil_0_20_P_CO2", "z_inv_b", "site")]
+plot_yield <- plot_yield[complete.cases(plot_yield), ]
+plot_yield$Predicted <- predict(m_yield, level=0)
+
+r2 <- cor(plot_yield$Predicted, plot_yield$Relative_Yield)^2
+metrics <- data.frame(Metric = c("Pseudo R2", "RMSE"), Value = c(r2, rmse))
+kable(metrics, digits = 3, caption = "Performance Metrics") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
+
+# Plot
+ggplot(plot_yield, aes(x = Predicted, y = Relative_Yield, color=site)) +
+  geom_point(alpha = 0.5, size=2) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
+  theme_minimal() +
+  labs(title="Predicted vs Observed (Yield Model)", x="Predicted Relative Yield", y="Observed Relative Yield")
+```
+
+## 4. Mechanistic Uptake Model { .scrollable .smaller }
+
+```{r annex-uptake}
+#| echo: false
+#| message: false
+#| warning: false
+m_uptake <- summary_models$uptake
+
+# Coefficients
+cf <- summary(m_uptake)$tTable
+colnames(cf)[colnames(cf) == "Pr(>|t|)"] <- "p-value"
+kable(cf, digits = 4, caption = "Uptake Model Fixed Effects") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"))
+
+# Metrics
+rmse <- sqrt(mean(residuals(m_uptake)^2))
+plot_uptake <- final_artifacts$data$D_Long_Agro
+plot_uptake <- plot_uptake[, c("Relative_Uptake", "soil_0_20_P_CO2", "z_inv_b_agro", "z_Temp_Anom", "z_fert_N", "z_v0", "crop", "site")]
+plot_uptake <- plot_uptake[complete.cases(plot_uptake), ]
+plot_uptake$Predicted <- predict(m_uptake, level=0)
+
+r2 <- cor(plot_uptake$Predicted, plot_uptake$Relative_Uptake)^2
+metrics <- data.frame(Metric = c("Pseudo R2", "RMSE"), Value = c(r2, rmse))
+kable(metrics, digits = 3, caption = "Performance Metrics") |>
+  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
+
+# Plot
+ggplot(plot_uptake, aes(x = Predicted, y = Relative_Uptake, color=site)) +
+  geom_point(alpha = 0.5, size=2) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
+  theme_minimal() +
+  labs(title="Predicted vs Observed (Uptake Model)", x="Predicted Relative Uptake", y="Observed Relative Uptake")
+```
+
+
+
