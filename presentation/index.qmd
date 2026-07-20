@@ -1,7 +1,7 @@
 ---
-title: "P-release kinetics as a predictor for P-availability"
-subtitle: "in Swiss cropping systems"
-author: "Agroscope Research Team"
+title: "Improving estimation of P-availability based on two GRUD extractions"
+subtitle: "Moving from lookup tables to mechanistic models"
+author: "Marc Jerónimo Pérez y Ropero"
 date: "2026-07-21"
 format:
   revealjs:
@@ -56,15 +56,22 @@ Our **mechanistic approach** explicitly models the chemical supply chain. We sep
 
 ## The Current Paradigm & The Missing Link { .scrollable .smaller }
 
-<details>
-<summary>Detailed Context</summary>
-Recent extensive evaluations of long-term European field trials by Steinfurth et al. (2024) have highlighted a critical gap in modern P management: **predicting P depletion and availability is impossible without knowing the "P sorption capacity" of the soil.**
+**The Missing Link:**
 
-Simultaneously, pioneering work at Agroscope by Hirte et al. (2021) has proven that critical soil test phosphorus (STP) concentrations are not static. By evaluating 26 years of Swiss field data, they demonstrated that pedoclimatic variables (clay, pH, temperature) significantly shift yield response curves, exposing the limitations of rigid empirical guidelines.
-</details>
+- Critical soil test phosphorus (STP) concentrations are not static; they depend heavily on pedoclimatic variables *(Hirte et al., 2021)*.
+- Predicting P depletion and availability is impossible without knowing the "P sorption capacity" of the soil *(Steinfurth et al., 2024)*.
 
 **Our Goal:** 
-We aim to bridge these two findings. We build upon the pedoclimatic dependencies identified by Hirte et al. (2021) by providing the explicit mechanistic "missing link" called for by Steinfurth et al. (2024). We directly model the soil's **P sorption capacity** ($K_f$) via the Freundlich isotherm, and the resulting non-linear **Buffer Power** ($b$), to calculate exactly *how* pedoclimates restrict P diffusion and crop uptake.
+Bridge these findings by explicitly modeling the soil's **P sorption capacity** to derive the non-linear **Buffer Power**. This provides the mechanistic "missing link" to calculate exactly how pedoclimates restrict crop uptake.
+
+<details>
+<summary>Deep Dive: Detailed Context</summary>
+Recent extensive evaluations of long-term European field trials by Steinfurth et al. (2024) have highlighted a critical gap in modern P management: predicting P depletion and availability is impossible without knowing the "P sorption capacity" of the soil. Simultaneously, pioneering work at Agroscope by Hirte et al. (2021) has proven that critical soil test phosphorus (STP) concentrations are not static. By evaluating 26 years of Swiss field data, they demonstrated that pedoclimatic variables (clay, pH, temperature) significantly shift yield response curves, exposing the limitations of rigid empirical guidelines. We aim to bridge these two findings by directly modeling the soil's P sorption capacity ($K_f$) via the Freundlich isotherm, and the resulting non-linear Buffer Power ($b$), to calculate exactly *how* pedoclimates restrict P diffusion.
+</details>
+
+::: {.notes}
+Recent extensive evaluations of long-term European field trials by Steinfurth et al. (2024) have highlighted a critical gap in modern P management: predicting P depletion and availability is impossible without knowing the "P sorption capacity" of the soil. Simultaneously, pioneering work at Agroscope by Hirte et al. (2021) has proven that critical soil test phosphorus (STP) concentrations are not static. By evaluating 26 years of Swiss field data, they demonstrated that pedoclimatic variables (clay, pH, temperature) significantly shift yield response curves, exposing the limitations of rigid empirical guidelines. We aim to bridge these two findings by directly modeling the soil's P sorption capacity ($K_f$) via the Freundlich isotherm, and the resulting non-linear Buffer Power ($b$), to calculate exactly *how* pedoclimates restrict P diffusion.
+:::
 
 ---
 
@@ -72,9 +79,25 @@ We aim to bridge these two findings. We build upon the pedoclimatic dependencies
 ## Conceptual Foundation: The Physical Chemistry { .scrollable .smaller }
 
 <details>
-<summary>Detailed Context</summary>
+<summary>Deep Dive: Desorption Kinetics & $v_0$</summary>
 Before analyzing the data, we must define the fundamental physical variables that govern soil phosphorus availability. We treat the soil not as a black box, but as a dynamic chemical system with distinct pools and kinetic fluxes.
+
+**The Derivation of Desorption Velocity ($v_0$):**
+- **The ODE:** P release into solution follows first-order kinetics: $\frac{d P_L}{dt} = k(P_{CO2} - P_L)$.
+- **The Initial Rate:** The maximum speed of release occurs at $t=0$ (a pure sink, like a hungry root): $v_0 = \frac{d P_L}{dt}\Big|_{t=0} = k \cdot P_{CO2}$.
+- **The Extrapolation (PTF):** The kinetic rate constant $k$ was measured experimentally on a subset of soils. We trained a Pedotransfer Function (PTF) based on **pH** and **Texture** to predict $k$ across the entire dataset.
+- **The Construction:** $v_0$ is thus constructed for every field trial as the product of the predicted rate constant and the measured Intensity: $v_0 = k_{pred} \cdot P_{CO2}$.
 </details>
+
+::: {.notes}
+Before analyzing the data, we must define the fundamental physical variables that govern soil phosphorus availability. We treat the soil not as a black box, but as a dynamic chemical system with distinct pools and kinetic fluxes.
+
+**The Derivation of Desorption Velocity ($v_0$):**
+- **The ODE:** P release into solution follows first-order kinetics: $\frac{d P_L}{dt} = k(P_{CO2} - P_L)$.
+- **The Initial Rate:** The maximum speed of release occurs at $t=0$ (a pure sink, like a hungry root): $v_0 = \frac{d P_L}{dt}\Big|_{t=0} = k \cdot P_{CO2}$.
+- **The Extrapolation (PTF):** The kinetic rate constant $k$ was measured experimentally on a subset of soils. We trained a Pedotransfer Function (PTF) based on **pH** and **Texture** to predict $k$ across the entire dataset.
+- **The Construction:** $v_0$ is thus constructed for every field trial as the product of the predicted rate constant and the measured Intensity: $v_0 = k_{pred} \cdot P_{CO2}$.
+:::
 
 **The Key Variables:**
 
@@ -101,7 +124,7 @@ By taking the derivative of the Freundlich equation ($dQ/dI$) at constant temper
   - **Buffer Power ($b$):** $b(I) = K \cdot n \cdot I^{n-1}$
   - **Desorption Velocity ($v_0$):** $v_0 = k \cdot Q$ *(First-order kinetic flux)*
 - **The Inputs:** Intensity ($I$), Capacity modifier ($K$), Curvature ($n$), Desorption rate constant ($k$).
-- **The Output:** The absolute Desorbable Mass ($Q$), Buffer Power ($b$), and Kinetic Flux ($v_0$).
+- **The Output:** The AAE10 extractable mass as a proxy for the Quantity ($Q$), Buffer Power ($b$), and Kinetic Flux ($v_0$).
 
 ---
 
@@ -119,9 +142,9 @@ In the next slide, you can explore this interactively across the three physical 
 ```{ojs}
 //| panel: input
 //| layout-ncol: 3
-viewof K = Inputs.range([10, 100], {value: 40, step: 1, label: "K (Capacity)"})
-viewof n = Inputs.range([0.1, 0.9], {value: 0.5, step: 0.05, label: "n (Intensity Modifier)"})
-viewof current_I = Inputs.range([0.1, 10], {value: 2, step: 0.1, label: "Current I (mg/L)"})
+viewof K = Inputs.range([10, 100], {value: 20, step: 1, label: "K (Capacity)"})
+viewof n = Inputs.range([0, 1], {value: 1, step: 0.05, label: "n (Intensity Modifier)"})
+viewof current_I = Inputs.range([0.1, 10], {value: 1, step: 0.1, label: "Current I (mg/L)"})
 ```
 
 ```{ojs}
@@ -202,7 +225,7 @@ Plot.plot({
 <summary>Detailed Context & Practical Compromise</summary>
 To map static soil tests into a dynamic Q(I) buffer curve without requiring expensive kinetic laboratory analysis, we built a mixed-effects Pedotransfer Function (PTF). We model the bound legacy pool ($P_{AAE10}$, proxy for $Q$) against the active intensity ($P_{CO2}$, proxy for $I$). 
 
-While our rigorous geochemical analysis proved that amorphous metal oxides (Feox/Alox) dictate physical binding capacity, standard Agroscope field trials rarely measure them. To maximize field utility, we built a generalized agronomic PTF that substitutes these strict thermodynamic drivers with standard background proxies (Ca, Mg, K, Fine Texture).
+While our rigorous geochemical analysis proved that amorphous metal oxides (Feox/Alox) dictate physical binding capacity, standard Agroscope field trials rarely measure them. To maximize field utility, we built a generalized agronomic PTF that substitutes these strict thermodynamic drivers with standard background proxies (Ca, Mg, K, Texture (clay+silt)).
 </details>
 
 **Effect Structure: The Pedotransfer Function**
@@ -212,12 +235,12 @@ Because the non-linear Freundlich isotherm $Q = K \cdot I^n$ becomes linear in l
   $$ \ln(Q) = \underbrace{\left(\alpha + \sum \beta_{env} X_{env}\right)}_{\text{Mathematically solves for } \ln(K)} + \underbrace{\left(\beta_I + \sum \gamma_{env} X_{env}\right)}_{\text{Mathematically solves for } n} \cdot \ln(I) $$
 - **The Inputs:** 
   - Intensity ($I = P_{CO2}$)
-  - 8 Environmental Covariates $X_{env}$: pH, Fine Texture, Ca, Mg, K, $C_{org}$, Temperature, Precipitation.
+  - 8 Environmental Covariates $X_{env}$: pH, Texture (clay+silt), Ca, Mg, K, $C_{org}$, Temperature, Precipitation.
 - **The Output:** 
   - **Buffer Multiplier ($K$):** The baseline sorption capacity.
   - **Buffer Curvature ($n$):** How the physical buffer power decays as the soil becomes saturated.
 
-*(Mixed-Effects Structure: $\alpha \sim 1 | \text{site/plot\_nr}$, absorbing structural field-level variances).*
+*(Mixed-Effects Structure: $\alpha \sim 1 \mid \text{site/plot}$, absorbing structural field-level variances).*
 
 ---
 
@@ -233,7 +256,10 @@ Because Phosphorus binds strongly to soil particles, its transport is almost ent
 
 **Effect Structure: Effective Diffusion Penalty**
 
-- **The Equation:** $D_e \propto \frac{1}{b}$
+- **The Equation:** 
+  $$ D_e = \frac{D_l \cdot \theta \cdot f}{b} $$
+  *(Where $D_l$ is diffusion in pure water, $\theta$ is volumetric water content, and $f$ is the tortuosity factor. Assuming comparable average soil moisture states, this simplifies to our focal physical penalty:)*
+  $$ D_e \propto \frac{1}{b} $$
 - **The Inputs:** 
   - Thermodynamic Buffer Power ($b$)
 - **The Output:** 
@@ -242,35 +268,66 @@ Because Phosphorus binds strongly to soil particles, its transport is almost ent
 ---
 
 
-## The Target Variable: The Piper-Steenbjerg Paradox { .scrollable .smaller }
+## The Target Variable: The Geometry of Yield & Uptake { .scrollable .smaller }
+
+<img src="steenbjerg_tangent.png" style="width: 100%; max-width: 1000px; max-height: none; margin: 0 auto; display: block;" />
+
+**The Core Biological Geometry:**
+
+- **The Phases:** The curve captures the transition from structural growth (steep rise) to luxury accumulation (flat plateau).
+- **The Mathematical Target:** The tangent line from the origin identifies the absolute minimum tissue concentration ($C_{base}$).
+- **The Ambiguity:** High $C_P$ occurs during both severe starvation and luxury waste. Only the minimum $C_P$ is an unambiguous agronomic target.
+- **Our Strategy:** To rigorously locate this inflection point, we explicitly modeled Absolute Uptake ($P_{up}$) and Relative Yield ($Y$) against soil intensity ($I$).
 
 <details>
-<summary>Why model Uptake and Yield instead of Concentration?</summary>
-Statistically speaking, modeling plant tissue concentration ($C_P$) directly would be much cleaner. It is a direct measurement of the plant's chemical state. However, the biological reality of the **Piper-Steenbjerg effect** (growth dilution) destroys this statistical convenience. 
-
-When a P-starved plant finally absorbs Phosphorus, it rapidly generates new biomass. This sudden flush of carbon paradoxically *dilutes* the $C_P$ measurement, causing the concentration to drop even though the absolute mass of Phosphorus in the plant increased. 
+<summary>Deep Dive: Algebraic Derivation of the Tangent</summary>
+- **Tissue Concentration ($C_P$):** Defined as $C_P = \frac{P_{up}}{\text{Biomass}}$. Assuming Biomass $\propto$ Relative Yield ($Y$), we get $C_P \propto \frac{P_{up}}{Y}$.
+- **The Tangent Slope ($m$):** On the graph, a straight line from the origin $(0,0)$ to any point $(P_{up}, Y)$ has a slope $m = \frac{Y}{P_{up}}$.
+- **The Inverse Relationship:** Therefore, the slope is exactly inversely proportional to concentration: $m \propto \frac{1}{C_P}$.
+- **The Minimum $C_P$:** To find the lowest possible $C_P$, we must maximize the slope ($m$). The maximum possible slope from the origin that touches the curve is the tangent line where $\frac{dY}{dP_{up}} = \frac{Y}{P_{up}}$.
 </details>
 
-**The necessity of cumulative flow:**
+::: {.notes}
+- **Tissue Concentration ($C_P$):** Defined as $C_P = \frac{P_{up}}{\text{Biomass}}$. Assuming Biomass $\propto$ Relative Yield ($Y$), we get $C_P \propto \frac{P_{up}}{Y}$.
+- **The Tangent Slope ($m$):** On the graph, a straight line from the origin $(0,0)$ to any point $(P_{up}, Y)$ has a slope $m = \frac{Y}{P_{up}}$.
+- **The Inverse Relationship:** Therefore, the slope is exactly inversely proportional to concentration: $m \propto \frac{1}{C_P}$.
+- **The Minimum $C_P$:** To find the lowest possible $C_P$, we must maximize the slope ($m$). The maximum possible slope from the origin that touches the curve is the tangent line where $\frac{dY}{dP_{up}} = \frac{Y}{P_{up}}$.
+:::
 
-- **The Illusion of $C_P$:** Because of the dilution effect, a low $C_P$ is biologically ambiguous. It could mean severe starvation, or it could mean explosive, healthy growth.
-- **The Solution:** We are forced to abandon $C_P$ as a direct target. Instead, we must model the cumulative physical flow: **Absolute Uptake ($P_{up} = Y \times C_P$)** or **Relative Yield ($Y$)**. 
-- **The Trade-off:** While absolute Uptake and Yield are fundamentally correct biological targets, Yield ($Y$) is extremely noisy because it integrates every other environmental factor (weather, nitrogen, pests) across the entire season. Our mechanistic models must explicitly account for this noise.
-
----
-
-## The Mechanistic Uptake Model { .scrollable .smaller }
+## 1. The Mechanistic Yield Model ($Y$) { .scrollable .smaller }
 
 <details>
 <summary>Macroscopic Implementation</summary>
-The full numerical Barber-Cushman model requires complex spatio-temporal integration, making it highly impractical for national fertilizer guidelines. Instead, we embed the core theoretical limit (the diffusion penalty $1/b$ and desorption kinetics $v_0$) directly into a macroscopic **Michaelis-Menten Uptake Model**.
+We embed the physical diffusion penalty ($1/b$) directly into a macroscopic **Mitscherlich Yield Model**. This allows us to predict relative crop yield while explicitly modeling the physical constraints of the soil.
 </details>
 
-**Effect Structure: Plant Uptake**
-We explicitly structure the fixed and random effects to penalize nutrient delivery based on the physical chemistry of diffusion and desorption.
+**Effect Structure: Relative Yield**
 
 - **The Equation:** 
-  $$ U_{rel} = \frac{U_{max} \cdot I}{K_{m} + I} $$
+  $$ Y = 1 - \exp(-c(I + E)) $$
+- **The Inputs:**
+  - **Environmental Factors:** Temperature, Precipitation, pH, K ($K_{AAE10}$), Mg ($Mg_{AAE10}$), Nitrogen ($N_{fertilized}$).
+  - **Chemical Bottleneck:** Diffusion Penalty ($1/b$).
+- **The Output:**
+  - **Curvature Penalty ($c$):** $c = c_{base} \cdot \exp\left( \sum \beta_{env} X_{env} + \beta_{inv\_b} \left(\frac{1}{b}\right) \right)$
+
+*(Mixed-Effects Structure: $c_{base} \sim \text{crop} \mid \text{site/plot}$)*
+
+![](yield_pred_vs_obs.png){fig-align="center" width=800}
+
+---
+
+## 2. The Mechanistic Uptake Model ($P_{up}$) { .scrollable .smaller }
+
+<details>
+<summary>Macroscopic Implementation</summary>
+We embed the diffusion penalty ($1/b$) and desorption kinetics ($v_0$) into a macroscopic **Michaelis-Menten Uptake Model**.
+</details>
+
+**Effect Structure: Absolute Uptake**
+
+- **The Equation:** 
+  $$ P_{up} = \frac{U_{max} \cdot I}{K_{m} + I} $$
 - **The Inputs:**
   - **Environmental Factors:** Temperature ($\Delta T$), Nitrogen ($N$).
   - **Chemical Bottlenecks:** Diffusion Penalty ($1/b$), Desorption Velocity ($v_0$).
@@ -278,103 +335,75 @@ We explicitly structure the fixed and random effects to penalize nutrient delive
   - **Max Uptake ($U_{max}$):** $U_{max} = U_{base} + \beta_{temp} \Delta T + \beta_{N} N + \beta_{v0} v_0$
   - **Affinity Penalty ($K_m$):** $K_m = K_{base} \cdot \exp\left( \beta_{inv\_b} \cdot \left(\frac{1}{b}\right) \right)$
 
-*(Mixed-Effects Structure: $U_{base} \sim 1 | \text{site/year}$, modeling random baseline productivity variances).*
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
-#| fig-width: 10
-#| fig-height: 5
-
-# Predict relative uptake for plotting
-D_Long_Agro$Predicted_Uptake <- predict(m_uptake_raw_co2, level=0)
-
-ggplot(D_Long_Agro, aes(x = Predicted_Uptake, y = Relative_Uptake, color = site)) +
-    geom_point(alpha = 0.6, size=2) +
-    geom_abline(slope = 1, intercept = 0, color = "black", linetype = "dashed", size = 1) +
-    labs(
-        title = "Uptake Model Performance (Mechanistic $P_{CO2}$)",
-        subtitle = "Biological uptake explicitly bottlenecked by soil Buffer Power",
-        x = "Predicted Relative Uptake",
-        y = "Observed Relative Uptake",
-        color = "Monitoring Site"
-    ) +
-    theme_minimal()
-```
+*(Mixed-Effects Structure: $U_{base} \sim 1 \mid \text{site/year}$)*
 
 ---
 
+## 3. The Mechanistic Concentration Model ($C_P$) { .scrollable .smaller }
 
-## The $P_{crit}$ Target & Agronomic Goals { .scrollable .smaller }
+<details>
+<summary>Macroscopic Implementation</summary>
+We explicitly model the geometry of luxury consumption and growth dilution by combining an exponential decay (dilution) with a linear accumulation (luxury).
+</details>
 
-Using the **Michaelis-Menten Uptake Model**, we can mathematically define the critical soil intensity ($P_{crit}$) required to reach 95% of the maximum biological uptake. 
+**Effect Structure: Tissue Concentration**
 
-Because the NLME model intrinsically defines the 100% theoretical limit ($U_{max}$), we simply solve for the Intensity $I$ that satisfies $U = 0.95 U_{max}$:
+- **The Equation:** 
+  $$ C_P = C_{base} + A_{dil} \cdot \exp(-k \cdot I) + S_{acc} \cdot I $$
+- **The Inputs:**
+  - Intensity ($I$)
+- **The Outputs:**
+  - **Dilution Amplitude ($A_{dil}$):** The spike in concentration during severe starvation.
+  - **Decay Rate ($k$):** How fast growth dilutes the concentration.
+  - **Luxury Slope ($S_{acc}$):** The rate of non-structural P accumulation.
+  - **Base Concentration ($C_{base}$):** The theoretical minimum asymptote before luxury uptake.
 
-$$ 0.95 \cdot U_{max} = \frac{U_{max} \cdot I}{K_m + I} $$
+---
 
-$$ 0.95 K_m + 0.95 I = I $$
-$$ 0.95 K_m = 0.05 I $$
-$$ I = 19 \cdot K_m $$
+## Deriving $P_{crit}$ Across Models { .scrollable .smaller }
 
-**Conclusion:** The Critical Intensity ($P_{crit}$) is exactly **19 times the Half-Saturation Constant ($K_m$)**. 
+By defining a target parameter $x$ (e.g., $x = 0.95$ for 95% yield), we algebraically isolate the Critical Intensity ($P_{crit}$) required to reach that target for each respective biological model. 
 
-Because $K_m$ is dynamically penalized by the physical buffer power ($1/b$) and desorption velocity ($v_0$), $P_{crit}$ natively adapts to the unique pedological bottlenecks of the soil!
+**1. The Yield Model (Mitscherlich):**
+$$ x = 1 - \exp(-c(P_{crit} + E)) \implies P_{crit} = \frac{-\ln(1 - x)}{c} - E $$
+
+**2. The Uptake Model (Michaelis-Menten):**
+$$ x \cdot U_{max} = \frac{U_{max} \cdot P_{crit}}{K_m + P_{crit}} \implies P_{crit} = \frac{x}{1 - x} K_m $$
+
+**3. The Concentration Model (U-Shape Minimum):**
+The target here is the absolute minimum, found by setting the derivative to zero:
+$$ \frac{dC_P}{dI} = -k \cdot A_{dil} \exp(-k \cdot P_{crit}) + S_{acc} = 0 \implies P_{crit} = \frac{1}{k} \ln\left( \frac{k \cdot A_{dil}}{S_{acc}} \right) $$
+
+**Conclusion:** We successfully translate static physical chemistry ($c, K_m, k$) into dynamic agronomic targets!
 
 ## The Parametric Recommendation Framework { .scrollable .smaller }
 
-<details>
-<summary>Thermodynamic Mass-Balance</summary>
-With the physical bottlenecks isolated, we can transition from rigid empirical matrices to a purely thermodynamic mass-balance approach for fertilizer recommendations.
-
-**Step 1:** Calculate the required Intensity using the biological Uptake model ($P_{crit} = 19 K_m$).
-**Step 2:** Use the Thermodynamic Pedotransfer Function (PTF) to calculate the non-linear buffer curve ($K$ and $n$).
-**Step 3:** Calculate the exact mass difference ($\Delta Q_{yield}$) required to shift the soil from its current state to the critical state.
-</details>
+**Thermodynamic Mass-Balance:**
+- **Step 1:** Define the physiological minimum Intensity ($P_{crit} = 3/k$).
+- **Step 2:** Use the Thermodynamic Pedotransfer Function (PTF) to calculate the non-linear buffer curve parameters ($K$ and $n$) for the specific soil.
+- **Step 3:** Calculate the exact absolute mass difference ($\Delta Q_{yield}$) required to shift the soil from its current thermodynamic state to the critical state.
 
 **Effect Structure: Additive Recommendation**
 
 - **The Equation:**
-  $$ P_{rec} = F_{norm} + \Delta Q_{yield} - \text{Residues} $$
+  $$ P_{rec} = \Delta Q_{yield} $$
   *(where $\Delta Q_{yield} = Q(P_{crit}) - Q(I_{now})$)*
-- **The Inputs:** 
-  - Crop's baseline physiological requirement ($F_{norm}$)
+- **The Inputs:**
   - Target Quantity state ($Q(P_{crit})$) based on required biological uptake
   - Current Quantity state ($Q(I_{now})$)
 - **The Output:** 
+
+<details>
+<summary>Deep Dive: Thermodynamic Mass-Balance</summary>
+With the physical bottlenecks isolated, we can transition from rigid empirical matrices to a purely thermodynamic mass-balance approach for fertilizer recommendations. By taking the physiological Intensity target and projecting it through the soil-specific pedotransfer buffer curve, we derive the exact physical mass of Phosphorus required to satisfy the plant's kinetic limits.
+</details>
+
+::: {.notes}
+With the physical bottlenecks isolated, we can transition from rigid empirical matrices to a purely thermodynamic mass-balance approach for fertilizer recommendations. By taking the physiological Intensity target and projecting it through the soil-specific pedotransfer buffer curve, we derive the exact physical mass of Phosphorus required to satisfy the plant's kinetic limits.
+:::
   - **Fertilizer Recommendation ($P_{rec}$):** The absolute additive mass of P required to reach peak biological efficiency.
 
-## The Geometry of Luxury Consumption
 
-The Steenbjerg effect (dilution) and luxury consumption are visually perfectly explained by plotting Yield against Uptake. 
-
-Because Tissue Concentration ($C_P$) is the ratio of Uptake to Yield ($\frac{P_{up}}{Y}$), the point of **Minimum Tissue Concentration** is mathematically identical to the point of **Maximum Yield-to-Uptake Ratio**. 
-
-Geometrically, this is exactly where a tangent line drawn from the origin touches the curve. It perfectly divides the dilution phase from the luxury phase.
-
-![](steenbjerg_tangent.png){fig-align="center" width="75%"}
-
-## The Calculus of Luxury Consumption {.scrollable .smaller}
-
-Instead of targeting arbitrary agronomic quantiles (e.g., 95% yield), we can mathematically derive the absolute physiological boundary where biological growth uncouples from phosphorus uptake (luxury consumption).
-
-We define tissue concentration $C_P$ as the ratio of Uptake to Yield:
-$$ C_P(I) = \frac{P_{up}(I)}{Y(I)} $$
-
-The exact point where the Steenbjerg dilution effect ends and $C_P$ begins to rise is the global minimum of the $C_P(I)$ curve. By setting $\frac{dC_P}{dI} = 0$, we find:
-$$ \frac{d}{dI} \ln(P_{up}) = \frac{d}{dI} \ln(Y) $$
-
-Substituting our hyperbolic uptake and exponential yield models, this produces a transcendental equation:
-$$ \frac{K_m}{I(K_m + I)} = \frac{c_{eff} \cdot \exp(-c_{eff}(I + E_{base}))}{1 - \exp(-c_{eff}(I + E_{base}))} $$
-
-::: {.callout-important}
-## Numerical Solution for Winter Wheat
-
-When solved numerically for average Swiss conditions ($c_{eff} \approx 4.3$, $E_{base} \approx 0.81$, $K_m \approx 0.026$), the true theoretical Critical Intensity ($I_{crit}$) evaluates to **0.00006 mg/L**. 
-
-At this staggeringly low intensity in the bulk soil solution, the plant is already achieving **97% of maximum yield** via endogenous/rhizosphere reserves ($E_{base}$). This proves that historical targets of 1.0 or 1.5 mg/L maintain the soil in a perpetual, wasteful state of absolute luxury consumption.
-:::
 
 ## Interactive Fertilization Calculator { .interactive-slide .scrollable .smaller }
 
@@ -402,6 +431,8 @@ viewof show_uptake = Inputs.toggle({label: "Show Uptake Target", value: true})
 
 viewof target_yield_pct = Inputs.range([0, 100], {value: 95, step: 1, label: "Target Relative Yield (%)"})
 viewof show_yield = Inputs.toggle({label: "Show Yield Target", value: true})
+
+viewof show_empirical = Inputs.toggle({label: "Show Concentration Target (3/k)", value: true})
 
 viewof dynamic_limits = Inputs.toggle({label: "Use Dynamic Plot Limits", value: false})
 ```
@@ -548,7 +579,7 @@ calc = {
   
   let Q_now = K_val * Math.pow(current_P, n);
   let delta_Q_up = Q_target_up - Q_now;
-  let P_rec_up = norms.P + delta_Q_up;
+  let P_rec_up = delta_Q_up;
 
   let yd = coef_data.yield_coefs;
   let yd_sd = coef_data.yield_scales;
@@ -561,6 +592,7 @@ calc = {
   let c_eff = c_base_crop * Math.exp(yd.beta_invb * z_inv_b + yd.beta_pH * z_pH_yd + yd.beta_K * z_K_yd + yd.beta_Mg * z_Mg_yd);
   
   // Yield target logic: y = 1 - exp(-c_eff * (I + E_base)) => I = -ln(1 - y) / c_eff - E_base
+  let frac_yd = target_yield_pct / 100.0;
   // Clamping P_crit_yd to 0. A negative P_crit means E_base alone is sufficient for the yield target.
   let P_crit_yd_raw = (-Math.log(1.0 - frac_yd) / c_eff) - yd.E_base;
   let P_crit_yd = (frac_yd >= 1.0) ? 999 : Math.max(0, P_crit_yd_raw);
@@ -568,7 +600,14 @@ calc = {
   let Q_target_yd = K_val * Math.pow(P_crit_yd, n);
   
   let delta_Q_yd = Q_target_yd - Q_now;
-  let P_rec_yd = norms.P + delta_Q_yd;
+  let P_rec_yd = delta_Q_yd;
+  
+  let k_dil_crops = { WW: 9.18, KA: 11.02, ZR: 11.68, RA: 0.74, KM: 1631, SM: 1631, SW: 1631, CH: 10, FR: 10, SJ: 10, WG: 9.18, WS: 9.18, ZF: 10 };
+  let k_dil = k_dil_crops[crop_choice] || 10;
+  let P_crit_emp = 3.0 / k_dil;
+  let Q_target_emp = K_val * Math.pow(P_crit_emp, n);
+  let delta_Q_emp = Q_target_emp - Q_now;
+  let P_rec_emp = delta_Q_emp;
   
   let grud_c_co2 = get_grud_correction('CO2', current_P, soil_clay);
   let grud_rec_co2 = norms.P * grud_c_co2;
@@ -581,6 +620,7 @@ calc = {
   return { K: K_val, n: n, Q_now: Q_now, F_norm: norms.P, 
            P_crit_up: P_crit_up, Q_target_up: Q_target_up, delta_Q_up: delta_Q_up, P_rec_up: P_rec_up,
            P_crit_yd: P_crit_yd, Q_target_yd: Q_target_yd, delta_Q_yd: delta_Q_yd, P_rec_yd: P_rec_yd,
+           P_crit_emp: P_crit_emp, Q_target_emp: Q_target_emp, delta_Q_emp: delta_Q_emp, P_rec_emp: P_rec_emp,
            grud_c_co2, grud_rec_co2, grud_c_aae, grud_rec_aae };
 }
 ```
@@ -592,8 +632,9 @@ md`#### Fertilizer Recommendation
   <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 250px;">
       <strong>Mechanistic Predictions:</strong><br/>
-      ${show_uptake ? `Uptake: F(${calc.F_norm}) + ΔQ(${calc.delta_Q_up.toFixed(1)}) = <strong>${Math.max(0, calc.P_rec_up).toFixed(1)} kg/ha</strong><br/>` : ""}
-      ${show_yield ? `Yield: F(${calc.F_norm}) + ΔQ(${calc.delta_Q_yd.toFixed(1)}) = <strong>${Math.max(0, calc.P_rec_yd).toFixed(1)} kg/ha</strong>` : ""}
+      ${show_uptake ? `Uptake Target: ΔQ(${calc.delta_Q_up.toFixed(1)}) = <strong>${Math.max(0, calc.P_rec_up).toFixed(1)} kg/ha</strong><br/>` : ""}
+      ${show_yield ? `Yield Target: ΔQ(${calc.delta_Q_yd.toFixed(1)}) = <strong>${Math.max(0, calc.P_rec_yd).toFixed(1)} kg/ha</strong><br/>` : ""}
+      ${show_empirical ? `Concentration (3/k): ΔQ(${calc.delta_Q_emp.toFixed(1)}) = <strong style="color:purple;">${Math.max(0, calc.P_rec_emp).toFixed(1)} kg/ha</strong>` : ""}
     </div>
     <div style="flex: 1; min-width: 250px;">
       <strong>GRUD Empirical Recommendations:</strong><br/>
@@ -607,16 +648,18 @@ md`#### Fertilizer Recommendation
 ```{ojs}
 //| panel: fill
 {
-  let min_I = Math.min(0, (show_yield ? calc.P_crit_yd : 0) * 1.1, (show_uptake ? calc.P_crit_up : 0) * 1.1);
-  let min_Q = Math.min(0, (show_yield ? calc.Q_target_yd : 0) * 1.1, (show_uptake ? calc.Q_target_up : 0) * 1.1);
+  let min_I = Math.min(0, (show_yield ? calc.P_crit_yd : 0) * 1.1, (show_uptake ? calc.P_crit_up : 0) * 1.1, (show_empirical ? calc.P_crit_emp : 0) * 1.1);
+  let min_Q = Math.min(0, (show_yield ? calc.Q_target_yd : 0) * 1.1, (show_uptake ? calc.Q_target_up : 0) * 1.1, (show_empirical ? calc.Q_target_emp : 0) * 1.1);
 
   let max_I_up = (show_uptake && calc.P_crit_up < 999) ? calc.P_crit_up : 5;
   let max_I_yd = (show_yield && Math.abs(calc.P_crit_yd) < 99999) ? Math.max(0, calc.P_crit_yd) : 5;
-  let max_I = dynamic_limits ? Math.max(5, max_I_up * 1.1, max_I_yd * 1.1) : 5;
+  let max_I_emp = (show_empirical && calc.P_crit_emp < 999) ? calc.P_crit_emp : 5;
+  let max_I = dynamic_limits ? Math.max(5, max_I_up * 1.1, max_I_yd * 1.1, max_I_emp * 1.1) : 5;
   
   let max_Q_up = (show_uptake && calc.Q_target_up < 9999) ? calc.Q_target_up : 150;
   let max_Q_yd = (show_yield && Math.abs(calc.Q_target_yd) < 99999) ? Math.max(0, calc.Q_target_yd) : 150;
-  let max_Q = dynamic_limits ? Math.max(150, max_Q_up * 1.1, max_Q_yd * 1.1) : 150;
+  let max_Q_emp = (show_empirical && calc.Q_target_emp < 9999) ? calc.Q_target_emp : 150;
+  let max_Q = dynamic_limits ? Math.max(150, max_Q_up * 1.1, max_Q_yd * 1.1, max_Q_emp * 1.1) : 150;
   
   // Guard against extreme infinities crashing the browser plot
   if (max_I > 100000) max_I = 100000;
@@ -650,6 +693,13 @@ md`#### Fertilizer Recommendation
       Plot.ruleX([calc.P_crit_yd], {stroke: "blue", strokeDasharray: "4"}),
       Plot.dot([{I: calc.P_crit_yd, Q: calc.Q_target_yd}], {x: "I", y: "Q", fill: "blue", r: 8}),
       Plot.text([{I: calc.P_crit_yd, Q: calc.Q_target_yd}], {x: "I", y: "Q", text: () => `${target_yield_pct}% Yield (${Math.max(0, calc.P_rec_yd).toFixed(1)} kg/ha)`, dy: 20, dx: 20, fill: "blue", fontSize: 14, fontWeight: "bold"})
+    ] : []),
+    
+    // Empirical Target
+    ...(show_empirical ? [
+      Plot.ruleX([calc.P_crit_emp], {stroke: "purple", strokeDasharray: "4"}),
+      Plot.dot([{I: calc.P_crit_emp, Q: calc.Q_target_emp}], {x: "I", y: "Q", fill: "purple", r: 8}),
+      Plot.text([{I: calc.P_crit_emp, Q: calc.Q_target_emp}], {x: "I", y: "Q", text: () => `Concentration Target (${Math.max(0, calc.P_rec_emp).toFixed(1)} kg/ha)`, dy: -40, dx: -20, fill: "purple", fontSize: 14, fontWeight: "bold"})
     ] : [])
   ]
   });
@@ -688,7 +738,7 @@ $$Q_{legacy} = K \cdot |P_{crit\_yd}|^n$$
 }
 ```
 
-## Conclusions & Policy Recommendations { .smaller }
+## Conclusions { .smaller }
 
 1. **The Physical Diffusion Bottleneck is Real:** Thermodynamic modeling confirms that the soil's buffering capacity ($1/b$) strictly limits biological P-uptake and yield, independent of the bulk pool.
 2. **The AAE10 Extraction on Calcareous Soils:** We have mechanically proven that EDTA saturates in highly alkaline soils ($pH > 7.3$), leading to challenges in accurate measurement.
@@ -1479,39 +1529,6 @@ ggplot(plot_ptf, aes(x = Predicted, y = ln_P_AAE)) +
   labs(title="Predicted vs Observed (PTF)", x="Predicted ln(P_AAE)", y="Observed ln(P_AAE)")
 ```
 
-## 3. Mechanistic Yield Model { .scrollable .smaller }
-
-```{r annex-yield}
-#| echo: false
-#| message: false
-#| warning: false
-m_yield <- summary_models$yield
-
-# Coefficients
-cf <- summary(m_yield)$tTable
-colnames(cf)[colnames(cf) == "Pr(>|t|)"] <- "p-value"
-kable(cf, digits = 4, caption = "Yield Model Fixed Effects") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"))
-
-# Metrics
-rmse <- sqrt(mean(residuals(m_yield)^2))
-plot_yield <- final_artifacts$data$D_Yield
-plot_yield <- plot_yield[, c("Relative_Yield", "soil_0_20_P_CO2", "z_inv_b", "site")]
-plot_yield <- plot_yield[complete.cases(plot_yield), ]
-plot_yield$Predicted <- predict(m_yield, level=0)
-
-r2 <- cor(plot_yield$Predicted, plot_yield$Relative_Yield)^2
-metrics <- data.frame(Metric = c("Pseudo R2", "RMSE"), Value = c(r2, rmse))
-kable(metrics, digits = 3, caption = "Performance Metrics") |>
-  kable_styling(bootstrap_options = c("striped", "condensed"), full_width=FALSE)
-
-# Plot
-ggplot(plot_yield, aes(x = Predicted, y = Relative_Yield, color=site)) +
-  geom_point(alpha = 0.5, size=2) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color="red") +
-  theme_minimal() +
-  labs(title="Predicted vs Observed (Yield Model)", x="Predicted Relative Yield", y="Observed Relative Yield")
-```
 
 ## 4. Mechanistic Uptake Model { .scrollable .smaller }
 

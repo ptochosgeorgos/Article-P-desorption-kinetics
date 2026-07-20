@@ -31,15 +31,15 @@ step_all = r"""
 \node[agnostic_node] (agn_test) {\textbf{Static Soil Test} \\ (e.g. $P_{CO2}$ or $P_{AAE10}$)};
 \node[sink, below=of agn_test] (agn_target) {\textbf{Empirical Target} \\ Fertilizer Multiplier};
 
-\draw[agnostic_arrow] (agn_test.south) -- node[right, text=red!80, font=\bfseries] {Agnostic Black-Box} (agn_target.north);
+\draw[agnostic_arrow] (agn_test.south) -- node[right, text=red!80, font=\bfseries] {Lookup Table} (agn_target.north);
 
 % Mechanistic Approach (Right)
 \node[solid_pool, right=4cm of agn_test] (mech_solid) {\textbf{Solid Phase P} \\ Quantity ($P_{AAE10}$)};
-\node[measured_pool, right=of mech_solid] (mech_soluble) {\textbf{Soluble P} \\ Intensity ($P_{CO2}$)};
-\node[sink, below=of mech_soluble] (mech_plant) {\textbf{Plant Uptake} \\ ($Y_{rel\_hist}$)};
+\node[measured_pool, right=5cm of mech_solid] (mech_soluble) {\textbf{Soluble P} \\ Intensity ($P_{CO2}$)};
+\node[sink, below=of mech_soluble] (mech_plant) {\textbf{Plant Uptake} \\ \textbf{Yield} \\ \textbf{Tissue P concentration}};
 
 \draw[measured_arrow] (mech_solid.20) -- node[above, font=\bfseries] {Desorption ($k$)} (mech_soluble.160);
-\draw[standard_arrow] (mech_soluble.200) -- node[below] {Adsorption} (mech_solid.340);
+\draw[standard_arrow] (mech_soluble.200) -- node[below, font=\bfseries] {Adsorption} (mech_solid.340);
 
 \draw[<->, dashed, very thick, draw=purple] (mech_solid.north) -- ++(0,1) -| node[pos=0.25, above, font=\bfseries, text=purple] {Buffer Power ($b = dQ/dI$)} (mech_soluble.north);
 
