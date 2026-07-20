@@ -306,7 +306,7 @@ ggplot(D_Long_Agro, aes(x = Predicted_Uptake, y = Relative_Uptake, color = site)
 ---
 
 
-## The $P_{crit.smaller }$ Target & Agronomic Goals { .scrollable .smaller }
+## The $P_{crit}$ Target & Agronomic Goals { .scrollable .smaller }
 
 Using the **Michaelis-Menten Uptake Model**, we can mathematically define the critical soil intensity ($P_{crit}$) required to reach 95% of the maximum biological uptake. 
 
@@ -345,7 +345,17 @@ With the physical bottlenecks isolated, we can transition from rigid empirical m
 - **The Output:** 
   - **Fertilizer Recommendation ($P_{rec}$):** The absolute additive mass of P required to reach peak biological efficiency.
 
-## The Calculus of Luxury Consumption { .scrollable .smaller }
+## The Geometry of Luxury Consumption
+
+The Steenbjerg effect (dilution) and luxury consumption are visually perfectly explained by plotting Yield against Uptake. 
+
+Because Tissue Concentration ($C_P$) is the ratio of Uptake to Yield ($\frac{P_{up}}{Y}$), the point of **Minimum Tissue Concentration** is mathematically identical to the point of **Maximum Yield-to-Uptake Ratio**. 
+
+Geometrically, this is exactly where a tangent line drawn from the origin touches the curve. It perfectly divides the dilution phase from the luxury phase.
+
+![](steenbjerg_tangent.png){fig-align="center" width="75%"}
+
+## The Calculus of Luxury Consumption {.scrollable .smaller}
 
 Instead of targeting arbitrary agronomic quantiles (e.g., 95% yield), we can mathematically derive the absolute physiological boundary where biological growth uncouples from phosphorus uptake (luxury consumption).
 
@@ -361,7 +371,7 @@ $$ \frac{K_m}{I(K_m + I)} = \frac{c_{eff} \cdot \exp(-c_{eff}(I + E_{base}))}{1 
 ::: {.callout-important}
 ## Numerical Solution for Winter Wheat
 
-When solved numerically for average Swiss conditions ($c_{eff} \approx 4.3$, $E_{base} \approx 0.81$, $K_m \approx 0.026$), the true theoretical Critical Intensity ($I_{crit}$) evaluates to **$0.00006 \text{ mg/L}$**. 
+When solved numerically for average Swiss conditions ($c_{eff} \approx 4.3$, $E_{base} \approx 0.81$, $K_m \approx 0.026$), the true theoretical Critical Intensity ($I_{crit}$) evaluates to **0.00006 mg/L**. 
 
 At this staggeringly low intensity in the bulk soil solution, the plant is already achieving **97% of maximum yield** via endogenous/rhizosphere reserves ($E_{base}$). This proves that historical targets of 1.0 or 1.5 mg/L maintain the soil in a perpetual, wasteful state of absolute luxury consumption.
 :::
