@@ -345,6 +345,27 @@ With the physical bottlenecks isolated, we can transition from rigid empirical m
 - **The Output:** 
   - **Fertilizer Recommendation ($P_{rec}$):** The absolute additive mass of P required to reach peak biological efficiency.
 
+## The Calculus of Luxury Consumption { .scrollable .smaller }
+
+Instead of targeting arbitrary agronomic quantiles (e.g., 95% yield), we can mathematically derive the absolute physiological boundary where biological growth uncouples from phosphorus uptake (luxury consumption).
+
+We define tissue concentration $C_P$ as the ratio of Uptake to Yield:
+$$ C_P(I) = \frac{P_{up}(I)}{Y(I)} $$
+
+The exact point where the Steenbjerg dilution effect ends and $C_P$ begins to rise is the global minimum of the $C_P(I)$ curve. By setting $\frac{dC_P}{dI} = 0$, we find:
+$$ \frac{d}{dI} \ln(P_{up}) = \frac{d}{dI} \ln(Y) $$
+
+Substituting our hyperbolic uptake and exponential yield models, this produces a transcendental equation:
+$$ \frac{K_m}{I(K_m + I)} = \frac{c_{eff} \cdot \exp(-c_{eff}(I + E_{base}))}{1 - \exp(-c_{eff}(I + E_{base}))} $$
+
+::: {.callout-important}
+## Numerical Solution for Winter Wheat
+
+When solved numerically for average Swiss conditions ($c_{eff} \approx 4.3$, $E_{base} \approx 0.81$, $K_m \approx 0.026$), the true theoretical Critical Intensity ($I_{crit}$) evaluates to **$0.00006 \text{ mg/L}$**. 
+
+At this staggeringly low intensity in the bulk soil solution, the plant is already achieving **97% of maximum yield** via endogenous/rhizosphere reserves ($E_{base}$). This proves that historical targets of 1.0 or 1.5 mg/L maintain the soil in a perpetual, wasteful state of absolute luxury consumption.
+:::
+
 ## Interactive Fertilization Calculator { .interactive-slide .scrollable .smaller }
 
 Explore the Parametric Framework in real-time. Select a crop and adjust the soil parameters. The model instantly calculates the non-linear buffer curve, the $P_{crit}$ target, and the precise additive fertilizer recommendation.
@@ -361,11 +382,12 @@ viewof crop_choice = Inputs.select(new Map([
 
 viewof current_P = Inputs.range([0.1, 5.0], {value: 1.5, step: 0.1, label: "Current Soil Test P (mg/L)"})
 viewof soil_pH = Inputs.range([5.0, 8.5], {value: 6.5, step: 0.1, label: "Soil pH"})
-viewof soil_clay_silt = Inputs.range([10, 80], {value: 35, step: 1, label: "Texture (Clay+Silt %)"})
+viewof soil_clay = Inputs.range([0, 80], {value: 20, step: 1, label: "Clay (%)"})
+viewof soil_silt = Inputs.range([0, 80], {value: 15, step: 1, label: "Silt (%)"})
 
 viewof show_expert = Inputs.toggle({label: "Show Expert Soil Panel (Cations & Corg)", value: false})
 
-viewof target_uptake_pct = Inputs.range([0, 100], {value: 95, step: 1, label: "Target P-Uptake (%)"})
+viewof target_uptake_pct = Inputs.range([0, 100], {value: 80, step: 1, label: "Target P-Uptake (%)"})
 viewof show_uptake = Inputs.toggle({label: "Show Uptake Target", value: true})
 
 viewof target_yield_pct = Inputs.range([0, 100], {value: 95, step: 1, label: "Target Relative Yield (%)"})
@@ -477,6 +499,7 @@ calc = {
   let c = ptf.coefficients;
   
   let z_pH = (soil_pH - sd.pH.mean) / sd.pH.sd;
+  let soil_clay_silt = soil_clay + soil_silt;
   let z_tex = (Math.log(soil_clay_silt) - sd.FineTexture.mean) / sd.FineTexture.sd;
   
   let val_Ca = show_expert ? exp_Ca : 5000;
@@ -528,22 +551,21 @@ calc = {
   let c_eff = c_base_crop * Math.exp(yd.beta_invb * z_inv_b + yd.beta_pH * z_pH_yd + yd.beta_K * z_K_yd + yd.beta_Mg * z_Mg_yd);
   
   // Yield target logic: y = 1 - exp(-c_eff * (I + E_base)) => I = -ln(1 - y) / c_eff - E_base
-  let frac_yd = target_yield_pct / 100.0;
-  let P_crit_yd = (frac_yd >= 1.0) ? 999 : (-Math.log(1.0 - frac_yd) / c_eff) - yd.E_base;
+  // Clamping P_crit_yd to 0. A negative P_crit means E_base alone is sufficient for the yield target.
+  let P_crit_yd_raw = (-Math.log(1.0 - frac_yd) / c_eff) - yd.E_base;
+  let P_crit_yd = (frac_yd >= 1.0) ? 999 : Math.max(0, P_crit_yd_raw);
   
-  // Allow negative P_crit_yd to show the theoretical eutrophication buffer
-  // Calculate Q_target_yd using an antisymmetric extension to avoid NaN from fractional roots of negative numbers
-  let Q_target_yd = Math.sign(P_crit_yd) * K_val * Math.pow(Math.abs(P_crit_yd), n);
+  let Q_target_yd = K_val * Math.pow(P_crit_yd, n);
   
   let delta_Q_yd = Q_target_yd - Q_now;
   let P_rec_yd = norms.P + delta_Q_yd;
   
-  let grud_c_co2 = get_grud_correction('CO2', current_P, soil_clay_silt);
+  let grud_c_co2 = get_grud_correction('CO2', current_P, soil_clay);
   let grud_rec_co2 = norms.P * grud_c_co2;
   
   // The mechanistic model outputs Q_now in mg P / kg soil.
   // The empirical GRUD AAE10 tables expect inputs in mg P / kg soil directly!
-  let grud_c_aae = get_grud_correction('AAE', Q_now, soil_clay_silt);
+  let grud_c_aae = get_grud_correction('AAE', Q_now, soil_clay);
   let grud_rec_aae = norms.P * grud_c_aae;
   
   return { K: K_val, n: n, Q_now: Q_now, F_norm: norms.P, 
