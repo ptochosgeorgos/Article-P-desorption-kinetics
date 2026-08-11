@@ -6,46 +6,81 @@ format:
     toc: true
     code-fold: true
 execute:
+  cache: true
   warning: false
   message: false
 ---
 
 ## 1. Introduction & Conceptual Workflow
 
-```{mermaid}
-graph TD
-    classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-    classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
+```{tikz}
+%| fig-cap: "Modular workflow synchronizing data sources, extraction methods, and mathematical models."
+%| echo: false
+%| fig-align: center
+%| engine.opts:
+%|   extra.preamble: ["\\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}"]
 
-    subgraph Phase_1 ["Phase 1: Introduction & Problem"]
-        A["Established Practice:<br>Static GRUD Pools P_CO2 & P_AAE10"]:::intro
-        B["Chemical Activity:<br>Dynamic Plant P-Supply"]:::intro
-        A --> C{"Research Questions"}:::intro
-        B --> C
-    end
+\begin{tikzpicture}[
+    font=\sffamily\small,
+    box/.style={rectangle, rounded corners, draw=black, thick, align=center, text width=3.5cm, minimum height=1cm},
+    data/.style={cylinder, shape border rotate=90, aspect=0.25, draw=black, thick, fill=gray!10, text width=3cm, align=center, minimum height=1.2cm},
+    arrow/.style={-{Stealth[scale=1.2]}, thick, draw=black!70},
+    % Colors
+    kinetics/.style={fill=cyan!10, draw=cyan!80!black},
+    thermo/.style={fill=orange!10, draw=orange!80!black},
+    bio/.style={fill=green!10, draw=green!80!black},
+    eval/.style={fill=purple!10, draw=purple!80!black},
+    % Group boxes
+    groupbox/.style={rectangle, rounded corners, draw=gray!50, dashed, thick, inner sep=20pt, inner ysep=25pt, fill=gray!5}
+]
 
-    subgraph Phase_2 ["Phase 2: Laboratory Derivations"]
-        C --> D["Quantity-Intensity Q/I Modeling"]:::lab
-        C --> E["Desorption Kinetics I/t Modeling"]:::lab
-        D --> F("Physical Buffer Power: b"):::lab
-        E --> G("Desorption Rate Constant: k"):::lab
-    end
+% --- Left Column: Data Sources ---
+\node[data] (kin_data) at (0, 6.5) {Time-Series Data\\(Water Extraction)};
+\node[data] (bio_data) at (0, 3.25) {Biological Data\\Yield, $C_p$, $P_{up}$};
+\node[data] (thermo_data) at (0, 0) {Equilibration Data\\($P_{AAE10}$ vs $P_{CO_2}$)};
 
-    subgraph Phase_3 ["Phase 3: The Kinetic Crossing"]
-        F --> H{Dynamic Desorption}:::thermo
-        G --> H
-        H --> I[Historical Desorption Velocity v0]:::thermo
-        H --> J[Raw Empirical Concentrations]:::thermo
-    end
+% --- Middle Column: Sub-Models ---
+\node[box, kinetics] (kin_model) at (4.5, 6.5) {Kinetic NLME Model\\(Desorption Rate)};
+\node[box, thermo] (thermo_model) at (4.5, 0) {Thermodynamic LMER\\(Freundlich Isotherm)};
 
-    subgraph Phase_4 ["Phase 4: Field Scaling (PTF Comparison)"]
-        I --> K["Agronomic vs Geochemical PTFs<br>1990-2022"]:::uptake
-        J --> K
-        K --> L("Selected Field Inverse Buffer Power: 1/b"):::uptake
-    end
+% --- Right Column: Coefficients & Biological Model ---
+\node[box, kinetics] (kin_coef) at (9, 6.5) {Kinetic Coefficients\\$k, v_0$};
+\node[box, eval] (mech_model) at (9, 3.25) {Mechanistic Models\\(Covariates: $v_0, 1/b$)};
+\node[box, thermo] (thermo_coef) at (9, 0) {Buffer Coefficients\\$b, 1/b$};
+
+% --- Far Right Column: Evaluation ---
+\node[box, eval] (comparison) at (13.5, 3.25) {Model Evaluation\\\& Comparison};
+
+% --- Edges ---
+% Kinetics (Top Row)
+\draw[arrow] (kin_data) -- (kin_model);
+\draw[arrow] (kin_model) -- (kin_coef);
+% Flow into biological (Down)
+\draw[arrow] (kin_coef) -- (mech_model);
+
+% Thermo (Bottom Row)
+\draw[arrow] (thermo_data) -- (thermo_model);
+\draw[arrow] (thermo_model) -- (thermo_coef);
+% Flow into biological (Up)
+\draw[arrow] (thermo_coef) -- (mech_model);
+
+% Biological (Middle Row)
+\draw[arrow] (bio_data) -- (mech_model);
+\draw[arrow] (mech_model) -- (comparison);
+
+% Backgrounds
+\begin{scope}[on background layer]
+    \node[groupbox, fit=(kin_data) (kin_model) (kin_coef)] (phase1) {};
+    \node[anchor=north west, font=\sffamily\bfseries, color=gray!70!black, shift={(10pt,-8pt)}] at (phase1.north west) {Desorption Kinetics};
+
+    \node[groupbox, fit=(bio_data) (mech_model) (comparison)] (phase3) {};
+    \node[anchor=north west, font=\sffamily\bfseries, color=gray!70!black, shift={(10pt,-8pt)}] at (phase3.north west) {Biological Scaling \& Evaluation};
+
+    \node[groupbox, fit=(thermo_data) (thermo_model) (thermo_coef)] (phase2) {};
+    \node[anchor=north west, font=\sffamily\bfseries, color=gray!70!black, shift={(10pt,-8pt)}] at (phase2.north west) {Buffer Thermodynamics};
+\end{scope}
+
+\end{tikzpicture}
 ```
 
 ## 1.1 Data Structure & Methodological Rationale
@@ -86,6 +121,14 @@ By utilizing the full 6-site pedoclimatic matrix (`ALT, CAD, ELL, GRA, OEN, REH`
 #| warning: false
 
 rm(list = ls())
+
+library(tikzDevice)
+options(tikzDefaultEngine = "luatex")
+knitr::opts_chunk$set(
+  dev = "tikz",
+  fig.align = "center"
+)
+
 suppressPackageStartupMessages({
     library(lme4)
     library(lmerTest) # For p-values
@@ -119,7 +162,8 @@ suppressPackageStartupMessages({
     }
 
     get_metrics_nlme <- function(model, model_name, data, response) {
-        pred_c <- predict(model, level = 2) # Plot level
+        max_level <- length(model$groups)
+        pred_c <- predict(model, level = max_level) # Plot level
         pred_m <- predict(model, level = 0) # Fixed effects only
         
         r2_c <- round(cor(data[[response]], pred_c)^2, 3)
@@ -287,9 +331,9 @@ ptf_geo_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_Feox + z_ln_Alox + z_pH + z_ln_C
 
 # Performance Extraction
 ptf_results <- bind_rows(
-    get_metrics_lmer(ptf_agro_raw, "Agronomic (Raw P_CO2)", D_ptf, "ln_P_AAE"),
+    get_metrics_lmer(ptf_agro_raw, "Agronomic (Raw $P_{CO_2}$)", D_ptf, "ln_P_AAE"),
     get_metrics_lmer(ptf_agro_thm, "Agronomic (Thermo a_CO2)", D_ptf, "ln_P_AAE"),
-    get_metrics_lmer(ptf_geo_raw, "Geochemical (Raw P_CO2)", D_ptf, "ln_P_AAE"),
+    get_metrics_lmer(ptf_geo_raw, "Geochemical (Raw $P_{CO_2}$)", D_ptf, "ln_P_AAE"),
     get_metrics_lmer(ptf_geo_thm, "Geochemical (Thermo a_CO2)", D_ptf, "ln_P_AAE")
 )
 
@@ -304,7 +348,7 @@ plot_ptf <- function(model, title) {
     ggplot(plot_data, aes(x = Fitted, y = ln_P_AAE, color = site)) +
         geom_point(alpha = 0.5, size = 2) +
         geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-        labs(title = title, x = "Predicted ln(P_AAE)", y = "Observed ln(P_AAE)", color = "Monitoring Site") +
+        labs(title = title, x = "Predicted $\\ln(P_{AAE})$", y = "Observed $\\ln(P_{AAE})$", color = "Monitoring Site") +
         theme_minimal()
 }
 
@@ -336,7 +380,7 @@ ptf_practical_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_FineTexture + z_pH + z_ln_
 
 # Present Performance
 ptf_results_agro <- bind_rows(
-    get_metrics_lmer(ptf_practical_raw, "Practical Agro (Raw P_CO2)", D_ptf_agro, "ln_P_AAE"),
+    get_metrics_lmer(ptf_practical_raw, "Practical Agro (Raw $P_{CO_2}$)", D_ptf_agro, "ln_P_AAE"),
     get_metrics_lmer(ptf_practical_thm, "Practical Agro (Thermo a_CO2)", D_ptf_agro, "ln_P_AAE")
 )
 
@@ -354,7 +398,7 @@ plot_ptf_prac <- function(model, title) {
     ggplot(plot_data, aes(x = Fitted, y = ln_P_AAE, color = site)) +
         geom_point(alpha = 0.5, size = 2) +
         geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
-        labs(title = title, x = "Predicted ln(P_AAE)", y = "Observed ln(P_AAE)", color = "Monitoring Site") +
+        labs(title = title, x = "Predicted $\\ln(P_{AAE})$", y = "Observed $\\ln(P_{AAE})$", color = "Monitoring Site") +
         theme_minimal(base_size = 11) +
         theme(plot.title = element_text(face = "bold", size = 12))
 }
@@ -392,7 +436,7 @@ ptf_cons_thm <- lmer(ln_P_AAE ~ ln_a_CO2 * (z_ln_FineTexture + z_pH + z_ln_Ca + 
 
 # Present Performance
 ptf_results_cons <- bind_rows(
-    get_metrics_lmer(ptf_cons_raw, "Conservative Agro (Raw P_CO2)", D_ptf_cons, "ln_P_AAE"),
+    get_metrics_lmer(ptf_cons_raw, "Conservative Agro (Raw $P_{CO_2}$)", D_ptf_cons, "ln_P_AAE"),
     get_metrics_lmer(ptf_cons_thm, "Conservative Agro (Thermo a_CO2)", D_ptf_cons, "ln_P_AAE")
 )
 
@@ -530,12 +574,11 @@ D_Long <- D_ready |>
         inv_b_cons = 1 / b_power_cons
     ) |>
 
-    # Normalize Uptake & Scale Bottlenecks
+    # 5. Normalize variables relative to the maximum observed uptake for that site/year
     group_by(site, crop, year) |>
     mutate(
         crop = droplevels(as.factor(crop)),
-        ref_uptake = mean(annual_P_uptake[treatment_ID == "P166"], na.rm = TRUE),
-        ref_uptake = ifelse(is.na(ref_uptake) | is.nan(ref_uptake), max(annual_P_uptake, na.rm = TRUE), ref_uptake),
+        ref_uptake = max(annual_P_uptake, na.rm = TRUE),
         Relative_Uptake = annual_P_uptake / ref_uptake
     ) |>
     ungroup() |>
@@ -696,7 +739,7 @@ validate_nlme <- function(model, data, y_var, title) {
 
     ggplot(plot_data, aes(x = Predicted, y = .data[[y_var]], color = site)) +
         geom_point(size = 3, alpha = 0.7) + geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
-        labs(title = paste(title, "\nCond_R2:", r2_c, "| Marg_R2:", r2_m), x = "Predicted Relative Uptake", y = "Observed Relative Uptake", color = "Monitoring Site") +
+        labs(title = paste(title, "\nConditional $R^2$:", r2_c, "| Marginal $R^2$:", r2_m), x = "Predicted Relative Uptake", y = "Observed Relative Uptake", color = "Monitoring Site") +
         theme_minimal(base_size = 11) + theme(plot.title = element_text(face = "bold", size = 11))
 }
 
@@ -743,12 +786,12 @@ res_table |>
     pack_rows("Null Models (No 1/b Penalty)", 15, 17)
 
 # Comparison Graphs with unified legend
-((validate_nlme(mod_raw_co2_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Raw P_CO2") |
-    validate_nlme(mod_thm_co2_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Thermo a_CO2") |
-    validate_nlme(mod_raw_aae_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Legacy P_AAE10")) /
-    (validate_nlme(mod_raw_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Raw P_CO2") |
-        validate_nlme(mod_thm_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Thermo a_CO2") |
-        validate_nlme(mod_raw_aae_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Legacy P_AAE10"))) +
+((validate_nlme(mod_raw_co2_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Raw $P_{CO_2}$") |
+    validate_nlme(mod_thm_co2_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Thermo $a_{CO_2}$") |
+    validate_nlme(mod_raw_aae_geo, D_Long_Geo, "Relative_Uptake", "Geo PBC: Legacy $P_{AAE10}$")) /
+    (validate_nlme(mod_raw_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Raw $P_{CO_2}$") |
+        validate_nlme(mod_thm_co2_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Thermo $a_{CO_2}$") |
+        validate_nlme(mod_raw_aae_agro, D_Long_Agro, "Relative_Uptake", "Agro PBC: Legacy $P_{AAE10}$"))) +
     plot_layout(guides = "collect") & theme(legend.position = "bottom")
 ```
 
@@ -771,12 +814,12 @@ plot_residuals_boxplot <- function(model, data, title) {
         theme(legend.position = "none")
 }
 
-(plot_residuals_boxplot(mod_raw_co2_geo, D_Long_Geo, "Geo: Raw P_CO2") |
-    plot_residuals_boxplot(mod_thm_co2_geo, D_Long_Geo, "Geo: Thermo a_CO2") |
-    plot_residuals_boxplot(mod_raw_aae_geo, D_Long_Geo, "Geo: Legacy P_AAE10")) /
-    (plot_residuals_boxplot(mod_raw_co2_agro, D_Long_Agro, "Agro: Raw P_CO2") |
-        plot_residuals_boxplot(mod_thm_co2_agro, D_Long_Agro, "Agro: Thermo a_CO2") |
-        plot_residuals_boxplot(mod_raw_aae_agro, D_Long_Agro, "Agro: Legacy P_AAE10"))
+(plot_residuals_boxplot(mod_raw_co2_geo, D_Long_Geo, "Geo: Raw $P_{CO_2}$") |
+    plot_residuals_boxplot(mod_thm_co2_geo, D_Long_Geo, "Geo: Thermo $a_{CO_2}$") |
+    plot_residuals_boxplot(mod_raw_aae_geo, D_Long_Geo, "Geo: Legacy $P_{AAE10}$")) /
+    (plot_residuals_boxplot(mod_raw_co2_agro, D_Long_Agro, "Agro: Raw $P_{CO_2}$") |
+        plot_residuals_boxplot(mod_thm_co2_agro, D_Long_Agro, "Agro: Thermo $a_{CO_2}$") |
+        plot_residuals_boxplot(mod_raw_aae_agro, D_Long_Agro, "Agro: Legacy $P_{AAE10}$"))
 ```
 
 ```{r}
@@ -794,8 +837,8 @@ get_effects <- function(mod, model_name) {
 
 # Bind them together and print
 all_effects <- bind_rows(
-    get_effects(mod_raw_co2_geo, "1. Geo PBC - Raw P_CO2"),
-    get_effects(mod_raw_co2_agro, "1. Agro PBC - Raw P_CO2"),
+    get_effects(mod_raw_co2_geo, "1. Geo PBC - Raw $P_{CO_2}$"),
+    get_effects(mod_raw_co2_agro, "1. Agro PBC - Raw $P_{CO_2}$"),
     get_effects(mod_thm_co2_geo, "2. Geo PBC - Thermo a_CO2"),
     get_effects(mod_thm_co2_agro, "2. Agro PBC - Thermo a_CO2"),
     get_effects(mod_raw_aae_geo, "3. Geo PBC - Legacy P_AAE10"),
@@ -805,6 +848,51 @@ all_effects <- bind_rows(
 print(as.data.frame(all_effects), row.names = FALSE)
 ```
 
+## 7.5 The Tissue Concentration ($C_P$) Model
+
+### Mechanistic Hypothesis: The Luxury Accumulation Drive
+While historically represented by a Piper-Steenbjerg dilution curve, rigorous phenomenological testing over 11,000 observations reveals that the initial exponential dilution penalty ($k_{dil}$) is statistically undetectable across pedoclimatic noise. Instead, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration ($C_{base}$), followed by a linear **Luxury Accumulation** phase ($S_{acc}$). The magnitude of this luxury accumulation is significantly driven by the soil's desorption velocity ($v_0$) and buffer power ($1/b$), which dictate how rapidly the soil can push excess phosphorus into the plant once primary metabolic needs are met.
+
+```{r cp-mechanistic-model}
+# 1. Filter out biological outliers (e.g., crop failures where near-zero yield artificially inflates C_P)
+D_CP <- D_Long_Agro |> 
+    filter(is.finite(annual_P_uptake), is.finite(annual_yield_mp_DM)) |> 
+    mutate(C_P = annual_P_uptake / annual_yield_mp_DM) |> 
+    filter(C_P > 0, C_P < 1.0) |> 
+    mutate(P_CO2 = as.numeric(soil_0_20_P_CO2))
+
+D_CP_nona <- na.omit(D_CP[, c("C_P", "P_CO2", "z_v0", "z_inv_b_agro", "crop", "site", "year_f")])
+
+# 2. Define starting values
+n_crops <- length(unique(D_CP_nona$crop))
+start_vals <- c(
+    C_base = c(median(D_CP_nona$C_P), rep(0, n_crops - 1)),
+    S_base = c(0.01, rep(0, n_crops - 1)),
+    beta_v0 = 0, beta_invb = 0
+)
+
+# 3. Fit the Simplified Phenomenological Model
+# Note: User requested crop as a fixed slope and intercept, and keeping the same random effects (1 | site/year_f).
+# Because of the large number of parameters (2 * n_crops + 2) and complex temporal random effects without a hard bound,
+# we increase maxIter and pnlsTol to prevent step-halving.
+mod_cp_mechanistic <- nlme(
+    C_P ~ C_base + (S_base + beta_v0 * z_v0 + beta_invb * z_inv_b_agro) * P_CO2,
+    data = D_CP_nona,
+    fixed = list(C_base ~ crop, S_base ~ crop, beta_v0 + beta_invb ~ 1),
+    random = C_base ~ 1 | site/year_f,
+    start = start_vals,
+    control = nlmeControl(maxIter = 2000, pnlsMaxIter = 200, msMaxIter = 200, pnlsTol = 0.05, returnObject = TRUE)
+)
+
+print(summary(mod_cp_mechanistic))
+
+# Performance Metrics
+preds <- predict(mod_cp_mechanistic)
+resids <- D_CP_nona$C_P - preds
+rmse <- sqrt(mean(resids^2))
+r2 <- cor(D_CP_nona$C_P, preds)^2
+cat(sprintf("\nPerformance: RMSE = %.4f kg P/dt DM | R2 = %.4f\n", rmse, r2))
+```
 
 ## 7. The Yield-STP Comparison (Mitscherlich)
 
@@ -832,7 +920,6 @@ A negative $\beta_{\text{invb}}$ means soils with higher buffer power (stronger 
 The original design anticipated that K and Mg fertilization treatments would introduce sufficient variance in ionic strength to meaningfully shift the thermodynamic activity coefficient $\gamma$, making $a_{\text{CO}_2} = \gamma \cdot c_{\text{CO}_2}$ substantially different from the raw concentration. In practice, the treatment-induced ionic strength variation was too small — the activity-corrected and raw concentrations were nearly collinear across the available treatment range. Raw $P_{\text{CO}_2}$ is therefore retained as the concentration metric.
 
 ```{r mitscherlich-yield-models, fig.width=14, fig.height=5}
-# 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
 D_Yield <- D_ready |>
     filter(!is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
@@ -871,12 +958,11 @@ D_Yield <- D_ready |>
         inv_b_cons = 1 / b_power_cons
     ) |>
 
-    # Normalize TOTAL YIELD by Site, Crop, and Year using P166 as reference
+    # Normalize TOTAL YIELD by Site, Crop, and Year
     group_by(site, crop, year) |>
     mutate(
         crop = droplevels(as.factor(crop)),
-        ref_yield = mean(total_yield[treatment_ID == "P166"], na.rm = TRUE),
-        ref_yield = ifelse(is.na(ref_yield) | is.nan(ref_yield), max(total_yield, na.rm = TRUE), ref_yield),
+        ref_yield = max(total_yield, na.rm = TRUE),
         Relative_Yield = total_yield / ref_yield
     ) |>
     ungroup() |>
@@ -894,18 +980,6 @@ D_Yield <- D_ready |>
 cat("Total Harvest Years Evaluated for Yield (2010-2022):", nrow(D_Yield), "\n")
 cat("Sites:", length(unique(D_Yield$site)), "->", paste(unique(D_Yield$site), collapse = ", "), "\n\n")
 
-# NOTE: P_CO2 directly measures soil solution P intensity (I in Q/I theory).
-# After site×crop normalization, the theoretical maximum yield is ~1 by construction.
-# Therefore, we fix the asymptote at 1 and apply a One-Step NLME Mitscherlich model
-# where the rate constant c is mathematically modulated by pedoclimatic drivers
-# and an annual random effect to capture unmeasured temporal variation:
-#
-#   c_eff = (c_base + u_year) * exp(β_invb * z_inv_b + β_pH * z_pH + ...)
-#   Y = 1 − exp(−c_eff * P_CO2)
-#
-# A negative β implies that the environmental driver LOWERS the P-foraging efficiency,
-# meaning the crop yield rises more slowly per unit of P_CO2 in the soil.
-
 n_crops <- length(levels(D_Yield$crop))
 
 m_yield_raw_co2 <- nlme(
@@ -920,7 +994,7 @@ m_yield_raw_co2 <- nlme(
     ) * (soil_0_20_P_CO2 + E_base))),
     data = D_Yield,
     fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_K ~ 1, beta_Mg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
-    random = c_base ~ 1 | site/plot_nr,
+    random = E_base ~ 1 | site,
     start = c(1.2, rep(0, n_crops - 1), 0, 0, 0, 0, 0, 0, 0, 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
@@ -937,7 +1011,7 @@ m_yield_thm_co2 <- nlme(
     ) * (a_CO2_total_mg_L + E_base))),
     data = D_Yield,
     fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_K ~ 1, beta_Mg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
-    random = c_base ~ 1 | site/plot_nr,
+    random = E_base ~ 1 | site,
     start = c(1.2, rep(0, n_crops - 1), 0, 0, 0, 0, 0, 0, 0, 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
@@ -954,8 +1028,8 @@ m_yield_raw_aae <- nlme(
     ) * (soil_0_20_P_AAE10 + E_base))),
     data = D_Yield,
     fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_K ~ 1, beta_Mg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
-    random = c_base ~ 1 | site/plot_nr,
-    start = c(0.04, rep(0, n_crops - 1), 0, 0, 0, 0, 0, 0, 0, 0),
+    random = E_base ~ 1 | site,
+    start = c(0.05, rep(0, n_crops - 1), 0, 0, 0, 0, 0, 0, 0, 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
 
@@ -971,7 +1045,7 @@ m_yield_cons_co2 <- nlme(
     ) * (soil_0_20_P_CO2 + E_base))),
     data = D_Yield,
     fixed = list(c_base ~ crop, beta_invb ~ 1, beta_pH ~ 1, beta_K ~ 1, beta_Mg ~ 1, beta_N ~ 1, beta_Temp ~ 1, beta_Prec ~ 1, E_base ~ 1),
-    random = c_base ~ 1 | site/plot_nr,
+    random = E_base ~ 1 | site,
     start = c(1.2, rep(0, n_crops - 1), 0, 0, 0, 0, 0, 0, 0, 0),
     control = nlmeControl(maxIter = 2000, returnObject = TRUE)
 )
@@ -990,7 +1064,7 @@ print(round(summary(m_yield_raw_aae)$tTable, 4))
 
 cat("\n### Yield Models Performance Metrics ###\n")
 df_yield_metrics <- dplyr::bind_rows(list(
-    get_metrics_nlme(m_yield_raw_co2, "Yield ~ Raw P_CO2", D_Yield, "Relative_Yield"),
+    get_metrics_nlme(m_yield_raw_co2, "Yield \\sim Raw $P_{CO_2}$", D_Yield, "Relative_Yield"),
     get_metrics_nlme(m_yield_thm_co2, "Yield ~ Thermo a_CO2", D_Yield, "Relative_Yield"),
     get_metrics_nlme(m_yield_raw_aae, "Yield ~ Legacy P_AAE10", D_Yield, "Relative_Yield")
 ))
@@ -1006,10 +1080,10 @@ cat("\n")
 
 ```{r residual-diagnostics-yield, fig.width=12, fig.height=8}
 D_res_all <- dplyr::bind_rows(
-    D_Yield |> mutate(Model = "Raw P_CO2 (Complete)", Fitted = predict(m_yield_raw_co2), Residual = residuals(m_yield_raw_co2)),
-    D_Yield |> mutate(Model = "Raw P_CO2 (Conservative)", Fitted = predict(m_yield_cons_co2), Residual = residuals(m_yield_cons_co2)),
-    D_Yield |> mutate(Model = "Thermo a_CO2", Fitted = predict(m_yield_thm_co2), Residual = residuals(m_yield_thm_co2)),
-    D_Yield |> mutate(Model = "Legacy P_AAE10", Fitted = predict(m_yield_raw_aae), Residual = residuals(m_yield_raw_aae))
+    D_Yield |> mutate(Model = "Raw $P_{CO2}$ (Complete)", Fitted = predict(m_yield_raw_co2), Residual = residuals(m_yield_raw_co2)),
+    D_Yield |> mutate(Model = "Raw $P_{CO2}$ (Conservative)", Fitted = predict(m_yield_cons_co2), Residual = residuals(m_yield_cons_co2)),
+    D_Yield |> mutate(Model = "Thermo $a_{CO2}$", Fitted = predict(m_yield_thm_co2), Residual = residuals(m_yield_thm_co2)),
+    D_Yield |> mutate(Model = "Legacy $P_{AAE10}$", Fitted = predict(m_yield_raw_aae), Residual = residuals(m_yield_raw_aae))
 )
 
 p_resid <- ggplot(D_res_all, aes(x = Fitted, y = Residual, color = site)) +
@@ -1059,7 +1133,7 @@ calc_pcrit <- function(model, name) {
             Model = name,
             c_base_crop = cf["c_base.(Intercept)"] + tidyr::replace_na(cf[paste0("c_base.crop", crop)], 0),
             plot_full_id = paste0(site, "/", plot_nr),
-            re_total = ranef(model)$site[as.character(site), 1] + ranef(model)$plot_nr[plot_full_id, 1],
+            re_total = ranef(model)[as.character(site), 1],
             c_eff  = (c_base_crop + tidyr::replace_na(re_total, 0)) * exp(
                 cf["beta_invb"] * z_inv_b +
                 cf["beta_pH"] * z_pH +
@@ -1131,7 +1205,7 @@ p_pcrit_forest <- ggplot(nlme_effects_all, aes(x = estimate, y = reorder(term_cl
     geom_point(size = 4) +
     facet_wrap(~Model, ncol = 1) +
     scale_color_manual(values = c("p < 0.05" = "#2c7bb6", "p ≥ 0.05" = "gray60")) +
-    labs(title = "Drivers of P-Foraging Efficiency (Rate Constant c)",
+    labs(title = "Drivers of P-Foraging Efficiency (Rate Constant $c_{eff}$)",
         subtitle = "Negative = Slower uptake (Requires higher P_crit)",
         x = "Standardised Coefficient (log scale)", y = "", color = "") +
     theme_minimal(base_size = 11) +
@@ -1144,7 +1218,7 @@ p_pcrit_forest_inv <- ggplot(nlme_effects_all, aes(x = estimate_inv, y = reorder
     geom_point(size = 4) +
     facet_wrap(~Model, ncol = 1) +
     scale_color_manual(values = c("p < 0.05" = "#d73027", "p ≥ 0.05" = "gray60")) +
-    labs(title = "Drivers of the Critical P Threshold (P_crit)",
+    labs(title = "Drivers of the Critical P Threshold ($P_{crit}$)",
         subtitle = "Positive = Increases the required P_crit (worse foraging)",
         x = "Standardised Coefficient (effect on P_crit)", y = "", color = "") +
     theme_minimal(base_size = 11) +
@@ -1213,9 +1287,9 @@ cv_res_geo_thm  <- loso_cv(f_geo_thm, D_ptf)
 
 # 4. Compile and Present Results
 cv_results <- bind_rows(
-    cv_res_agro_raw |> mutate(Model = "Agronomic (Raw P_CO2)"),
+    cv_res_agro_raw |> mutate(Model = "Agronomic (Raw $P_{CO_2}$)"),
     cv_res_agro_thm |> mutate(Model = "Agronomic (Thermo a_CO2)"),
-    cv_res_geo_raw  |> mutate(Model = "Geochemical (Raw P_CO2)"),
+    cv_res_geo_raw  |> mutate(Model = "Geochemical (Raw $P_{CO_2}$)"),
     cv_res_geo_thm  |> mutate(Model = "Geochemical (Thermo a_CO2)")
 ) |> dplyr::select(Model, Mean_In_Sample_R2, Mean_Out_Sample_R2)
 
@@ -1321,13 +1395,13 @@ extract_bal <- function(mod, name) {
 }
 
 bal_table <- bind_rows(
-    extract_bal(m_bal_co2, "1. Full - Raw P_CO2"),
+    extract_bal(m_bal_co2, "1. Full - Raw $P_{CO_2}$"),
     extract_bal(m_bal_thm, "2. Full - Thermo a_CO2"),
     extract_bal(m_bal_aae, "3. Full - Legacy P_AAE10"),
-    extract_bal(m_bal_co2_n, "1. Freundlich n - Raw P_CO2"),
+    extract_bal(m_bal_co2_n, "1. Freundlich n - Raw $P_{CO_2}$"),
     extract_bal(m_bal_thm_n, "2. Freundlich n - Thermo a_CO2"),
     extract_bal(m_bal_aae_n, "3. Freundlich n - Legacy P_AAE10"),
-    extract_bal(m_bal_co2_b, "1. Buffer b - Raw P_CO2"),
+    extract_bal(m_bal_co2_b, "1. Buffer b - Raw $P_{CO_2}$"),
     extract_bal(m_bal_thm_b, "2. Buffer b - Thermo a_CO2"),
     extract_bal(m_bal_aae_b, "3. Buffer b - Legacy P_AAE10"),
     extract_bal(m_bal_co2_null, "1. Null - Raw P_CO2 (No 1/b)"),
@@ -1348,13 +1422,13 @@ plot_data_bal <- D_Cum |> mutate(
 p_full <- ggplot(plot_data_bal, aes(x = Predicted_Full, y = Cumulated_P_Balance, color = site)) +
     geom_point(alpha = 0.7, size = 3) +
     geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-    labs(title = "Full Model (P_CO2 * 1/b)", x = "Predicted Cumulative P Balance", y = "Observed Cumulative P Balance") +
+    labs(title = "Full Model ($P_{CO_2} \\cdot 1/b$)", x = "Predicted Cumulative P Balance", y = "Observed Cumulative P Balance") +
     theme_minimal() + theme(legend.position = "none")
 
 p_null <- ggplot(plot_data_bal, aes(x = Predicted_Null, y = Cumulated_P_Balance, color = site)) +
     geom_point(alpha = 0.7, size = 3) +
     geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-    labs(title = "Null Model (P_CO2)", x = "Predicted Cumulative P Balance", y = "") +
+    labs(title = "Null Model ($P_{CO_2}$)", x = "Predicted Cumulative P Balance", y = "") +
     theme_minimal()
 
 (p_full | p_null) + plot_layout(guides = "collect") & theme(legend.position = "right")
@@ -1392,16 +1466,16 @@ library(kableExtra)
 rmse_table <- data.frame(
     Model = c("Raw P_CO2 (Complete)", "Raw P_CO2 (Conservative)", "Thermo a_CO2", "Legacy P_AAE10"),
     Pseudo_R2 = c(
-        cor(D_Yield$Relative_Yield, predict(m_yield_raw_co2, level = 2))^2,
-        cor(D_Yield$Relative_Yield, predict(m_yield_cons_co2, level = 2))^2,
-        cor(D_Yield$Relative_Yield, predict(m_yield_thm_co2, level = 2))^2,
-        cor(D_Yield$Relative_Yield, predict(m_yield_raw_aae, level = 2))^2
+        cor(D_Yield$Relative_Yield, predict(m_yield_raw_co2, level = 1))^2,
+        cor(D_Yield$Relative_Yield, predict(m_yield_cons_co2, level = 1))^2,
+        cor(D_Yield$Relative_Yield, predict(m_yield_thm_co2, level = 1))^2,
+        cor(D_Yield$Relative_Yield, predict(m_yield_raw_aae, level = 1))^2
     ),
     RMSE_Conditional = c(
-        sqrt(mean(residuals(m_yield_raw_co2, level = 2)^2)),
-        sqrt(mean(residuals(m_yield_cons_co2, level = 2)^2)),
-        sqrt(mean(residuals(m_yield_thm_co2, level = 2)^2)),
-        sqrt(mean(residuals(m_yield_raw_aae, level = 2)^2))
+        sqrt(mean(residuals(m_yield_raw_co2, level = 1)^2)),
+        sqrt(mean(residuals(m_yield_cons_co2, level = 1)^2)),
+        sqrt(mean(residuals(m_yield_thm_co2, level = 1)^2)),
+        sqrt(mean(residuals(m_yield_raw_aae, level = 1)^2))
     ),
     RMSE_Marginal = c(
         sqrt(mean(residuals(m_yield_raw_co2, level = 0)^2)),
@@ -1554,7 +1628,7 @@ def_data <- quad_co2 |>
 # Join full model P_crit (using the Raw P_CO2 model)
 def_data <- def_data |> dplyr::left_join(
     D_Pcrit_all |> 
-        dplyr::filter(Model == "Raw P_CO2") |> 
+        dplyr::filter(Model == "Raw $P_{CO_2}$") |> 
         dplyr::select(site, plot_nr, year, P_crit_full = P_crit), 
     by = c("site", "plot_nr", "year")
 )
@@ -1596,7 +1670,7 @@ p_delta_q <- ggplot(def_data, aes(x = Delta_Q, y = Yield_Gap, color = site)) +
     labs(
         title = "Agronomic Prescription Validation: P Deficit vs Yield Penalty",
         subtitle = "Focusing on correctly identified deficient plots (True Negatives).",
-        x = expression(Delta*Q~" (Target "*P[AAE10]*" - Actual "*P[AAE10]*", mg/kg)"),
+        x = "$\\Delta Q$ (Target $P_{AAE10}$ - Actual $P_{AAE10}$, mg/kg)",
         y = "Yield Gap (0.95 - Relative Yield)",
         color = "Site"
     ) +
@@ -1629,7 +1703,7 @@ p_delta_q_acidic <- ggplot(def_data_acidic, aes(x = Delta_Q, y = Yield_Gap, colo
     labs(
         title = "Agronomic Prescription Validation (pH < 7.0)",
         subtitle = "Geochemically bounded: P Deficit vs Yield Penalty in Acidic-to-Neutral soils.",
-        x = expression(Delta*Q~" (Target "*P[AAE10]*" - Actual "*P[AAE10]*", mg/kg)"),
+        x = "$\\Delta Q$ (Target $P_{AAE10}$ - Actual $P_{AAE10}$, mg/kg)",
         y = "Yield Gap (0.95 - Relative Yield)",
         color = "Site"
     ) +
@@ -1656,7 +1730,7 @@ p_hist <- ggplot(plot_df, aes(x = Delta_Q, fill = Model)) +
     labs(
         title = "Fertilizer Prescription (Delta Q) Explosion on Unseen Sites",
         subtitle = "Comparing Full Model vs LOOCV. Note the extreme multi-million kg/ha extrapolation artifact on OEN.",
-        x = expression(Delta*Q~" Prescription (mg/kg) [Log10 Scale]"),
+        x = "$\\Delta Q$ Prescription (mg/kg) [Log10 Scale]",
         y = "Count"
     ) +
     theme_minimal(base_size = 12) +

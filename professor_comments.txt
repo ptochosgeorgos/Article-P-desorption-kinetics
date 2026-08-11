@@ -1,0 +1,616 @@
+## Highlights
+ * Page 18 (Predicting P-Balance (P_{bal})): "0.572"
+
+
+## Detailed comments
+ * Page 1: why a predictor for P availability? This sounds rather like a measure of P availability
+
+ * Page 1: as a first draft this would have been ok, and we could have worked on this, but as a final version that was more problematic
+
+ * Page 1:
+
+   
+
+   i have a fundamentally different view of this method: 
+
+   it mimics what happens when the soil has been depleted in water soluble (ie because of plant uptake) and then is left replenishing this pool of water soluble P; 
+
+   the concentration of water soluble P at the beginning is the intensity, 
+
+   the quantity released from the solid phase is an expression of the quantity, 
+
+   and the rate of release is the capacity ie the aptitude of the soil to come back to equilibrium
+
+ * Page 1:
+   > soil tests (STPs) for phosphorus (P) often fail to predict agronomic outcomes
+
+   this is not really shown or substantited by adequate references in the thesis
+
+   and we do not know which agronomic outcomes we are discussing here
+
+ * Page 1: samples
+
+ * Page 1: "For predicting sitenormalized yield, STPs were superior" -- which contradicts the first sentence :)
+
+ * Page 1: "information," -- from a statistical perspective
+
+ * Page 1: predictive power of what
+
+ * Page 1:
+   > exceptional success of the kinetic model in predicting the long-term P-Balance, a key indicator of nutrient stewardship
+
+   youpi, but why
+
+ * Page 1:
+   > kinetic parameters are a vastly superior tool for assessing the long-term P status and sustainability of agricultural soils. 1
+
+   why? the kinetics are done on the short term? this needs to be discussed
+
+ * Page 1: this is a purely statistical perspective and this should be acknowledged as  such; an other approach is to consider processes and to use stats to support the findings
+
+ * Page 1 (The Complexity of Phosphorus): "Phosphorus" -- this title is unclear
+
+ * Page 1 (The Complexity of Phosphorus): "SOM)" -- besides SOM can be both a sink and a source of orthoP through immobilization and mineralization
+
+ * Page 1 (From Static Measurements to Dynamic Understanding): "capacity factor" -- sorry this is not correct, the amount of potentially available P is the quantity not the capacity
+
+ * Page 1 (From Static Measurements to Dynamic Understanding): "weakly" -- or not
+
+ * Page 1 (From Static Measurements to Dynamic Understanding): "CO" -- CO2
+
+ * Page 1 (From Static Measurements to Dynamic Understanding): "EDTA (AAE10" -- how relevant is this method  to assess available P
+
+ * Page 1 (From Static Measurements to Dynamic Understanding): "While this dual approach is logical" -- but how many use both extractants, usually practitioneers use one of them
+
+ * Page 1 (From Static Measurements to Dynamic Understanding): "As early as 1982," -- scientists have been working way before 1982, flossman and richter have not discovered these kinetics
+
+ * Page 2 (From Static Measurements to Dynamic Understanding): indeed it should be aimed instead to insuring sufficient P availability for the crop
+
+ * Page 2 (From Static Measurements to Dynamic Understanding):
+   > In Switzerland, this has led to the accumulation of "legacy P" in many agricultural soils
+
+   explain how does this relate to the preceding sentence
+
+ * Page 2 (From Static Measurements to Dynamic Understanding):
+   > Additionally, understanding the release kinetics of this legacy P is key to both improving nutrient use efficiency and protecting water ecosystems and reserves (Hirte et al., 2018).
+
+   why :)
+
+ * Page 2 (From Static Measurements to Dynamic Understanding): and on the crop
+
+ * Page 2 (Objectives and Research Questions):
+   > (1) be sensitive to changes in the soil P status resulting from fertilizer inputs and crop removal (the P balance) (Frossard et al., 2000; Johnston et al., 2001); (2) correlate with the risk of P loss to the environment (P export) (Sharpley et al., 2000); and (3), most critically, reflect the kinetic nature of P supply to plant roots, which is governed by the slow diffusion of phosphate in the soil solution (Kuang et al., 2012; Nye & Tinker, 2000).
+
+   just as an info, this is exactly what the IEK do, but it does not prevent us to propose other methods
+
+ * Page 2 (Objectives and Research Questions): and the crop needs
+
+ * Page 2 (Objectives and Research Questions):
+   > (Hirte, Stüssel, et al., 2021)
+
+   and before gallet et al, i am really sorry to see the work we did before is almost completely ignored
+
+   why two names in this ref and not just hirte et al
+
+ * Page 2 (Objectives and Research Questions): "stable P equilibria" -- this is an assumption
+
+ * Page 2 (Objectives and Research Questions): "six" -- but you do not work on GRA
+
+ * Page 2 (Research Questions and Hypotheses):
+   > as these agronomic outcomes are more dependent on the rate of P supply throughout the growing season
+
+   and on many other factors incl climate etc
+
+ * Page 2 (Research Questions and Hypotheses):
+   > The measured STP values will be positively correlated with soil clay and organic carbon content, reflecting the greater number of sorption sites in these soils
+
+   this supposes that STP action is related to the desorption, but what does it mean concretely? 
+
+   again a ref from the group would have been useful (Demaria)
+
+ * Page 2 (Research Questions and Hypotheses): ")." -- demaria's paper on extractions would have been helpful here
+
+ * Page 3 (Research Questions and Hypotheses):
+   > 𝑃𝑑𝑒𝑠𝑜𝑟𝑏
+
+   i do not have the impression that the problem is a linear vs a non linear estimation, but that p desorb is considered as a difference between 2 extracts on one side vs p desorb  is estimated from the asymptote of the desorption on the other side
+
+   something you miss also is the strength of the sink as well, a plant is an infinite sink for P not your system, so you only get a fraction of the Pdesorb, this needs discussion
+
+ * Page 3 (Research Questions and Hypotheses):
+   > The desorbable P pool (𝑃𝑑𝑒𝑠𝑜𝑟𝑏) is expected to correlate positively with clay and organic matter content, which provide sorption surfaces.
+
+   it all depends on the sorption strength, if soprtion is ery energetic, than p will be not be desorbed in water, if P is sorbed with low energy (affinity) then you will be able to desorb it rapidly
+
+ * Page 3 (Research Questions and Hypotheses): "composition." -- properties is better adapted
+
+ * Page 4 (The Long-Term Phosphorus Fertilization Experiment): since there are several experiments i would use the plural
+
+ * Page 4 (The Long-Term Phosphorus Fertilization Experiment): for info there is a much older P experiment in Changins with a much higher clay content, you might think of it in the future
+
+ * Page 4 (The Long-Term Phosphorus Fertilization Experiment): what are these, this needs to be explained
+
+ * Page 4 (Experimental Sites):
+   > Rümlang-Altwi (ALT), Cadenazzo (CAD), Ellighausen (ELL), Grabs (GRA), Oensingen (OEN), and Zurich-Reckenholz (REC).
+
+   you mention 6 trials, but you do not use GRAB, so why mentioning it
+
+   the naming of the trials (including the use of abbreviations) is variable, which is not good
+
+ * Page 4 (Experimental Sites): "(%)" -- the unit should be also g/kg and not %
+
+ * Page 4 (Phosphorus Desorption Kinetics): "in the year 2022" -- when in 2022?
+
+ * Page 4 (Phosphorus Desorption Kinetics): "topsoil layer (0-20 cm)." -- any air drying? sieving? at 2mm?
+
+ * Page 4 (Original Method of Flossmann and Richter):
+   > Removal of Soluble P
+
+   i) the term removal is not adapted because you have not removed all the soluble P
+
+   ii) Have you measured the P concentration in this fraction, this is a super important result in it self
+
+ * Page 5 (Adapted Kinetic Protocol for This Study): after filtration? if not have you lost any soil during this step
+
+ * Page 5 (Adapted Kinetic Protocol for This Study): "was resuspended in 200 ml of fresh deionized water." -- how difficult was it
+
+ * Page 5 (Adapted Kinetic Protocol for This Study): "determined" -- immediately after filtration? Was there any storage
+
+ * Page 5 (Adapted Kinetic Protocol for This Study): "filtered." -- how, which mesh size
+
+ * Page 5 (Modeling of Desorption Kinetics): did you need to give initials values to guide the modeling
+
+ * Page 5 (Modeling of Desorption Kinetics):
+
+   
+
+   which unit need to be used for P(t) and Pdesorb 
+
+   Sometimes this type of experiments show several exponential terms (see Frossard et al 2014) this might be considered in the discussion
+
+ * Page 5 (Modeling of Desorption Kinetics): "dissolution" -- is dissolution the proper term? desorption would probably be better
+
+ * Page 5 (Modeling of Desorption Kinetics): "3 min" -- this is arbitrary (I am basically against any thing arbitrary, it could be 1, 2, 4, 5?)
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters):
+   > Plot yield normalized by the national mean yield for that year and crop.
+
+   you should have explained how this was calculated
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters):
+   > Plot yield normalized by the site-specific median yield of the highest P treatment for that year and crop.
+
+   you should have explained how this was calculated (including explaining your hypotheses)
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters):
+   > P Uptake
+
+   the unit should refer to time: kg/ha and year
+
+   over which period was this calculated
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters):
+   > P Balance
+
+   the unit should refer to time: kg/ha and year
+
+   over which period was this calculated
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "𝑃𝐴𝐴𝐸10" -- when were PCO2 and PAAEDTA measured
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): and org C, pH, texture....
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "Total P removed" -- do you mean output
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "harvested crop biomass" -- it should have been better explained
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): so the unit should be kg P/ha year
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "P outputs (uptake)." -- output is different from uptake
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "Maximum desorbable P" -- in your system, which has no infinite sink for P (eg no Feoxide paper), so not the maximum value
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "representing the initial flux" -- sorry i do not know what the "initial flux" means
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "CO" -- co2 not co
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "available" -- no not available, see demaria et al
+
+ * Page 6 (Comparative Modeling of Soil and Agronomic Parameters): "crystalline and amorphous" -- not correct dithionite citrate extracts amorphous Al oxides and Al included in Fe  oxides but not crystallized Al oxides
+
+ * Page 6 (Model Assumptions and Diagnostics): "𝑃𝑑𝑒𝑠𝑜𝑟𝑏 or PS" -- why introduce PS and not stick to Pdesorb that is clear enough
+
+ * Page 8 (Establishment of the P-Desorption Kinetic Model): "𝑃𝑑𝑒𝑠𝑜𝑟𝑏" -- see notes above (infinite sink)
+
+ * Page 8 (Establishment of the P-Desorption Kinetic Model): "rate constant (𝑘)" -- there are many rates (see iek approach) so here we look at a net (global) rate
+
+ * Page 8 (Initial Approach: Failure of the Linearized Model):
+   > the first-order kinetic equation was linearized
+
+   this should have been better described including how the total amount of desorbable P was estimated, i suppose this is where the problem was
+
+   to fully demonstrate that the original approach was not valid i would have done the same measurements as these authors (so including their estimation of total desorbable P)
+
+ * Page 8 (Initial Approach: Failure of the Linearized Model):
+   > A core assumption of this model is that the linear relationship must pass through the origin
+
+   why have they done this assumption
+
+ * Page 9 (Final Approach: Successful Non-Linear Model):
+   > statistical
+
+   i am not sure that this is a statistical failure, but rather a different understanding
+
+   your desorb P is the max you can desorb in YOUR system while for flossmann the p desorb =Pcal-PH2O.
+
+   both approaches have a merit but these are different ways of looking at things
+
+   (I also do not know whether PCAL extracts only available P)
+
+ * Page 9 (Final Approach: Successful Non-Linear Model): why are you introducing abbreviations in table 1 and then not use them
+
+ * Page 9 (Final Approach: Successful Non-Linear Model):
+
+   
+
+   what is meant by replicate? Do you mean different field replicates? Or these are analytical replicates? This needs to be explained
+
+   sometimes one is missing, sometimes 2 are missing, why?
+
+ * Page 9 (Final Approach: Successful Non-Linear Model):
+
+   
+
+   have flossman and richter used this variable as y, or another
+
+   here you are using Pdesorb which to my knowledge was not quantified by Flossman and richter
+
+ * Page 9 (Final Approach: Successful Non-Linear Model): in table 1 you write ALT and in the rest of the text you mention ruemlang, why?
+
+ * Page 9 (Final Approach: Successful Non-Linear Model):
+   > Figure 1: Test of the linearized first-order kinetic model. The plot visually supports the statistical finding that many intercepts are not zero
+
+   one of the laws in scientific writing is that the reader should be able to understand the graphic without having the read the text, here this is not possible
+
+ * Page 10 (Final Approach: Successful Non-Linear Model):
+
+   
+
+   this was obviously an excellent idea. 
+
+   However you are here comparing results from soils sampled i think in 1998 (?) and in 2022. Although i would not expect too much variations in clay, FeCD etc, i would expect differences in parameters affected by management as P availability. 
+
+   So here a first control point would have been to compare water soluble P in 1998 and 2022. 
+
+   Then i would have compared Cp (or E1min) and Pdesorb, well k and r1/R and may be Fm and J. More thoughts should have been put in which parameter should i compare with which parameter and why.
+
+ * Page 10 (Comparison with Isotopic Exchange Kinetics (IEK)): "non-equilibrium desorption" -- at the beginning of your experiment you have no equilibrium, but at the end there is an equilibrium (or the equilibrium will be reached soon)
+
+ * Page 10 (Comparison with Isotopic Exchange Kinetics (IEK)):
+   > 7 days
+
+   7 days is not really long term, and n is included in the calculation of E7days
+
+   furthermore E7days is in mg/kg and Pdesorb in mg/L
+
+ * Page 10 (Comparison with Isotopic Exchange Kinetics (IEK)):
+   > 𝑛1𝑑
+
+   what is this, how do you calculate this, this should have been explained
+
+   for me n is not time dependent
+
+ * Page 10 (Comparison with Isotopic Exchange Kinetics (IEK)): same question, what are these replicates
+
+ * Page 10 (Comparison with Isotopic Exchange Kinetics (IEK)): nice figure, but problem with the title
+
+ * Page 11 (Comparison with Isotopic Exchange Kinetics (IEK)): "capacity" -- but what is the intensity in your system? What you call capacity is Pdesorb (so actually the quantity) and how do you operationally define "lability"
+
+ * Page 11 (Effects of Fertilization on Agronomic and Soil Parameters): have you thought of comparing Pdesorb in kg P/ha with the amount of P taken by a crop over y ear
+
+ * Page 11 (Agronomic Responses to P Fertilization): i do not see a pronounced effect there
+
+ * Page 12 (Agronomic Responses to P Fertilization):
+   > Data from 2017-2022
+
+   what does this mean, are these average values for these 6 years? 
+
+   why have you considered these 6 years? Is this the duration of a rotation?
+
+   all of this needs to be introduced and explained
+
+ * Page 12 (Agronomic Responses to P Fertilization):
+   > Both yield metrics showed a generally positive response to P fertilization
+
+   fine but the effects on yield are very small, and this is fine as many other factors have a very high impact on the yields
+
+   what does generally mean
+
+ * Page 12 (Agronomic Responses to P Fertilization): should have been explained well in the M&Ms
+
+ * Page 12 (Agronomic Responses to P Fertilization): i rather see a plateau
+
+ * Page 12 (Agronomic Responses to P Fertilization): is the unit in kgP/ha and yr
+
+ * Page 12 (Agronomic Responses to P Fertilization): is the unit in kgP/ha and yr
+
+ * Page 12 (Agronomic Responses to P Fertilization): 5
+
+ * Page 13 (Agronomic Responses to P Fertilization): in the text you are mentioning 4 treatments and you show 3 in the figures (while you 6 of them at the beginning), why
+
+ * Page 13 (Soil P Parameters as a Function of P Fertilization): "responded" -- what do you mean
+
+ * Page 13 (Soil P Parameters as a Function of P Fertilization): 5
+
+ * Page 13 (Soil P Parameters as a Function of P Fertilization): where are these data
+
+ * Page 14 (Soil P Parameters as a Function of P Fertilization): i would try to correlate Pdesorb with PCO2 or PAAEDTA
+
+ * Page 14 (Soil P Parameters as a Function of P Fertilization):
+   > These initial observations suggest that the kinetic parameters, particularly the rate constant 𝑘, may provide unique information about the soil's P dynamics not captured by the static tests P-CO2 and P-AAE10 alone. The next section will use formal statistical models to test these relationships.
+
+   i would not have written this here, this sounds like a discussion (and we are in the results)
+
+ * Page 14 (Predicting P Parameters from Soil Properties): "''" -- what are these brackets
+
+ * Page 14 (Predicting P Parameters from Soil Properties):
+
+   
+
+   i would not have used Ald because it does not extract crystallized Al oxides;
+
+   before you consider a parameter you always need to explain why
+
+ * Page 14 (Predicting P Parameters from Soil Properties):
+
+   
+
+   i would not have used silt because i do not know why it would have a specific impact on P availability, 
+
+   it would have been ok to use these parameters if this would have been explained
+
+ * Page 14 (Predicting P Parameters from Soil Properties): attention you are discussing the hypotheses, this should be in the discussion section while we are still in the results section
+
+ * Page 14 (Predicting P Parameters from Soil Properties):
+   > This clearly distinguishes the kinetic component from the capacity component, suggesting that while oxides control how much P can be held, soil texture and organic matter influence how fast it can be released
+
+   what would be the chemical basis of this
+
+   this sounds strange anyway
+
+ * Page 14 (Predicting P Parameters from Soil Properties): i do not understand
+
+ * Page 14 (Predicting P Parameters from Soil Properties): "only 𝑃𝐴𝐴𝐸10 showing a significant negative link to 𝐴𝑙𝑑." -- again, why, chemically (but this belongs to the discussion)
+
+ * Page 15 (Predictive Modeling of Agronomic Outcomes):
+   > standard water-soluble P test
+
+   the standard water soluble P is not the PCO2 test
+
+   you could have tested the PH2O that should have been measured at the beginning of your exp
+
+ * Page 15 (Predictive Modeling of Agronomic Outcomes): thanks for building sentences
+
+ * Page 15 (Anomaly in the Cadenazzo Yield Data):
+   > the Cadenazzo site exhibited substantially higher overall yields than all other locations
+
+   since when, on which crop
+
+ * Page 15 (Anomaly in the Cadenazzo Yield Data):
+   > corresponding soil analysis data (STPs, organic carbon, etc.) for the Cadenazzo site were unavailable due to sample loss.
+
+   again from which year, we did soil analyses in gallet's and demaria's theses
+
+   and you did P analyses on the samples taken in 2022
+
+ * Page 15 (Anomaly in the Cadenazzo Yield Data): "recording error" -- have you asked the technicians in charge
+
+ * Page 15 (Anomaly in the Cadenazzo Yield Data):
+   > Cadenazzo data was retained in the models but is recognized as a significant source of unexplained variance that likely contributed to the poor predictive performance of all models for yield-related metrics like 𝑌𝑛𝑜𝑟𝑚 and 𝑌𝑟𝑒𝑙.
+
+   i do not think that it was a good idea
+
+ * Page 16 (Predicting Site-Normalized Yield (Y_{norm})): no need to put two titles to a figure
+
+ * Page 16 (Predicting Site-Normalized Yield (Y_{norm})): "Annual dry matter yield" -- annual dry matter of which crop in which year
+
+ * Page 17 (Predicting Site-Normalized Yield (Y_{norm})):
+   > 𝑃
+
+   does this refer to model 2 presented in section 2442? this is confusing, the title of the table does not help understanding the content
+
+   is PCO2 here the fixed effect?
+
+ * Page 17 (Predicting Site-Normalized Yield (Y_{norm})): "$P_{CO_2}$ and $P_{AAE10}$" -- the format is not nice
+
+ * Page 17 (Predicting National-Normalized Yield (Y_{rel})): "struggle" -- what does struggle mean, these models explain very little
+
+ * Page 17 (Predicting National-Normalized Yield (Y_{rel})): "3.5.3.1 Performance of Standard STP Methods" -- why add a section title here
+
+ * Page 17 (Predicting National-Normalized Yield (Y_{rel})):
+   > A critical observation across all models is the large discrepancy between the marginal R² (𝑅2 𝑐 ). 𝑚) and the conditional R² (𝑅2
+
+   i see, and so what
+
+ * Page 19 (Discussion): "Hirte, Richner, et al., 2021" -- and gallet et al
+
+ * Page 19 (Discussion): "overarching pedoclimatic factors" -- and other, see morel et al
+
+ * Page 19 (Discussion):
+   > has led to a widespread accumulation of "legacy P" in many agricultural soils
+
+   the grud changed and originally the 100% was probably too high, this should have been discussed
+
+ * Page 19 (Discussion):
+   > P100 and P166 treatments in this study were likely operating in a P-surplus range
+
+   you have calculated the balance, so you should know (this should not be likely, but shown)
+
+ * Page 19 (Discussion): "critical threshold" -- of what?
+
+ * Page 19 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "P-Balance" -- this is strange. But we have no information on the balance. Was it calculated over one year, a rotation, the entire duration of the trials, this should have been checked
+
+ * Page 19 (Hypothesis 1: The Nuanced Role of Standard Soil Tests):
+   > 2 they do not adequately capture the cumulative, long-term P status of the soil system
+
+   given the lack of explanations given in the thesis, this conclusion can not be accepted
+
+ * Page 19 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "site-normalized yield (𝑌𝑛𝑜𝑟𝑚)," -- for which year/period?
+
+ * Page 19 (Hypothesis 1: The Nuanced Role of Standard Soil Tests):
+   > within-field management, where the goal is to ensure P is not limiting relative to that specific environment's potential, traditional capacity-based tests are well-suited and robust.
+
+   this would need to be better explained
+
+ * Page 19 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "national-normalized yield (𝑌𝑟𝑒𝑙) and P-uptake (𝑃𝑢𝑝)," -- for which year/period
+
+ * Page 20 (Hypothesis 1: The Nuanced Role of Standard Soil Tests):
+   > Hirte et al. (2021)
+
+   why is this bold
+
+ * Page 20 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "(Hirte, Stüssel, et al., 2021" -- why sometimes Hirte et al sometimes Hirte Stüssel...
+
+ * Page 20 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "GRA" -- but where are the GRA results?
+
+ * Page 20 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "." -- and an acidic extraction pH
+
+ * Page 20 (Hypothesis 1: The Nuanced Role of Standard Soil Tests): "f." -- again our work is ignored
+
+ * Page 20 (Hypothesis 2: Characterizing P Desorption Kinetics): which were the core assumptions and why were they core assumptions
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics): What can be desorbed for what depends also on the strength of the sink
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics): it is actually
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics):
+   > .
+
+   these are 2 diffferent approaches (these 2 "limits") and both should be discussed properly
+
+   the method used here is not an infinite sink method, and therefore total P desorb can not be quantified, neither its kinetics, see lookman, frossard and many others; and Pdesorb can be assigned to different pools
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics): "replicates" -- so here you mean field replicates
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics): "micro-site" -- what does micro mean here, i would rather write within site heterogeneity (you are not dealing with soil aggregates)
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics):
+   > undissolved fertilizer granules in the soil matrix
+
+   do you believe in this given the rainfall and the solubility of TSP
+
+   when during the year is added TSP (during a dry period)?
+
+   How could this be checked?
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics): "solidifies" -- ? soldify?
+
+ * Page 21 (Hypothesis 2: Characterizing P Desorption Kinetics): "s." -- see remarks above on this topic
+
+ * Page 22 (Hypothesis 2: Characterizing P Desorption Kinetics): "capacity and kineti" -- wording!
+
+ * Page 22 (Hypothesis 2: Characterizing P Desorption Kinetics): "exchangeable pool" -- but how is the exchangeable pool defined here
+
+ * Page 22 (Hypothesis 2: Characterizing P Desorption Kinetics): "speed" -- rate
+
+ * Page 22 (Hypothesis 2: Characterizing P Desorption Kinetics):
+   > as higher clay content can increase the tortuosity of diffusion pathways
+
+   is this relevant in your batch experiment
+
+ * Page 22 (Hypothesis 2: Characterizing P Desorption Kinetics): so is this only a problem of diffusion or of desorption AND diffusion
+
+ * Page 22 (Hypothesis 2: Characterizing P Desorption Kinetics):
+   > pH governs the speciation of orthophosphate ions and their affinity for mineral surfaces
+
+   how
+
+   and oxide as well
+
+ * Page 22 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): knowing that the cadenazzo yields data are included in the analysis, and these were not clear
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): "Balance represents the long-term integration of nutrient inputs and outputs" -- since i do not know how this was calculated, this statement can not be accepted
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): "n." -- why? This must be discussed
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): "this level" -- was the level of 100% always the same in kg/ha over decades?
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters):
+   > likely led to significant "legacy P" accumulation
+
+   you calculated the balance, why should legacy P only a likelihood
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): "extreme deficiency" -- again, you had access to all data, have you seen anywhere an extreme deficiency? If yes what does extreme deficiency mean
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters):
+   > the rate of P supply is most likely to be a yield-limiting factor.
+
+   likely yes
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters):
+   > as seen in the exploratory analysis in with the mlr3-model-comparisons, weather variables alone were often strong predictors of yield
+
+   where are these data? Which years were considered for this analysis
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): "status." -- similar observations were made by Morel et al 1992
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): "." -- see also Morel et al 1992
+
+ * Page 23 (Hypothesis 3: The Context-Dependent Power of Kinetic Parameters): the next step is to look more carefully to the results
+
+ * Page 24 (Conclusion and Outlook):
+   > diffusion-limited reality of P uptake
+
+   what does this mean
+
+   does this thesis consider only the diffusion, but not desorption nor  uptake
+
+   this should have said upfront
+
+ * Page 24 (Conclusion and Outlook):
+   > on a chemically flawed premise, where the estimated desorbable P pool (𝑃𝑑𝑒𝑠𝑜𝑟𝑏) far exceeds the physical solubility of phosphate.
+
+   no, they have another point of view which is not wrong, the desorbable P is probably much higher than what you measure
+
+   nevertheless your approach is more coherent for your system
+
+ * Page 24 (Conclusion and Outlook):
+   > were ultimately attributed to the "nugget effect" of residual fertilizer granules
+
+   this is pure speculation and is not supported by data
+
+ * Page 24 (Conclusion and Outlook): "𝑃𝑑𝑒𝑠𝑜𝑟𝑏" -- it would be nice if P desorb could be correlated to water extractable P, too bad that it was not checked
+
+ * Page 24 (Conclusion and Outlook): "context." -- why consider them in the same model if it does not make sense then ?
+
+ * Page 24 (Conclusion and Outlook):
+   > The centrifugation step (4000 rpm for 15 minutes) created highly compact sediments, particularly in clay-rich soils. Consequently, the magnetic stir bar required considerable time (up to 10 minutes) to achieve full resuspension, meaning the reactive surface area was not constant at the beginning of the experiment, violating a key assumption of kinetic modeling. Furthermore, the decanting process left a residue of P-rich colloids on the sediment surface, which, upon resuspension, likely contributed to an immediate release of P, invalidating the assumption of P(t=0)=0 and necessitating a time correction in our model.
+
+   these are very important observations that should been mentioned in the discussion
+
+ * Page 24 (Conclusion and Outlook):
+   > A crucial element missing from all such chemical extractions is the active plant sink. A plant root constantly removes phosphate from the solution, fundamentally altering the chemical equilibrium.
+
+   this should have come in the discussion as well, with the question of the infinite sink and the different methods used to assess that
+
+ * Page 25 (Conclusion and Outlook): "ons." -- this has been tackled in models
+
+ * Page 25 (Conclusion and Outlook): "parameters." -- see mollier, pellerin etc
+
+ * Page 27 (References):
+   > W. J. G. de.
+
+   ????
+
+ * Page 27 (References):
+   > Jr., G. J. G.,
+
+   ????
+
+ * Page 27 (References):
+   > Flossmann, R., & Richter, D. (1982). Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution
+
+   reference?
+
+ * Page 27 (References): "Frossard, E." -- ????
+

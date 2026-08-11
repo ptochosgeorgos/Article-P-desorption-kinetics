@@ -80,5 +80,14 @@ existing <- read_json("presentation/calculator_coefs.json")
 existing$uptake_coefs <- uptake_coefs
 existing$yield_coefs <- yield_coefs
 
+existing$scales$inv_b_agro <- list(
+    mean = mean(D_Long_Agro$inv_b_agro, na.rm=TRUE),
+    sd = sd(D_Long_Agro$inv_b_agro, na.rm=TRUE)
+)
+existing$scales$inv_b <- list(
+    mean = mean(D_Yield$inv_b, na.rm=TRUE),
+    sd = sd(D_Yield$inv_b, na.rm=TRUE)
+)
+
 write_json(existing, "presentation/calculator_coefs.json", auto_unbox = TRUE, pretty = TRUE)
 print("Updated calculator_coefs.json successfully.")

@@ -541,7 +541,13 @@ calc = {
   
   let z_pH = (soil_pH - sd.pH.mean) / sd.pH.sd;
   let soil_clay_silt = soil_clay + soil_silt;
-  let z_tex = (Math.log(soil_clay_silt) - sd.FineTexture.mean) / sd.FineTexture.sd;
+  let z_tex_raw = (Math.log(soil_clay_silt) - sd.FineTexture.mean) / sd.FineTexture.sd;
+  
+  // Clamp z_tex to the empirical bounds of the training data (approx FineTexture 45% to 80%)
+  // to prevent the negative coefficient artifact from blowing up Q on pure sands
+  let z_tex_min = (Math.log(45) - sd.FineTexture.mean) / sd.FineTexture.sd;
+  let z_tex_max = (Math.log(80) - sd.FineTexture.mean) / sd.FineTexture.sd;
+  let z_tex = Math.max(z_tex_min, Math.min(z_tex_max, z_tex_raw));
   
   let val_Ca = show_expert ? exp_Ca : 5000;
   let val_Mg = show_expert ? exp_Mg : 250;
@@ -565,12 +571,23 @@ calc = {
   
   let b_1 = n * K_val * Math.pow(1.0, n - 1);
   let inv_b = 1.0 / b_1;
-  let z_inv_b = (inv_b - 0.05) / 0.02; // Approx scaling of inverse buffer for the demo
+  
+  let inv_b_agro_mean = coef_data.scales?.inv_b_agro?.mean || 0.040;
+  let inv_b_agro_sd = coef_data.scales?.inv_b_agro?.sd || 0.565;
+  let inv_b_mean = coef_data.scales?.inv_b?.mean || 0.040;
+  let inv_b_sd = coef_data.scales?.inv_b?.sd || 0.565;
+
+  let z_inv_b_agro_raw = (inv_b - inv_b_agro_mean) / inv_b_agro_sd;
+  let z_inv_b_raw = (inv_b - inv_b_mean) / inv_b_sd;
+
+  // Clamp the Z-scores to prevent exponential blow-up on extreme slider edge cases
+  let z_inv_b_agro = Math.max(-3, Math.min(4, z_inv_b_agro_raw));
+  let z_inv_b = Math.max(-3, Math.min(4, z_inv_b_raw));
   
   let up = coef_data.uptake_coefs;
   // Look up crop-specific K_base
   let K_base_crop = up.K_base_crops[crop_choice] || up.K_base_crops["WW"]; // fallback
-  let Km = K_base_crop * Math.exp(up.beta_invb * z_inv_b); 
+  let Km = K_base_crop * Math.exp(up.beta_invb * z_inv_b_agro); 
   
   // Uptake target logic: y = x / (Km + x) => x = y * Km / (1 - y)
   let frac_up = target_uptake_pct / 100.0;

@@ -11,13 +11,11 @@ suppressPackageStartupMessages({
   library(ggtext)
   library(ggpmisc)
   library(nlme)
-  library(latex2exp)
   library(kableExtra)
   library(broom)
   library(dplyr)
   library(MuMIn)
-  library(latex2exp)
-})
+  })
 
 options(warn = -1)
 #RES <- readRDS("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/RES.rds")
@@ -145,8 +143,8 @@ Following the conceptual framework of Flossmann and Richter (1982), the first-or
    geom_point() +
    facet_grid(Site ~ Treatment) +
    theme_bw() +
-   labs(x=TeX("$Time (min)$"),
-        y=TeX("$ln(1-P/P_{desorb})$")) +
+   labs(x="$Time (min)$",
+        y="$ln(1-P/P_{desorb})$") +
    geom_smooth(method="lm", alpha = 0.3)
 ```
 
@@ -190,8 +188,8 @@ pred_data <- d_plot %>%
    geom_line(data = pred_data, aes(x = t.dt, y = pred_Pv, col = Repetition), size = 0.5) +
    facet_grid(Treatment ~ Site,scales = "free_y") +
    theme_bw() +
-   labs(x = TeX("$Time (min)$"),
-        y = TeX("$P_{V}$ $mg~L^{-1}$"));
+   labs(x = "$Time (min)$",
+        y = "$P_{V}$ $mg~L^{-1}$");
  suppressWarnings(print(p1))
 ```
 
@@ -216,8 +214,6 @@ The size of the desorbable P pool ($P_{desorb}$) was compared against the long-t
 
 library(ggplot2)
 library(dplyr)
-library(latex2exp)
-
 # Step 1: Prepare the data for correlation analysis
 correlation_data <- D %>%
   select(uid, PS, k, E_exp_10080, n_1440) %>%
@@ -234,8 +230,8 @@ p1 <- ggplot(correlation_data, aes(x = E_exp_10080, y = PS)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "blue", formula = y ~ x) +
   labs(
-    x = TeX("Isotopically Exchangeable P, $E_{7d}$ (mg kg$^{-1}$)"),
-    y = TeX("Desorbable P, $P_{desorb}$ (mg L$^{-1}$)")
+    x = "Isotopically Exchangeable P, $E_{7d}$ (mg kg$^{-1}$)",
+    y = "Desorbable P, $P_{desorb}$ (mg L$^{-1}$)"
   ) +
   coord_cartesian(ylim = c(0, 0.3)) +
   theme_bw()
@@ -245,8 +241,8 @@ p2 <- ggplot(correlation_data, aes(x = n_1440, y = k)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, color = "blue", formula = y ~ x) +
   labs(
-    x = TeX("IEK Kinetic Parameter, $n_{1d}$"),
-    y = TeX("Desorption Rate Constant, $k$ (min$^{-1}$)")
+    x = "IEK Kinetic Parameter, $n_{1d}$",
+    y = "Desorption Rate Constant, $k$ (min$^{-1}$)"
   ) +
   coord_cartesian(ylim = c(0, 0.3)) +
   theme_bw()
@@ -291,17 +287,17 @@ D_long_agronomic <- D %>%
 
 D_long_agronomic <- D_long_agronomic %>%
   mutate(Variable = case_when(
-    Variable == "Ymain_norm"       ~ as.character(TeX("$Y_{norm}$ (\\%)")),
-    Variable == "Ymain_rel"        ~ as.character(TeX("$Y_{rel}$ (\\%)")),
-    Variable == "annual_P_uptake"  ~ as.character(TeX("$P_{up}$ (kg ha$^{-1}$)")),
-    Variable == "annual_P_balance" ~ as.character(TeX("$P_{bal}$ (kg ha$^{-1}$)")),
+    Variable == "Ymain_norm"       ~ "$Y_{norm}$ (\\%)",
+    Variable == "Ymain_rel"        ~ "$Y_{rel}$ (\\%)",
+    Variable == "annual_P_uptake"  ~ "$P_{up}$ (kg ha$^{-1}$)",
+    Variable == "annual_P_balance" ~ "$P_{bal}$ (kg ha$^{-1}$)",
     TRUE                           ~ Variable
   )) %>%
   mutate(Variable = factor(Variable, levels = c(
-    as.character(TeX("$Y_{norm}$ (\\%)")),
-    as.character(TeX("$Y_{rel}$ (\\%)")),
-    as.character(TeX("$P_{up}$ (kg ha$^{-1}$)")),
-    as.character(TeX("$P_{bal}$ (kg ha$^{-1}$)"))
+    "$Y_{norm}$ (\\%)",
+    "$Y_{rel}$ (\\%)",
+    "$P_{up}$ (kg ha$^{-1}$)",
+    "$P_{bal}$ (kg ha$^{-1}$)"
   )))
 
 ggplot(D_long_agronomic, aes(x = Treatment, y = Value, fill = Treatment)) +
@@ -343,19 +339,19 @@ D_long_soil <- D %>%
 
 D_long_soil <- D_long_soil %>%
   mutate(Variable = case_when(
-    Variable == "k"                   ~ as.character(TeX("$k$ (min$^{-1}$)")),
-    Variable == "PS"                  ~ as.character(TeX("$P_{desorb}$ (mg L$^{-1}$)")),
-    Variable == "kPS"                 ~ as.character(TeX("$J_0$ (mg L$^{-1}$ min$^{-1}$)")),
-    Variable == "soil_0_20_P_CO2"   ~ as.character(TeX("$P_{CO_2}$ (mg kg$^{-1}$)")),
-    Variable == "soil_0_20_P_AAE10" ~ as.character(TeX("$P_{AAE10}$ (mg kg$^{-1}$)")),
+    Variable == "k"                   ~ "$k$ (min$^{-1}$)",
+    Variable == "PS"                  ~ "$P_{desorb}$ (mg L$^{-1}$)",
+    Variable == "kPS"                 ~ "$J_0$ (mg L$^{-1}$ min$^{-1}$)",
+    Variable == "soil_0_20_P_CO2"   ~ "$P_{CO_2}$ (mg kg$^{-1}$)",
+    Variable == "soil_0_20_P_AAE10" ~ "$P_{AAE10}$ (mg kg$^{-1}$)",
     TRUE                              ~ Variable
   )) %>%
   mutate(Variable = factor(Variable, levels = c(
-    as.character(TeX("$k$ (min$^{-1}$)")),
-    as.character(TeX("$P_{desorb}$ (mg L$^{-1}$)")),
-    as.character(TeX("$J_0$ (mg L$^{-1}$ min$^{-1}$)")),
-    as.character(TeX("$P_{CO_2}$ (mg kg$^{-1}$)")),
-    as.character(TeX("$P_{AAE10}$ (mg kg$^{-1}$)"))
+    "$k$ (min$^{-1}$)",
+    "$P_{desorb}$ (mg L$^{-1}$)",
+    "$J_0$ (mg L$^{-1}$ min$^{-1}$)",
+    "$P_{CO_2}$ (mg kg$^{-1}$)",
+    "$P_{AAE10}$ (mg kg$^{-1}$)"
   )))
 
 ggplot(D_long_soil, aes(x = Treatment, y = Value, fill = Treatment)) +
@@ -428,7 +424,7 @@ results_table_soil <- create_coef_table(
   covariate_labels = covariate_labels_soil_props,
   model_labels = model_labels_soil
 )
-knitr::kable(results_table_soil, escape = FALSE, row.names = FALSE, format = "markdown")
+knitr::kable(results_table_soil, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 
 
 # Gemini, these are the results.
@@ -563,7 +559,7 @@ results_table_ynorm <- create_coef_table(
   covariate_labels = covariate_labels,
   model_labels = model_labels_ynorm
 )
-knitr::kable(results_table_ynorm, escape = FALSE, row.names = FALSE, format = "markdown")
+knitr::kable(results_table_ynorm, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 
 # Gemini here are the results
 # Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
@@ -609,7 +605,7 @@ results_table_yrel <- create_coef_table(
   covariate_labels = covariate_labels,
   model_labels = model_labels_yrel
 )
-knitr::kable(results_table_yrel, escape = FALSE, row.names = FALSE, format = "markdown")
+knitr::kable(results_table_yrel, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 
 # Gemini here the results
 # |Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
@@ -658,7 +654,7 @@ results_table_export <- create_coef_table(
   covariate_labels = covariate_labels,
   model_labels = model_labels_export
 )
-knitr::kable(results_table_export, escape = FALSE, row.names = FALSE, format = "markdown")
+knitr::kable(results_table_export, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 
 # Gemini, here are the results
 # |Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
@@ -704,7 +700,7 @@ results_table_balance <- create_coef_table(
   covariate_labels = covariate_labels,
   model_labels = model_labels_balance
 )
-knitr::kable(results_table_balance, escape = FALSE, row.names = FALSE, format = "markdown")
+knitr::kable(results_table_balance, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 
 # Gemini here are the results
 # |Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |

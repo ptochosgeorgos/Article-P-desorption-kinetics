@@ -24,7 +24,6 @@ library(ggplot2)
 library(ggtext)
 library(ggpmisc)
 library(nlme)
-library(latex2exp)
 library(kableExtra)
 library(broom)
 library(dplyr)
@@ -75,8 +74,8 @@ Following the conceptual framework of Flossmann and Richter (1982), the first-or
  ggplot(d[d$Treatment!="P100"&(d$Repetition==1|d$Repetition==2),], aes(y=Y1, x=t.min., col = Repetition)) +
    geom_point() +
    facet_grid(Site ~ Treatment) +
-   labs(x=TeX("$Time (min)$"),
-        y=TeX("$ln(1-\\frac{P}{P_S})$")) +
+   labs(x="$Time (min)$",
+        y="$ln(1-\\frac{P}{P_S})$") +
    geom_smooth(method="lm", alpha = 0.3)
 ```
 
@@ -121,8 +120,8 @@ pred_data <- d_plot %>%
    geom_point(data = d_plot, aes(y = Pv.mg.L., x = t.dt, col = Repetition)) +
    geom_line(data = pred_data, aes(x = t.dt, y = pred_Pv, col = Repetition), size = 0.5) +
    facet_grid(Treatment ~ Site,scales = "free_y") +
-   labs(x = TeX("$Time (min)$"),
-        y = TeX("$P_{V}(\\frac{mg}{L})$"));
+   labs(x = "$Time (min)$",
+        y = "$P_{V}(\\frac{mg}{L})$");
  suppressWarnings(print(p1))
 ```
 
@@ -159,43 +158,43 @@ To account for the hierarchical data structure and obtain the most reliable esti
 ggplot(D[D$soil_0_20_P_CO2!=0,],aes(y=Ymain_norm, x=soil_0_20_P_CO2, col=Site, size = Treatment)) +
   geom_point(shape = 7) + 
   scale_x_log10() + scale_y_log10() +
-  labs(x=TeX("$P_{CO_{2}}(mg/kg Soil)$"),
+  labs(x="$P_{CO_{2}}(mg/kg Soil)$",
          y="relative Yield (%)") +
   facet_wrap( ~ Site, nrow = 2)
 
 ggplot(D[D$soil_0_20_P_AAE10!=0,],aes(y=Ymain_norm, x=soil_0_20_P_AAE10, col=Site, size = Treatment)) +
   geom_point(shape = 7) + 
   scale_x_log10() + scale_y_log10() +
-  labs(x=TeX("$P_{AAE10}(mg/kg Soil)$"),
+  labs(x="$P_{AAE10}(mg/kg Soil)$",
          y="relative Yield (%)") +
   facet_wrap( ~ Site, nrow = 2)
 
 ggplot(D[D$soil_0_20_P_CO2!=0&D$annual_P_uptake!=0,],aes(y=annual_P_uptake, x=soil_0_20_P_CO2, col=Site, size = Treatment)) +
   geom_point(shape = 7) + 
   scale_x_log10() + scale_y_log10() +
-  labs(x=TeX("$P_{CO_{2}}(mg/kg Soil)$"),
-         y=TeX("Annual P-Uptake $kg~P/ha$")) +
+  labs(x="$P_{CO_{2}}(mg/kg Soil)$",
+         y="Annual P-Uptake $kg~P/ha$") +
   facet_wrap( ~ Site, nrow = 2)
 
 ggplot(D[D$soil_0_20_P_AAE10!=0&D$annual_P_uptake!=0,],aes(y=annual_P_uptake, x=soil_0_20_P_AAE10, col=Site, size = Treatment)) +
   geom_point(shape = 7) + 
   scale_x_log10() + scale_y_log10() +
-  labs(x=TeX("$P_{AAE10}(mg/kg Soil)$"),
-         y=TeX("Annual P-Uptake $kg~P/ha$")) +
+  labs(x="$P_{AAE10}(mg/kg Soil)$",
+         y="Annual P-Uptake $kg~P/ha$") +
   facet_wrap( ~ Site, nrow = 2)
 
 ggplot(D[D$soil_0_20_P_CO2!=0&D$annual_P_balance!=0,],aes(y=annual_P_balance, x=soil_0_20_P_CO2, col=Site, size = Treatment)) +
   geom_point(shape = 7) + 
   scale_x_log10() + scale_y_log10() +
-  labs(x=TeX("$P_{CO_{2}}(mg/kg Soil)$"),
-         y=TeX("Annual P-Balance $kg~P/ha$")) +
+  labs(x="$P_{CO_{2}}(mg/kg Soil)$",
+         y="Annual P-Balance $kg~P/ha$") +
   facet_wrap( ~ Site, nrow = 2)
 
 ggplot(D[D$soil_0_20_P_AAE10!=0&D$annual_P_balance!=0,],aes(y=annual_P_balance, x=soil_0_20_P_AAE10, col=Site, size = Treatment)) +
   geom_point(shape = 7) + 
   scale_x_log10() + scale_y_log10() +
-  labs(x=TeX("$P_{AAE10}(mg/kg Soil)$"),
-         y=TeX("Annual P-Balance $kg~P/ha$")) +
+  labs(x="$P_{AAE10}(mg/kg Soil)$",
+         y="Annual P-Balance $kg~P/ha$") +
   facet_wrap( ~ Site, nrow = 2)
 
 
@@ -471,8 +470,8 @@ summary(res)
 ggplot(d, aes(y=Y1, x=t.min., col = Repetition)) +
   geom_point() +
   facet_grid(Site ~ Treatment) + 
-  labs(x=TeX("$Time (min)$"),
-       y=TeX("$ln(1-\\frac{P}{P_S})$")) +
+  labs(x="$Time (min)$",
+       y="$ln(1-\\frac{P}{P_S})$") +
   geom_smooth(method="lm", alpha = 0.3) 
 ```
 
@@ -509,8 +508,8 @@ p1 <- ggplot() +
   geom_point(data = d_plot, aes(y = Pv.mg.L., x = t.dt, col = Repetition)) +
   geom_line(data = pred_data, aes(x = t.dt, y = pred_Pv, col = Repetition), size = 0.5) +
   facet_grid(Treatment ~ Site) +
-  labs(x = TeX("$Time (min)$"),
-       y = TeX("$P_{V}(\\frac{mg}{L})$")); suppressWarnings(print(p1))
+  labs(x = "$Time (min)$",
+       y = "$P_{V}(\\frac{mg}{L})$"); suppressWarnings(print(p1))
 
 ```
 

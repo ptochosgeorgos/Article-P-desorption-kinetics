@@ -62,7 +62,6 @@ library(ggplot2)
 library(ggtext)
 library(ggpmisc)
 library(nlme)
-library(latex2exp)
 library(kableExtra)
 library(broom)
 library(dplyr)
@@ -128,8 +127,8 @@ summary(res)
 ggplot(d, aes(y=Y1, x=t.min., col = Repetition)) +
   geom_point() +
   facet_grid(Site ~ Treatment) + 
-  labs(x=TeX("$Time (min)$"),
-       y=TeX("$ln(1-\\frac{P}{P_S})$")) +
+  labs(x="$Time (min)$",
+       y="$ln(1-\\frac{P}{P_S})$") +
   geom_smooth(method="lm", alpha = 0.3) 
 
 ```
@@ -169,8 +168,8 @@ p1 <- ggplot() +
   geom_point(data = d_plot, aes(y = Pv.mg.L., x = t.dt, col = Repetition)) +
   geom_line(data = pred_data, aes(x = t.dt, y = pred_Pv, col = Repetition), size = 0.5) +
   facet_grid(Treatment ~ Site,scales = "free_y") +
-  labs(x = TeX("$Time (min)$"),
-       y = TeX("$P_{V}(\\frac{mg}{L})$")); suppressWarnings(print(p1))
+  labs(x = "$Time (min)$",
+       y = "$P_{V}(\\frac{mg}{L})$"); suppressWarnings(print(p1))
 
 d$ui <- interaction(d$Site, d$Treatment)
 

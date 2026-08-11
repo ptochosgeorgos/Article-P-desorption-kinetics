@@ -48,22 +48,3 @@ format:
       sidebar-width: 300px
       body-width: 900px
       margin-width: 250px
-
-  docx:
-    toc: false 
-    number-sections: true
-
-  pdf:
-    documentclass: article
-    papersize: a4
-    pdf-engine: lualatex
-    number-sections: true
-    mainfont: "Latin Modern Roman"
-    sansfont: "Latin Modern Sans"
-    monofont: "Latin Modern Mono"
-    colorlinks: true
-    geometry:
-      - top=25mm
-      - left=25mm
-      - right=25mm
-      - bottom=25mm

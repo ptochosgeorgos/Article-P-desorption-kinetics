@@ -10,7 +10,12 @@ library(dplyr)
 library(tidyr)
 library(readxl)
 library(ggpmisc)
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tikzDevice)
+options(tikzDefaultEngine = "luatex")
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE,
+  dev = "tikz", fig.align = "center"
+)
 
 # 1. Load legacy kinetics and climate data
 RES <- readRDS("data/RES.rds")
@@ -82,7 +87,7 @@ ggplot(D_main, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
     geom_boxplot(alpha = 0.7) +
     facet_wrap(~site, scales = "free_y") +
     labs(
-        title = "Annual Dry Matter Yield by Treatment and Site",
+        title = "Annual Dry Matter Yield by Treatment \\& Site",
         x = "Treatment",
         y = "Annual Yield (kg DM / ha)"
     ) +
@@ -97,7 +102,7 @@ ggplot(D_main, aes(x = Treatment, y = fert_P_tot, fill = Treatment)) +
     geom_boxplot(alpha = 0.7) +
     facet_wrap(~site, scales = "free_y") +
     labs(
-        title = "Total Applied P Fertilizer (fert_P_tot) by Treatment and Site",
+        title = "Total Applied P Fertilizer by Treatment \\& Site",
         x = "Treatment",
         y = "Applied P Fertilizer (kg P / ha)"
     ) +
@@ -114,7 +119,7 @@ ggplot(D_main, aes(x = fert_P_tot, y = annual_yield_mp_DM, color = Treatment)) +
     facet_wrap(~site, scales = "free") +
     labs(
         title = "Yield vs. Actual Applied P Fertilizer",
-        x = "Total Applied P Fertilizer (fert_P_tot)",
+        x = "Total Applied P Fertilizer",
         y = "Annual Yield (kg DM / ha)"
     ) +
     theme_bw()
@@ -127,9 +132,9 @@ ggplot(D_main, aes(x = Treatment, y = soil_0_20_P_CO2, fill = Treatment)) +
     geom_boxplot(alpha = 0.7) +
     facet_wrap(~site, scales = "free_y") +
     labs(
-        title = "Soil P (CO2 extractable) by Treatment and Site",
+        title = "Soil $P$ ($CO_2$ extractable) by Treatment \\& Site",
         x = "Treatment",
-        y = "P_CO2 (mg/kg)"
+        y = "$P_{CO_2}$ (mg/kg)"
     ) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -144,7 +149,7 @@ ggplot(D_main, aes(x = fert_P_tot, y = annual_P_uptake, color = Treatment)) +
     facet_wrap(~site, scales = "free") +
     labs(
         title = "Annual P Uptake vs. Applied P Fertilizer",
-        x = "Total Applied P Fertilizer (fert_P_tot)",
+        x = "Total Applied P Fertilizer",
         y = "Annual P Uptake (kg P / ha)"
     ) +
     theme_bw()
@@ -194,7 +199,7 @@ ggplot(D_indicators, aes(x = Indicator_Value, y = Cumulated_P_Balance, color = s
     geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed") +
     facet_grid(site ~ Indicator, scales = "free") +
     labs(
-        title = "Cumulated P Balance (1990-2022) vs. Soil P Indicators",
+        title = "Cumulated P Balance (1990--2022) vs. Soil P Indicators",
         x = "Measured Soil P Indicator Value",
         y = "Cumulated P Balance (kg P / ha)",
         color = "Site"
@@ -218,7 +223,7 @@ ggplot(D_pedo, aes(x = Driver_Value, y = Cumulated_P_Balance, color = Treatment)
     geom_point(alpha = 0.8, size = 2.5) +
     facet_wrap(~ Pedo_Driver, scales = "free_x", ncol = 3) +
     labs(
-        title = "Cumulated P Balance (1990-2022) Driven by Pedoclimatic Traits",
+        title = "Cumulated P Balance (1990--2022) Driven by Pedoclimatic Traits",
         x = "Pedoclimatic Driver Value (Site Average)",
         y = "Cumulated P Balance (kg P / ha)",
         color = "P Treatment"
@@ -226,7 +231,6 @@ ggplot(D_pedo, aes(x = Driver_Value, y = Cumulated_P_Balance, color = Treatment)
     theme_bw() +
     theme(legend.position = "bottom")
 ```
-
 
 ### 7. Annual P Uptake vs. Soil P Indicators
 
@@ -387,11 +391,9 @@ ggplot(icc_results, aes(x = reorder(Variable, ICC), y = ICC, fill = Category)) +
 
 ### 10. Covariate Permutation: Identifying the Best Pedoclimatic Drivers
 
-To rigorously test which combination of pedoclimatic traits best explains the variance across our 7 sites, we fit a series of Mixed-Effects models. For each of our 3 main soil indicators ($P_{CO2}$, $P_{AAE10}$, $PS$), we fit a baseline model:
-`annual_P_balance ~ scale(Indicator) + (1 | site)`
+To rigorously test which combination of pedoclimatic traits best explains the variance across our 7 sites, we fit a series of Mixed-Effects models. For each of our 3 main soil indicators ($P_{CO2}$, $P_{AAE10}$, $PS$), we fit a baseline model: `annual_P_balance ~ scale(Indicator) + (1 | site)`
 
-Then, we systematically loop through every 2-variable combination of our 6 pedoclimatic drivers (`pH`, `Corg`, `Clay`, `Lime`, `Temp`, `Prec`) and fit:
-`annual_P_balance ~ scale(Indicator) + scale(Var1) + scale(Var2) + (1 | site)`
+Then, we systematically loop through every 2-variable combination of our 6 pedoclimatic drivers (`pH`, `Corg`, `Clay`, `Lime`, `Temp`, `Prec`) and fit: `annual_P_balance ~ scale(Indicator) + scale(Var1) + scale(Var2) + (1 | site)`
 
 If the two physical variables successfully explain the site-to-site differences, the Random Intercept variance (`1 | site`) should shrink substantially towards 0.
 
@@ -506,6 +508,7 @@ knitr::kable(head(res_yield_cum, 10), caption = "**Top 10 Stable Models: CUMULAT
 res_up_cum <- run_perms("Cumulated_P_Uptake", inds_cum, cova_cum, D_cum)
 knitr::kable(head(res_up_cum, 10), caption = "**Top 10 Stable Models: CUMULATED P-Uptake (Sorted by Marginal $R^2$)**")
 ```
+
 ## 11. Final Task Sanity Graphs: Yield and Uptake Distributions
 
 To verify the overall distributions and responses of Yield and P Uptake across the sites, treatments, years, and specific fertilizers, we plot the requested sanity checks below.
