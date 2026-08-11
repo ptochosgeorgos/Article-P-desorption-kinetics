@@ -255,7 +255,7 @@ D_uptake_annual <- D_main %>%
 ggplot(D_uptake_annual, aes(x = Indicator_Value, y = annual_P_uptake)) +
     geom_point(aes(color = site), alpha = 0.6) +
     geom_smooth(method = "lm", color = "black", se = FALSE) +
-    stat_poly_eq(use_label(c("eq", "R2")), output.type = "latex") +
+    stat_poly_eq(use_label(c("eq", "R2")), output.type = "text") +
     facet_grid(site ~ Indicator, scales = "free") +
     labs(
         title = "Annual P Uptake vs. Soil P Indicators",
@@ -296,7 +296,7 @@ D_cum_uptake <- D_main %>%
 ggplot(D_cum_uptake, aes(x = Indicator_Value, y = Cumulated_P_Uptake)) +
     geom_point(aes(color = site), alpha = 0.8, size = 2) +
     geom_smooth(method = "lm", color = "black", se = FALSE) +
-    stat_poly_eq(use_label(c("eq", "R2")), label.y = 0.95, output.type = "latex") +
+    stat_poly_eq(use_label(c("eq", "R2")), label.y = 0.95, output.type = "text") +
     facet_grid(site ~ Indicator, scales = "free") +
     labs(
         title = "Cumulated P Uptake (1990-2022) vs. Soil P Indicators",
