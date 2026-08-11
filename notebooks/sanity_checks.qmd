@@ -190,8 +190,8 @@ D_indicators <- D_cum %>%
     ) %>%
     # Make the facet labels nicer
     mutate(Indicator = recode(Indicator,
-        mean_P_CO2 = "P_CO2 (Water Soluble)",
-        mean_P_AAE10 = "P_AAE10 (Chelate Extractable)",
+        mean_P_CO2 = "$P_{CO_2}$ (Water Soluble)",
+        mean_P_AAE10 = "$P_{AAE10}$ (Chelate Extractable)",
         mean_PS = "PS (Desorbable P / Capacity)"))
 
 ggplot(D_indicators, aes(x = Indicator_Value, y = Cumulated_P_Balance, color = site)) +
@@ -245,8 +245,8 @@ D_uptake_annual <- D_main %>%
         values_to = "Indicator_Value"
     ) %>%
     mutate(Indicator = recode(Indicator,
-        soil_0_20_P_CO2 = "P_CO2 (Water Soluble)",
-        soil_0_20_P_AAE10 = "P_AAE10 (Chelate Extractable)",
+        soil_0_20_P_CO2 = "$P_{CO_2}$ (Water Soluble)",
+        soil_0_20_P_AAE10 = "$P_{AAE10}$ (Chelate Extractable)",
         Pmax_PS = "PS (Desorbable P / Capacity)")) %>%
     # Filter missing to avoid plotting warnings
     filter(!is.na(Indicator_Value) & !is.na(annual_P_uptake))
@@ -287,8 +287,8 @@ D_cum_uptake <- D_main %>%
         values_to = "Indicator_Value"
     ) %>%
     mutate(Indicator = recode(Indicator,
-        mean_P_CO2 = "P_CO2 (Water Soluble)",
-        mean_P_AAE10 = "P_AAE10 (Chelate Extractable)",
+        mean_P_CO2 = "$P_{CO_2}$ (Water Soluble)",
+        mean_P_AAE10 = "$P_{AAE10}$ (Chelate Extractable)",
         mean_PS = "PS (Desorbable P / Capacity)")) %>%
     filter(!is.na(Indicator_Value) & !is.na(Cumulated_P_Uptake))
 
