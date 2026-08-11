@@ -38,6 +38,8 @@ format:
 execute:
   echo: false
   warning: false
+prefer-html: true
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
