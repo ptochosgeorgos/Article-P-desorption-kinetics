@@ -10,11 +10,9 @@ library(dplyr)
 library(tidyr)
 library(readxl)
 library(ggpmisc)
-library(tikzDevice)
-options(tikzDefaultEngine = "luatex")
 knitr::opts_chunk$set(
   echo = TRUE, warning = FALSE, message = FALSE,
-  dev = "tikz", fig.align = "center"
+  fig.align = "center"
 )
 
 # 1. Load legacy kinetics and climate data
