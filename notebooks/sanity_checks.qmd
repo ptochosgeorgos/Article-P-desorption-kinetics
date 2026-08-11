@@ -217,7 +217,8 @@ D_pedo <- D_cum %>%
         cols = c(mean_Clay, mean_Silt, mean_pH, mean_Corg, mean_Prec, mean_Temp, mean_K, mean_Mg, mean_Lime),
         names_to = "Pedo_Driver",
         values_to = "Driver_Value"
-    )
+    ) %>%
+    mutate(Pedo_Driver = gsub("_", " ", Pedo_Driver))
 
 ggplot(D_pedo, aes(x = Driver_Value, y = Cumulated_P_Balance, color = Treatment)) +
     geom_point(alpha = 0.8, size = 2.5) +
