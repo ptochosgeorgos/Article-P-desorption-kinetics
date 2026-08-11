@@ -2,24 +2,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Marc Jerónimo Pérez y Ropero">
 <meta name="author" content="Frank Liebisch">
-<meta name="author" content="Emmanuel Frossard">
-<meta name="dcterms.date" content="2026-07-21">
+<meta name="dcterms.date" content="2026-08-11">
 
 <title>P-release kinetics as a predictor for P-availability in Swiss cropping systems – STYCS P-Kinetics Manuscript</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -63,10 +65,10 @@ div.csl-indent {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5bae98d893b4cf6bded746534a57bb19.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-04f38dd05d8273ce930b2d623817583d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -94,12 +96,11 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -190,26 +191,31 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#the-agronomic-dilemma-of-phosphorus" id="toc-the-agronomic-dilemma-of-phosphorus" class="nav-link" data-scroll-target="#the-agronomic-dilemma-of-phosphorus"><span class="header-section-number">1.1</span> The Agronomic Dilemma of Phosphorus</a></li>
   <li><a href="#conceptual-frameworks-vs.-operational-definitions" id="toc-conceptual-frameworks-vs.-operational-definitions" class="nav-link" data-scroll-target="#conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</a></li>
-  <li><a href="#the-thermodynamic-flaw-ionic-strength-and-activity" id="toc-the-thermodynamic-flaw-ionic-strength-and-activity" class="nav-link" data-scroll-target="#the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</a></li>
+  <li><a href="#the-asymmetry-of-measurement-thermodynamics-vs.-biology" id="toc-the-asymmetry-of-measurement-thermodynamics-vs.-biology" class="nav-link" data-scroll-target="#the-asymmetry-of-measurement-thermodynamics-vs.-biology"><span class="header-section-number">1.3</span> The Asymmetry of Measurement: Thermodynamics vs.&nbsp;Biology</a></li>
   <li><a href="#unifying-quantity-intensity-and-the-kinetic-bottleneck" id="toc-unifying-quantity-intensity-and-the-kinetic-bottleneck" class="nav-link" data-scroll-target="#unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</a></li>
   <li><a href="#thesis-objectives-and-analytical-strategy" id="toc-thesis-objectives-and-analytical-strategy" class="nav-link" data-scroll-target="#thesis-objectives-and-analytical-strategy"><span class="header-section-number">1.5</span> Thesis Objectives and Analytical Strategy</a></li>
   </ul></li>
   <li><a href="#sec-materials-and-methods" id="toc-sec-materials-and-methods" class="nav-link" data-scroll-target="#sec-materials-and-methods"><span class="header-section-number">2</span> Materials and Methods</a>
   <ul class="collapse">
-  <li><a href="#sec-the-long-term-phosphorus-fertilization-experiment" id="toc-sec-the-long-term-phosphorus-fertilization-experiment" class="nav-link" data-scroll-target="#sec-the-long-term-phosphorus-fertilization-experiment"><span class="header-section-number">2.1</span> The Long-Term Phosphorus Fertilization Experiment</a></li>
-  <li><a href="#sec-experimental-sites" id="toc-sec-experimental-sites" class="nav-link" data-scroll-target="#sec-experimental-sites"><span class="header-section-number">2.2</span> Experimental Sites</a></li>
-  <li><a href="#sec-phosphorus-desorption-kinetics" id="toc-sec-phosphorus-desorption-kinetics" class="nav-link" data-scroll-target="#sec-phosphorus-desorption-kinetics"><span class="header-section-number">2.3</span> Phosphorus Desorption Kinetics and Thermodynamics</a>
+  <li><a href="#sec-the-long-term-phosphorus-fertilization-experiment" id="toc-sec-the-long-term-phosphorus-fertilization-experiment" class="nav-link" data-scroll-target="#sec-the-long-term-phosphorus-fertilization-experiment"><span class="header-section-number">2.1</span> The Long-Term Phosphorus Fertilization Experiment</a>
   <ul class="collapse">
-  <li><a href="#sec-adapted-kinetic-protocol-for-this-study" id="toc-sec-adapted-kinetic-protocol-for-this-study" class="nav-link" data-scroll-target="#sec-adapted-kinetic-protocol-for-this-study"><span class="header-section-number">2.3.1</span> Adapted Kinetic Protocol for This Study</a></li>
-  <li><a href="#sec-thermodynamic-correction" id="toc-sec-thermodynamic-correction" class="nav-link" data-scroll-target="#sec-thermodynamic-correction"><span class="header-section-number">2.3.2</span> Thermodynamic Correction to Chemical Activity</a></li>
+  <li><a href="#crop-yield-phosphorus-uptake-and-balances" id="toc-crop-yield-phosphorus-uptake-and-balances" class="nav-link" data-scroll-target="#crop-yield-phosphorus-uptake-and-balances"><span class="header-section-number">2.1.1</span> Crop Yield, Phosphorus Uptake, and Balances</a></li>
   </ul></li>
-  <li><a href="#sec-statistical-analysis" id="toc-sec-statistical-analysis" class="nav-link" data-scroll-target="#sec-statistical-analysis"><span class="header-section-number">2.4</span> Statistical Analysis and Modeling</a>
+  <li><a href="#analytical-workflow-and-data-integration" id="toc-analytical-workflow-and-data-integration" class="nav-link" data-scroll-target="#analytical-workflow-and-data-integration"><span class="header-section-number">2.2</span> Analytical Workflow and Data Integration</a></li>
+  <li><a href="#sec-experimental-sites" id="toc-sec-experimental-sites" class="nav-link" data-scroll-target="#sec-experimental-sites"><span class="header-section-number">2.3</span> Experimental Sites</a></li>
+  <li><a href="#sec-phosphorus-desorption-kinetics" id="toc-sec-phosphorus-desorption-kinetics" class="nav-link" data-scroll-target="#sec-phosphorus-desorption-kinetics"><span class="header-section-number">2.4</span> Phosphorus Desorption Kinetics and Thermodynamics</a>
   <ul class="collapse">
-  <li><a href="#modeling-of-desorption-kinetics-and-the-activity-flux-j_0" id="toc-modeling-of-desorption-kinetics-and-the-activity-flux-j_0" class="nav-link" data-scroll-target="#modeling-of-desorption-kinetics-and-the-activity-flux-j_0"><span class="header-section-number">2.4.1</span> 1. Modeling of Desorption Kinetics and the Activity Flux (<span class="math inline">\(J_0\)</span>)</a></li>
-  <li><a href="#thermodynamic-qi-isotherms-and-buffering-capacity" id="toc-thermodynamic-qi-isotherms-and-buffering-capacity" class="nav-link" data-scroll-target="#thermodynamic-qi-isotherms-and-buffering-capacity"><span class="header-section-number">2.4.2</span> 2. Thermodynamic <span class="math inline">\(Q(I)\)</span> Isotherms and Buffering Capacity</a></li>
-  <li><a href="#agronomic-normalization-the-historical-baseline-strategy" id="toc-agronomic-normalization-the-historical-baseline-strategy" class="nav-link" data-scroll-target="#agronomic-normalization-the-historical-baseline-strategy"><span class="header-section-number">2.4.3</span> 3. Agronomic Normalization: The Historical Baseline Strategy</a></li>
-  <li><a href="#comparative-modeling-of-agronomic-outcomes" id="toc-comparative-modeling-of-agronomic-outcomes" class="nav-link" data-scroll-target="#comparative-modeling-of-agronomic-outcomes"><span class="header-section-number">2.4.4</span> 4. Comparative Modeling of Agronomic Outcomes</a></li>
-  <li><a href="#mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" id="toc-mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" class="nav-link" data-scroll-target="#mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification"><span class="header-section-number">2.4.5</span> 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)</a></li>
+  <li><a href="#sec-adapted-kinetic-protocol-for-this-study" id="toc-sec-adapted-kinetic-protocol-for-this-study" class="nav-link" data-scroll-target="#sec-adapted-kinetic-protocol-for-this-study"><span class="header-section-number">2.4.1</span> Adapted Kinetic Protocol for This Study</a></li>
+  <li><a href="#temporal-stability-of-amorphous-metal-oxides" id="toc-temporal-stability-of-amorphous-metal-oxides" class="nav-link" data-scroll-target="#temporal-stability-of-amorphous-metal-oxides"><span class="header-section-number">2.4.2</span> Temporal Stability of Amorphous Metal Oxides</a></li>
+  </ul></li>
+  <li><a href="#sec-statistical-analysis" id="toc-sec-statistical-analysis" class="nav-link" data-scroll-target="#sec-statistical-analysis"><span class="header-section-number">2.5</span> Statistical Analysis and Modeling</a>
+  <ul class="collapse">
+  <li><a href="#modeling-of-desorption-kinetics-and-the-desorption-velocity-v_0" id="toc-modeling-of-desorption-kinetics-and-the-desorption-velocity-v_0" class="nav-link" data-scroll-target="#modeling-of-desorption-kinetics-and-the-desorption-velocity-v_0"><span class="header-section-number">2.5.1</span> 1. Modeling of Desorption Kinetics and the Desorption Velocity (<span class="math inline">\(v_0\)</span>)</a></li>
+  <li><a href="#thermodynamic-qi-isotherms-and-buffering-capacity" id="toc-thermodynamic-qi-isotherms-and-buffering-capacity" class="nav-link" data-scroll-target="#thermodynamic-qi-isotherms-and-buffering-capacity"><span class="header-section-number">2.5.2</span> 2. Thermodynamic <span class="math inline">\(Q(I)\)</span> Isotherms and Buffering Capacity</a></li>
+  <li><a href="#agronomic-normalization-controlling-pedoclimatic-noise" id="toc-agronomic-normalization-controlling-pedoclimatic-noise" class="nav-link" data-scroll-target="#agronomic-normalization-controlling-pedoclimatic-noise"><span class="header-section-number">2.5.3</span> 3. Agronomic Normalization: Controlling Pedoclimatic Noise</a></li>
+  <li><a href="#comparative-modeling-of-agronomic-outcomes" id="toc-comparative-modeling-of-agronomic-outcomes" class="nav-link" data-scroll-target="#comparative-modeling-of-agronomic-outcomes"><span class="header-section-number">2.5.4</span> 4. Comparative Modeling of Agronomic Outcomes</a></li>
+  <li><a href="#mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" id="toc-mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" class="nav-link" data-scroll-target="#mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification"><span class="header-section-number">2.5.5</span> 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)</a></li>
+  <li><a href="#derivation-of-critical-thresholds-p_crit" id="toc-derivation-of-critical-thresholds-p_crit" class="nav-link" data-scroll-target="#derivation-of-critical-thresholds-p_crit"><span class="header-section-number">2.5.6</span> 6. Derivation of Critical Thresholds (<span class="math inline">\(P_{crit}\)</span>)</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">3</span> References</a></li>
@@ -220,7 +226,7 @@ window.Quarto = {
   <li><a href="#a.3.-implementation-of-thermodynamic-correction" id="toc-a.3.-implementation-of-thermodynamic-correction" class="nav-link" data-scroll-target="#a.3.-implementation-of-thermodynamic-correction"><span class="header-section-number">4.3</span> A.3. Implementation of Thermodynamic Correction</a></li>
   </ul></li>
   </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -233,14 +239,14 @@ window.Quarto = {
 
 <div class="quarto-title-meta-author">
   <div class="quarto-title-meta-heading">Authors</div>
-  <div class="quarto-title-meta-heading">Affiliations</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
   
     <div class="quarto-title-meta-contents">
     <p class="author">Marc Jerónimo Pérez y Ropero </p>
   </div>
   <div class="quarto-title-meta-contents">
         <p class="affiliation">
-            ETH Zurich, Institute of Agricultural Sciences
+            Agroscope Reckenholz, Water Protection and Substance Flows
           </p>
       </div>
     <div class="quarto-title-meta-contents">
@@ -251,14 +257,6 @@ window.Quarto = {
             Agroscope Reckenholz, Water Protection and Substance Flows
           </p>
       </div>
-    <div class="quarto-title-meta-contents">
-    <p class="author">Emmanuel Frossard </p>
-  </div>
-  <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            ETH Zurich, Institute of Agricultural Sciences
-          </p>
-      </div>
   </div>
 
 <div class="quarto-title-meta">
@@ -267,7 +265,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 21, 2026</p>
+      <p class="date">August 11, 2026</p>
     </div>
   </div>
   
@@ -290,23 +288,26 @@ window.Quarto = {
 <section id="the-agronomic-dilemma-of-phosphorus" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="the-agronomic-dilemma-of-phosphorus"><span class="header-section-number">1.1</span> The Agronomic Dilemma of Phosphorus</h2>
 <p>Phosphorus (P) is an essential macronutrient for all life, yet its management in agricultural systems presents a significant challenge. In the soil solution, P exists predominantly as highly reactive orthophosphate anions (<span class="math inline">\(HPO_4^{2-}\)</span> or <span class="math inline">\(H_2PO_4^{-}\)</span>). These dissolved species are rapidly immobilized—either adsorbed onto the surfaces of clays and metal oxides or precipitated with cations like calcium, iron, and aluminum to form minerals of low solubility <span class="citation" data-cites="Brady2016Soils Sposito2008Chemistry">(<a href="#ref-Brady2016Soils" role="doc-biblioref">Brady &amp; Weil, 2016</a>; <a href="#ref-Sposito2008Chemistry" role="doc-biblioref">Sposito, 2008</a>)</span>. Consequently, the total soil P stock is vast, but the minute fraction dissolved in the soil solution—the only form directly available to plant roots—is highly transient.</p>
+<p>To manage this complex nutrient, European agricultural systems rely heavily on empirical soil tests to generate fertilizer recommendations. As detailed by <span class="citation" data-cites="jordan-meilleOverviewFertilizerPRecommendations2012">Jordan-Meille et al. (<a href="#ref-jordan-meilleOverviewFertilizerPRecommendations2012" role="doc-biblioref">2012</a>)</span> and later expanded by <span class="citation" data-cites="steinfurthThresholdsTargetPhosphorus2022"><span class="nocase">Steinfurth et al.</span> (<a href="#ref-steinfurthThresholdsTargetPhosphorus2022" role="doc-biblioref">2022</a>)</span>, these systems generally follow a three-step procedure: soil testing, calibration, and recommendation. Central to this process is the “Class Concept” (Klassenkonzept), where raw soil test values are calibrated into discrete P-fertility categories (e.g., Very Low, Target, Excessive). In many European countries, including Switzerland and France, these empirical thresholds are further modified by secondary soil parameters such as clay content and pH.</p>
+<p>However, despite these sophisticated calibration matrices, inter-laboratory comparisons reveal massive contradictions, with recommended fertilizer doses for the exact same soil varying by up to 300% across Europe <span class="citation" data-cites="jordan-meilleOverviewFertilizerPRecommendations2012">(<a href="#ref-jordan-meilleOverviewFertilizerPRecommendations2012" role="doc-biblioref">Jordan-Meille et al., 2012</a>)</span>. This fundamental instability arises because standard chemical extractants largely ignore the mechanistic processes governing plant P uptake.</p>
 </section>
 <section id="conceptual-frameworks-vs.-operational-definitions" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="conceptual-frameworks-vs.-operational-definitions"><span class="header-section-number">1.2</span> Conceptual Frameworks vs.&nbsp;Operational Definitions</h2>
 <p>To conceptualize plant P availability, soil science relies on three fundamental thermodynamic and mass-balance parameters <span class="citation" data-cites="Frossard2000Processes">(<a href="#ref-Frossard2000Processes" role="doc-biblioref">Frossard et al., 2000</a>)</span>: 1. <strong>P-Intensity (</strong><span class="math inline">\(I\)</span>): The thermodynamic energy state, or chemical activity, of P in the soil solution at any given moment. 2. <strong>P-Quantity or Capacity (</strong><span class="math inline">\(Q\)</span>): The physical mass of solid-phase P that is readily desorbable and can replenish the soil solution. 3. <strong>Phosphorus Buffering Capacity (PBC):</strong> The resistance of the soil to changes in P-Intensity, mathematically represented as the derivative of Quantity with respect to Intensity (<span class="math inline">\(dQ / dI\)</span>).</p>
-<p>While these concepts are theoretically robust, measuring them in natural soils is methodologically challenging. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
-<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref">Olsen et al., 1954</a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">FAL &amp; FAW, 1996</a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): Weak extractions using distilled or <span class="math inline">\(CO_2\)</span>-saturated water exert minimal chemical force, attempting to extract readily soluble forms without fundamentally altering the native soil matrix.</p>
+<p>While these concepts are theoretically robust, measuring them in natural soils is methodologically challenging. Isotopic Exchange Kinetics (IEK) perfectly capture these dynamics by tracing the true exchangeable pool without altering the chemical equilibrium <span class="citation" data-cites="fardeau1996dynamics galletEffectPhosphateFertilization2003">(<a href="#ref-fardeau1996dynamics" role="doc-biblioref">Fardeau, 1996</a>; <a href="#ref-galletEffectPhosphateFertilization2003" role="doc-biblioref">Gallet et al., 2003</a>)</span>. However, the requirement for radioisotopes renders IEK unsuitable for routine agronomic testing. In practice, standard agronomic soil tests do not measure absolute thermodynamic states; rather, they rely on <strong>operational definitions</strong> that often misrepresent the true pool of available P <span class="citation" data-cites="demariaExchangeabilityPhosphateExtracted2005">(<a href="#ref-demariaExchangeabilityPhosphateExtracted2005" role="doc-biblioref">Demaria et al., 2005</a>)</span>. A soil test value is strictly defined by the specific chemical extractant used, the extraction time, and the soil-to-solution ratio.</p>
+<p>Different standard methods target different physicochemical pools of P by employing distinct extraction mechanisms: - <strong>Olsen P (</strong><span class="math inline">\(NaHCO_3\)</span>, pH 8.5): Measures desorbable P. The high concentration of bicarbonate ions outcompetes orthophosphate for adsorption sites on soil surfaces <span class="citation" data-cites="Olsen1954">(<a href="#ref-Olsen1954" role="doc-biblioref">Olsen et al., 1954</a>)</span>. - <strong>P-AAE10 (Ammonium Acetate EDTA, pH 4.65):</strong> A strong extractant that attacks both sorbed and precipitated P forms. EDTA chelates background cations, actively dissolving apatites, while the acetate buffer facilitates desorption <span class="citation" data-cites="FAL1996Methodenbuch">(<a href="#ref-FAL1996Methodenbuch" role="doc-biblioref">Forschungsanstalt für Agrarökologie und Landbau (FAL), 1996</a>)</span>. - <strong>Water Extractions (</strong><span class="math inline">\(P_{H_2O}\)</span> and <span class="math inline">\(P_{CO_2}\)</span>): While lacking aggressive chelators, distilled or <span class="math inline">\(CO_2\)</span>-saturated water acts as an incredibly strong thermodynamic sink. By plunging the soil into a massively dilute environment, it forcefully drives dissolution and desorption to re-establish equilibrium. Consequently, the actual extracting power of these methods is fiercely modulated by the physical extraction time and, crucially, the soil-to-extractant ratio.</p>
 </section>
-<section id="the-thermodynamic-flaw-ionic-strength-and-activity" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="the-thermodynamic-flaw-ionic-strength-and-activity"><span class="header-section-number">1.3</span> The Thermodynamic Flaw: Ionic Strength and Activity</h2>
-<p>The reliance on operational definitions introduces an analytical limitation when interpreting soil tests, fundamentally tied to the principles of physical chemistry and plant physiology. Plant roots acquire P primarily via high-affinity transporter proteins (e.g., the PHT1 family). The binding kinetics of these transporters are governed by the true thermodynamic driving force of the substrate: its <strong>chemical activity (</strong><span class="math inline">\(a\)</span>), not its total stoichiometric concentration (<span class="math inline">\(c\)</span>).</p>
-<p>In the native soil solution, phosphate anions are electrostatically shielded by a cloud of background ions (<span class="math inline">\(Ca^{2+}, Mg^{2+}, K^+, NO_3^-, SO_4^{2-}\)</span>). This native ionic strength (<span class="math inline">\(I\)</span>) physically reduces the effective activity of the phosphate. The magnitude of this shielding is defined by the activity coefficient (<span class="math inline">\(\gamma\)</span>), where true chemical activity is <span class="math inline">\(a = c \cdot \gamma\)</span>.</p>
-<p>For strong extractants like Olsen or P-AAE10, the extractant solution has an overwhelmingly high ionic strength (e.g., <span class="math inline">\(I \approx 0.5 \text{ M}\)</span> for Olsen). This artificial salt load overwhelms the native ionic strength of the soil. Consequently, while these methods successfully quantify the physical mass of phosphorus (<span class="math inline">\(Q\)</span>), they alter the natural chemical environment, providing no information regarding the true thermodynamic Intensity (<span class="math inline">\(I\)</span>) perceived by the root.</p>
-<p>Conversely, while weak water extractions successfully preserve the native soil matrix, reading their variable activity against a standard <span class="math inline">\(I \approx 0\)</span> calibration curve renders the values mathematically incomparable across different pedoclimatic sites. For example, in heavily fertilized Swiss agricultural soils (such as the long-term STYCS 167% P-treatments), the dissolution of accumulated amendments can elevate pore water ionic strength to <span class="math inline">\(0.02 \text{ M}\)</span>. At a neutral pH, a large portion of P exists as the divalent <span class="math inline">\(HPO_4^{2-}\)</span> ion. Applying the Davies equation to this ionic strength yields an activity coefficient (<span class="math inline">\(\gamma\)</span>) of approximately <span class="math inline">\(0.58\)</span>. Therefore, over 40% of the chemically extracted mass is thermodynamically inactive to the root. To resolve this, raw stoichiometric concentrations derived from water extractions must be mathematically corrected via the Davies equation to yield true thermodynamic activity.</p>
+<section id="the-asymmetry-of-measurement-thermodynamics-vs.-biology" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="the-asymmetry-of-measurement-thermodynamics-vs.-biology"><span class="header-section-number">1.3</span> The Asymmetry of Measurement: Thermodynamics vs.&nbsp;Biology</h2>
+<p>Relying on operational definitions introduces severe analytical limitations, but a profound epistemological asymmetry exists between the chemical measurements of the soil and the biological measurements of the plant.</p>
+<p>On the soil side, thermodynamic measurements can be mechanistically clarified. While empirical tests like <span class="math inline">\(P_{AAE10}\)</span> suffer from clear artifacts (such as the physical saturation of the EDTA chelator in heavy clays), we can rationally address these limitations. We can convert stoichiometric concentrations to corrected chemical activities (<span class="math inline">\(\gamma\)</span>) using Davies or Pitzer equations, isolate kinetic bottlenecks, and model fundamental isotherms. We have rational, physical control over the soil matrix.</p>
+<p>Conversely, biological response variables are inherently messy, abstract, and riddled with physiological ambiguity. Agronomic models attempt to use plant tissue concentrations (<span class="math inline">\(C_P\)</span>) or total Phosphorus Uptake (<span class="math inline">\(P_{uptake}\)</span>) as response variables, but these are not absolute physical truths. They are abstractions derived from indirect measurements of mass and concentration.</p>
+<p>Furthermore, these biological metrics routinely collapse in the field due to physiological phenomena like the <strong>Piper-Steenbjerg effect</strong> (carbon dilution) <span class="citation" data-cites="hirteYieldResponseSoil2021">(<a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">Hirte et al., 2021</a>)</span>. When a severely P-starved plant finally receives Phosphorus, it rapidly generates new biomass. This burst of growth paradoxically <em>dilutes</em> the tissue <span class="math inline">\(C_P\)</span> concentration, causing the measured concentration to drop even though the total Phosphorus mass in the plant increased. This immediately forces an arbitrary decision: which specific plant tissue should we optimize to represent the whole organism?</p>
+<p>Finally, even if a perfect thermodynamic soil model is constructed, its predictive power in field trials remains constantly threatened by overarching pedoclimatic noise. Much like the Athenians praying to Zeus for rain in the <em>Meditations</em> of Marcus Aurelius, agronomic field trials are ultimately subservient to variables beyond human control. Temperature, precipitation, and soil moisture exert effect estimates that vastly overpower subtle chemical variations. Therefore, while we can mathematically anchor our thermodynamic extractions, predicting biological field outcomes requires accepting a fundamentally chaotic and uncertain reality.</p>
 </section>
 <section id="unifying-quantity-intensity-and-the-kinetic-bottleneck" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="unifying-quantity-intensity-and-the-kinetic-bottleneck"><span class="header-section-number">1.4</span> Unifying Quantity, Intensity, and the Kinetic Bottleneck</h2>
-<p>Once thermodynamic Intensity is correctly calculated, it can be paired with a standard mass extraction (<span class="math inline">\(Q\)</span>, such as <span class="math inline">\(P_{AAE10}\)</span>) to construct a purely thermodynamic <span class="math inline">\(Q(I)\)</span> framework. By parameterizing this relationship using a Freundlich isotherm (<span class="math inline">\(Q = K_f \cdot I^{1/n}\)</span>), the true Phosphorus Buffering Capacity (PBC) can be mathematically deduced as the continuous first derivative (<span class="math inline">\(\frac{dQ}{dI}\)</span>).</p>
+<p>By pairing an Intensity measurement with a mass extraction (<span class="math inline">\(Q\)</span>, such as <span class="math inline">\(P_{AAE10}\)</span>), we can construct a generalized <span class="math inline">\(Q(I)\)</span> framework. We parameterize this relationship using a Freundlich isotherm (<span class="math inline">\(Q = K_f \cdot I^{1/n}\)</span>) not because it yields a “true” universal constant, but because its log-log linearization elegantly isolates the baseline capacity (<span class="math inline">\(K_f\)</span>) and the saturation breakdown (<span class="math inline">\(n\)</span>). This thermodynamic abstraction liberates the analysis from the arbitrary, method-specific bounds of operational extractants (e.g., AAE10 vs.&nbsp;CAL vs.&nbsp;Olsen). It translates disparate empirical measurements into a common, transparent language where the Phosphorus Buffering Capacity (PBC) can be derived as the continuous first derivative (<span class="math inline">\(\frac{dQ}{dI}\)</span>) and meaningfully compared across borders.</p>
 <p>However, even with a correct thermodynamic understanding of <span class="math inline">\(Q\)</span> and <span class="math inline">\(I\)</span>, plant uptake remains fundamentally limited by time. Standard conceptual models assume instantaneous solid-solution equilibrium. In reality, desorption is a rate-limiting kinetic bottleneck <span class="citation" data-cites="Nye2000Solute flossmannExtractionMethodCharacterizing1982">(<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">Flossmann &amp; Richter, 1982</a>; <a href="#ref-Nye2000Solute" role="doc-biblioref">Nye &amp; Tinker, 2000</a>)</span>. When a root depletes the rhizosphere, the soil cannot always resupply phosphate fast enough.</p>
 <p>To address this, we define a dynamic predictor: the <strong>Initial Activity Flux (</strong><span class="math inline">\(J_0\)</span>). This flux shifts the focus from static mass to supply rate by multiplying the first-order desorption rate constant (<span class="math inline">\(k\)</span>) by the maximum thermodynamic activity (<span class="math inline">\(a_{max}\)</span>): <span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
 <p><a href="#tbl-terminology" class="quarto-xref">Table&nbsp;1</a> maps this transition from classic, operationally defined static tests to the proposed thermodynamic and kinetic parameters.</p>
@@ -334,7 +335,7 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Theoretical Concept (<span class="citation" data-cites="Frossard2000Processes">Frossard et al. (<a href="#ref-Frossard2000Processes" role="doc-biblioref">2000</a>)</span>)</strong></td>
-<td style="text-align: left;">Chemical activity of P in the soil solution</td>
+<td style="text-align: left;">Concentration of P in the soil solution</td>
 <td style="text-align: left;">Pool of solid-phase P that can replenish the solution</td>
 <td style="text-align: left;">Rate of P transfer from the solid to the liquid phase</td>
 </tr>
@@ -345,10 +346,10 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 <td style="text-align: left;"><em>Not Measured</em></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Dynamic / Thermodynamic Proxy (This Study)</strong></td>
-<td style="text-align: left;">Maximum Thermodynamic Activity (<span class="math inline">\(a_{max}\)</span>)</td>
+<td style="text-align: left;"><strong>Dynamic / Kinetic Proxy (This Study)</strong></td>
+<td style="text-align: left;">Raw Intensity (<span class="math inline">\(P_{CO_2}\)</span>)</td>
 <td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
-<td style="text-align: left;">Initial Activity Flux (<span class="math inline">\(J_0 = k \cdot a_{max}\)</span>)</td>
+<td style="text-align: left;">Dynamic Desorption Velocity (<span class="math inline">\(v_0 = k \cdot P_{CO_2}\)</span>)</td>
 </tr>
 </tbody>
 </table>
@@ -359,7 +360,7 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><embed src="index_files/figure-html/unnamed-chunk-1-1.pdf" class="img-fluid" width="672"></p>
 <figcaption>Conceptual model of the rhizosphere phosphorus cycle.</figcaption>
 </figure>
 </div>
@@ -368,75 +369,13 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 </section>
 <section id="thesis-objectives-and-analytical-strategy" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="thesis-objectives-and-analytical-strategy"><span class="header-section-number">1.5</span> Thesis Objectives and Analytical Strategy</h2>
-<p>This thesis hypothesizes that integrating thermodynamic activity and desorption kinetics provides a more comprehensive mechanistic framework for P-management compared to standard empirical testing. Using soils from the long-term Swiss agricultural experiment STYCS, this study aims to validate this framework through the following objectives:</p>
+<p>This thesis hypothesizes that integrating thermodynamic activity and desorption kinetics provides a more comprehensive mechanistic framework for P-management compared to standard empirical testing. Specifically, it directly answers the call by <span class="citation" data-cites="jordan-meilleOverviewFertilizerPRecommendations2012">Jordan-Meille et al. (<a href="#ref-jordan-meilleOverviewFertilizerPRecommendations2012" role="doc-biblioref">2012</a>)</span> to replace empirical extraction classes with mechanistic sorption-desorption models.</p>
+<p>Using soils from the long-term Swiss agricultural experiment STYCS, this study aims to validate this framework through the following core objectives and research questions:</p>
 <ol type="1">
-<li><strong>Thermodynamic Framework Formulation:</strong> Establish thermodynamic <span class="math inline">\(Q(I)\)</span> isotherms across highly diverse pedoclimatic sites to calculate the true PBC, demonstrating how long-term cumulative P-balances shift the soil’s physical chemistry.</li>
-<li><strong>Agronomic Prediction:</strong> Statistically evaluate the predictive power of the kinetic Activity Flux (<span class="math inline">\(J_0\)</span>) against relative crop yield and P-uptake. To isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). It is hypothesized that the thermodynamically corrected <span class="math inline">\(J_0\)</span> will outperform standard static extractions.</li>
+<li><strong>Thermodynamic Framework Formulation:</strong> Establish generalized <span class="math inline">\(Q(I)\)</span> isotherms across highly diverse pedoclimatic sites to abstract the buffering capacity into universally comparable parameters (<span class="math inline">\(K_f\)</span> and <span class="math inline">\(n\)</span>). <em>Research Question:</em> Is the Swiss GRUD framework and its analytical proxies (<span class="math inline">\(P_{CO_2}\)</span>, <span class="math inline">\(P_{AAE10}\)</span>) compliant with the broader European class concept presented by <span class="citation" data-cites="jordan-meilleOverviewFertilizerPRecommendations2012">Jordan-Meille et al. (<a href="#ref-jordan-meilleOverviewFertilizerPRecommendations2012" role="doc-biblioref">2012</a>)</span>, and do these empirical classes map meaningfully onto the underlying thermodynamic abstractions of physical desorption kinetics?</li>
+<li><strong>Agronomic Prediction:</strong> Statistically evaluate the predictive power of the kinetic Activity Flux (<span class="math inline">\(J_0\)</span>) against relative crop yield and P-uptake. To isolate the chemical P-limitation from overarching climatic noise, agronomic outcomes will be normalized against a historical biological baseline (the historical maximum yield of non-limiting P treatments for specific site-crop combinations). <em>Hypothesis:</em> The thermodynamically corrected <span class="math inline">\(J_0\)</span> will significantly outperform standard static extractions.</li>
 <li><strong>Mechanistic Validation:</strong> Propose a modified conceptual framework for radial transport to mathematically illustrate that the desorption rate acts as the primary limiting bottleneck restricting P-availability in the rhizosphere.</li>
 </ol>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph TD
-    %% Styling definitions
-    classDef intro fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef lab fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef thermo fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-    classDef uptake fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    classDef conc fill:#ffebee,stroke:#d32f2f,stroke-width:2px;
-
-    %% Phase 1: Introduction
-    subgraph Phase 1: Introduction &amp; Research Questions
-        A[Established Practice:&lt;br&gt;Static GRUD Pools P_CO2 &amp; P_AAE10]:::intro
-        B[Chemical Reality:&lt;br&gt;Dynamic Plant P-Supply]:::intro
-        A --&gt; C{Research Questions}:::intro
-        B --&gt; C
-    end
-
-    %% Phase 2: Lab Modeling
-    subgraph Phase 2: Laboratory Derivations
-        C --&gt; D[Quantity-Intensity Q/I Modeling]:::lab
-        C --&gt; E[Desorption Kinetics I/t Modeling]:::lab
-        D --&gt; F(Physical Buffer Power: b):::lab
-        E --&gt; G(Desorption Rate Constant: k):::lab
-    end
-
-    %% Phase 3: The Crossing
-    subgraph Phase 3: The Thermodynamic Crossing
-        F --&gt; H{Davies Equation Correction}:::thermo
-        G --&gt; H
-        H --&gt; I[True Thermodynamic Activities]:::thermo
-        H --&gt; J[Raw Empirical Concentrations]:::thermo
-    end
-
-    %% Phase 4 &amp; 5: Field Scaling and Uptake
-    subgraph Phase 4 &amp; 5: Field Scaling &amp; Plant Uptake Showdown
-        I --&gt; K[Agronomic PTF 1990-2022]:::uptake
-        K --&gt; L(Field Inverse Buffer Power: 1/b):::uptake
-        
-        L --&gt; M
-        G --&gt; M
-        J --&gt; M
-        
-        M((Non-Linear Mixed Models&lt;br&gt;Plant P-Uptake)):::uptake
-        
-        M --&gt; N[Model A: Instant Pool P_CO2&lt;br&gt;Limited purely by 1/b]:::uptake
-        M --&gt; O[Model B: Bound Pool P_AAE10&lt;br&gt;Heavily bottlenecked by k]:::uptake
-    end
-
-    %% Phase 6: Conclusion
-    subgraph Phase 6: Agronomic Implication
-        N --&gt; P([Conclusion:&lt;br&gt;The GRUD must incorporate kinetic k&lt;br&gt;to accurately predict long-term P-supply]):::conc
-        O --&gt; P
-    end
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
 <div style="page-break-after: always;"></div>
 </section>
 </section>
@@ -445,10 +384,31 @@ Table&nbsp;1: Conceptual mapping of fundamental phosphorus availability factors 
 <section id="sec-the-long-term-phosphorus-fertilization-experiment" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="sec-the-long-term-phosphorus-fertilization-experiment"><span class="header-section-number">2.1</span> The Long-Term Phosphorus Fertilization Experiment</h2>
 <p>The soil samples for this thesis originate from a set of six long-term field trials in Switzerland, established by Agroscope between 1989 and 1992. The primary objective of these experiments was to validate and re-evaluate Swiss phosphorus (P) fertilization guidelines by assessing long-term crop yield responses to varying P inputs across different pedoclimatic conditions. A detailed description of the experimental design and site characteristics can be found in <span class="citation" data-cites="hirteYieldResponseSoil2021">Hirte et al. (<a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">2021</a>)</span>.</p>
-<p>The experiment was set up as a <strong>completely randomized block design</strong> with four field replications at each site. The core of the experiment consists of six fixed-plot treatments representing different P fertilization levels, which were applied annually as superphosphate before tillage and sowing. These levels were based on percentages of the officially recommended P inputs: 0% (Zero), 33% (Deficit), 67% (Reduced), 100% (Norm), 133% (Elevated), and 167% (Surplus).</p>
+<p>The experiment was set up as a <strong>completely randomized block design</strong> with four field replications at each site. The core of the experiment consists of six fixed-plot treatments representing different P fertilization levels. These treatments were applied annually as triple superphosphate (TSP) before tillage and sowing. The application rates were strictly calibrated as percentages of the site- and crop-specific officially recommended P inputs (the Swiss GRUD norm): 0% (Zero), 33% (Deficit), 67% (Reduced), 100% (Norm), 133% (Elevated), and 167% (Surplus). This rigorous gradient ensures a massive divergence in cumulative P-balances across the 30-year timeframe, forcing distinct pedological responses.</p>
+<p>Crucially, all other macronutrients—including Nitrogen (N), Potassium (K), and Magnesium (Mg)—were applied uniformly across all plots to prevent secondary yield limitations. However, it must be noted that these “non-limiting” applications were structurally calibrated to exactly 100% of their respective empirical Swiss GRUD recommendations, derived from the same matrix of operational soil tests and crop removal estimates criticized in this study. Consequently, the assumption that secondary nutrients were strictly non-limiting throughout the 30-year trial relies entirely on the epistemological validity of the empirical GRUD framework itself—a paradox that underscores the urgent need to transition toward mechanistic, site-specific nutrient modeling.</p>
+<section id="crop-yield-phosphorus-uptake-and-balances" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="crop-yield-phosphorus-uptake-and-balances"><span class="header-section-number">2.1.1</span> Crop Yield, Phosphorus Uptake, and Balances</h3>
+<p>While the fundamental experimental design and baseline data collection follow the protocols described in <span class="citation" data-cites="hirteYieldResponseSoil2021">Hirte et al. (<a href="#ref-hirteYieldResponseSoil2021" role="doc-biblioref">2021</a>)</span>, the specific processing of the agronomic variables for this study diverges to explicitly isolate the chemical P-limitation.</p>
+<p>Crop yields were measured annually at harvest. Total fresh biomass was recorded, and representative subsamples were oven-dried to determine the absolute dry mass yield. Plant tissue phosphorus concentration (<span class="math inline">\(C_P\)</span>) was subsequently quantified from these dried subsamples. The total phosphorus uptake (<span class="math inline">\(P_{uptake}\)</span>) for each plot was calculated stoichiometrically as the product of the dry mass yield and the measured <span class="math inline">\(C_P\)</span>.</p>
+<p>To accurately quantify the historical legacy of the different fertilization treatments, the <strong>Cumulative P Balance (<span class="math inline">\(Cum\_P\_bal\)</span>)</strong> was calculated for each individual plot. <span class="math inline">\(Cum\_P\_bal\)</span> is defined as the net sum of all P inputs (from the annual TSP fertilization) minus all P outputs (specifically, the P removed from the field via the harvested crop biomass) accumulated over the entire 30-year duration of the trial. This provides a direct, continuous metric of the anthropogenic P surplus or deficit, which drives the underlying thermodynamic buffering systems.</p>
 </section>
-<section id="sec-experimental-sites" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="sec-experimental-sites"><span class="header-section-number">2.2</span> Experimental Sites</h2>
+</section>
+<section id="analytical-workflow-and-data-integration" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="analytical-workflow-and-data-integration"><span class="header-section-number">2.2</span> Analytical Workflow and Data Integration</h2>
+<p>To answer the research questions, the methodology is structured into three highly synchronized, modular steps mapping the raw data to the final agronomic predictions:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="index_files/figure-html/unnamed-chunk-2-1.pdf" class="img-fluid" width="672"></p>
+<figcaption>Modular workflow synchronizing data sources, extraction methods, and mathematical models.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-experimental-sites" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="sec-experimental-sites"><span class="header-section-number">2.3</span> Experimental Sites</h2>
 <p>The six experimental sites are located in the main crop-growing regions of Switzerland: <strong>Rümlang-Altwi (ALT)</strong>, <strong>Cadenazzo (CAD)</strong>, <strong>Ellighausen (ELL)</strong>, <strong>Grabs (GRA)</strong>, <strong>Oensingen (OEN)</strong>, and <strong>Zurich-Reckenholz (REC)</strong>. The key soil properties are summarized below.</p>
 <div class="cell">
 <div id="tbl-sites-corrected" class="cell quarto-float quarto-figure quarto-figure-center anchored">
@@ -460,18 +420,20 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <div class="cell-output-display">
 <table class="cell caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 7%">
-<col style="width: 30%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 23%">
-<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 27%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 21%">
+<col style="width: 11%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Site</th>
 <th style="text-align: left;">Soil Type (WRB)</th>
 <th style="text-align: right;">Clay (%)</th>
+<th style="text-align: right;">Silt (%)</th>
 <th style="text-align: right;">Sand (%)</th>
 <th style="text-align: right;">Organic C (g/kg)</th>
 <th style="text-align: right;">pH (H2O)</th>
@@ -482,6 +444,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <td style="text-align: left;">ALT</td>
 <td style="text-align: left;">Calcaric Cambisol</td>
 <td style="text-align: right;">22</td>
+<td style="text-align: right;">30</td>
 <td style="text-align: right;">48</td>
 <td style="text-align: right;">21</td>
 <td style="text-align: right;">7.9</td>
@@ -490,6 +453,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <td style="text-align: left;">CAD</td>
 <td style="text-align: left;">Eutric Fluvisol</td>
 <td style="text-align: right;">8</td>
+<td style="text-align: right;">52</td>
 <td style="text-align: right;">40</td>
 <td style="text-align: right;">14</td>
 <td style="text-align: right;">6.3</td>
@@ -498,6 +462,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <td style="text-align: left;">ELL</td>
 <td style="text-align: left;">Eutric Cambisol</td>
 <td style="text-align: right;">33</td>
+<td style="text-align: right;">36</td>
 <td style="text-align: right;">31</td>
 <td style="text-align: right;">23</td>
 <td style="text-align: right;">6.6</td>
@@ -506,6 +471,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <td style="text-align: left;">GRA</td>
 <td style="text-align: left;">Calcaric Fluvisol</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">49</td>
 <td style="text-align: right;">34</td>
 <td style="text-align: right;">16</td>
 <td style="text-align: right;">8.3</td>
@@ -514,6 +480,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <td style="text-align: left;">OEN</td>
 <td style="text-align: left;">Gleyic-calc. Cambisol</td>
 <td style="text-align: right;">37</td>
+<td style="text-align: right;">31</td>
 <td style="text-align: right;">32</td>
 <td style="text-align: right;">24</td>
 <td style="text-align: right;">7.1</td>
@@ -522,6 +489,7 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 <td style="text-align: left;">REC</td>
 <td style="text-align: left;">Eutric Gleysol</td>
 <td style="text-align: right;">39</td>
+<td style="text-align: right;">36</td>
 <td style="text-align: right;">25</td>
 <td style="text-align: right;">27</td>
 <td style="text-align: right;">7.4</td>
@@ -535,131 +503,196 @@ Table&nbsp;2: Soil characteristics of the six long-term experimental sites. Data
 </div>
 <p>Soil samples for this thesis were collected in the year 2022 from the topsoil layer (0-20 cm).</p>
 </section>
-<section id="sec-phosphorus-desorption-kinetics" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="sec-phosphorus-desorption-kinetics"><span class="header-section-number">2.3</span> Phosphorus Desorption Kinetics and Thermodynamics</h2>
-<p>The laboratory extraction of phosphorus was based on the sequential kinetic principles established by <span class="citation" data-cites="flossmannExtractionMethodCharacterizing1982">Flossmann &amp; Richter (<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">1982</a>)</span>, subsequently modified to capture high-resolution temporal kinetics and corrected to reflect true thermodynamic activity.</p>
-<section id="sec-adapted-kinetic-protocol-for-this-study" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="sec-adapted-kinetic-protocol-for-this-study"><span class="header-section-number">2.3.1</span> Adapted Kinetic Protocol for This Study</h3>
+<section id="sec-phosphorus-desorption-kinetics" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="sec-phosphorus-desorption-kinetics"><span class="header-section-number">2.4</span> Phosphorus Desorption Kinetics and Thermodynamics</h2>
+<p>The laboratory extraction of phosphorus was based on the sequential kinetic principles established by <span class="citation" data-cites="flossmannExtractionMethodCharacterizing1982">Flossmann &amp; Richter (<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">1982</a>)</span>, subsequently modified to capture high-resolution temporal kinetics and corrected to reflect thermodynamic activity.</p>
+<section id="sec-adapted-kinetic-protocol-for-this-study" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="sec-adapted-kinetic-protocol-for-this-study"><span class="header-section-number">2.4.1</span> Adapted Kinetic Protocol for This Study</h3>
 <p>To capture the desorption process with high temporal resolution while preserving the native soil matrix, a modified water-extraction protocol was employed:</p>
 <ol type="1">
-<li><strong>Pre-washing to Remove Soluble P</strong>: 10 g of air-dried soil was suspended in 200 ml of deionized water and shaken for 60 minutes at 120 Hz. The suspension was centrifuged for 15 minutes at 4000 rpm, and the supernatant containing the readily soluble P was discarded.</li>
-<li><strong>Kinetic Extraction</strong>: The remaining soil pellet was resuspended in 200 ml of fresh deionized water. The suspension was shaken continuously, and subsamples were taken at eight time points: 2, 4, 10, 15, 20, 30, 45, and 60 minutes.</li>
-<li><strong>Analysis</strong>: Subsamples were immediately filtered, and the stoichiometric concentration of orthophosphate (<span class="math inline">\(c_i\)</span>) was determined colorimetrically using the malachite green method <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref">Van Veldhoven &amp; Mannaerts, 1987</a>)</span>.</li>
+<li><strong>Pre-washing to Remove Initial Soluble P</strong>: 10 g of air-dried soil (sieved to &lt; 2 mm) was suspended in 200 ml of deionized water and horizontally shaken for 60 minutes at 120 rpm. The suspension was centrifuged for 15 minutes at 4000 rpm, and the supernatant containing the readily soluble P was completely decanted. The P concentration of this discarded fraction was not quantified in this study, as the primary objective was to reset the soil solution to <span class="math inline">\(P \approx 0\)</span> to isolate the subsequent solid-phase desorption kinetics. No soil was lost during decantation due to the highly compact nature of the pellet.</li>
+<li><strong>Kinetic Extraction</strong>: Because the remaining saturated soil pellet was highly compacted from centrifugation, achieving full resuspension required rigorous shaking, meaning the reactive surface area was not perfectly constant at the exact onset of the experiment. The pellet was rapidly resuspended in 200 ml of fresh deionized water to initiate the desorption process. The suspension was shaken continuously. To capture the nonlinear initial release phase, 2 ml subsamples were drawn at precisely eight time points: 2, 4, 10, 15, 20, 30, 45, and 60 minutes.</li>
+<li><strong>Analysis</strong>: Each subsample was immediately filtered through a 0.2 <span class="math inline">\(\mu\)</span>m membrane filter to halt desorption, and the stoichiometric concentration of orthophosphate (<span class="math inline">\(c(t)\)</span>) was determined colorimetrically using the malachite green method <span class="citation" data-cites="VanVeldhoven1987Malachite">(<a href="#ref-VanVeldhoven1987Malachite" role="doc-biblioref">Van Veldhoven &amp; Mannaerts, 1987</a>)</span>.</li>
 </ol>
 </section>
-<section id="sec-thermodynamic-correction" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="sec-thermodynamic-correction"><span class="header-section-number">2.3.2</span> Thermodynamic Correction to Chemical Activity</h3>
-<p>Although the kinetic extraction utilized deionized water, the immediate dissolution of native soil salts (<span class="math inline">\(Ca^{2+}, Mg^{2+}, K^+\)</span>, etc.) generates a non-zero ionic strength (<span class="math inline">\(I\)</span>) in the suspension. Because plant roots respond to thermodynamic energy rather than physical mass, the stoichiometric concentration of the extract (<span class="math inline">\(c_i\)</span>) must be corrected to its true chemical activity (<span class="math inline">\(a_i\)</span>).</p>
-<p>The activity coefficient (<span class="math inline">\(\gamma\)</span>) for the divalent phosphate ion (<span class="math inline">\(HPO_4^{2-}\)</span>, <span class="math inline">\(z = -2\)</span>) was calculated for each site-specific matrix using the <strong>Davies Equation</strong>, which is robust for agricultural soil solutions up to <span class="math inline">\(I \approx 0.1 \text{ M}\)</span>:</p>
-<p><span class="math display">\[\log_{10}(\gamma) = -0.5 \cdot z^2 \left( \frac{\sqrt{I}}{1+\sqrt{I}} - 0.3 I \right)\]</span></p>
-<p>The true thermodynamic activity (<span class="math inline">\(a_i\)</span>) of the phosphorus in the extract was then calculated as the product of the raw stoichiometric concentration and the activity coefficient:</p>
-<p><span class="math display">\[a_i = c_i \cdot \gamma\]</span></p>
-<p>This correction accounts for pedochemical variances caused by differing native background salinities and pH levels across the STYCS sites, converting the raw data into a universal thermodynamic Intensity (<span class="math inline">\(I\)</span>) metric.</p>
+<section id="temporal-stability-of-amorphous-metal-oxides" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="temporal-stability-of-amorphous-metal-oxides"><span class="header-section-number">2.4.2</span> Temporal Stability of Amorphous Metal Oxides</h3>
+<p>Although the kinetic parameters (<span class="math inline">\(k\)</span>) and geochemical structural variables (<span class="math inline">\(Fe_{ox}\)</span>, <span class="math inline">\(Al_{ox}\)</span>) were measured comprehensively in the year 2023, they were applied to the entire 26-year historical dataset. This is justified because oxalate-extractable iron and aluminum represent native, poorly-crystalline structural minerals rather than highly dynamic labile nutrient pools. Under constant arable management, these amorphous phases are widely recognized as pedologically stable over decadal timescales <span class="citation" data-cites="schwertmann1964differenzierung lookman1995geostatistical">(<a href="#ref-lookman1995geostatistical" role="doc-biblioref">Lookman et al., 1995</a>; <a href="#ref-schwertmann1964differenzierung" role="doc-biblioref">Schwertmann, 1964</a>)</span>. Thus, the 2023 measurements serve as robust, invariant site-means to characterize the fundamental sorption capacity of each experimental field.</p>
 </section>
 </section>
-<section id="sec-statistical-analysis" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="sec-statistical-analysis"><span class="header-section-number">2.4</span> Statistical Analysis and Modeling</h2>
+<section id="sec-statistical-analysis" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="sec-statistical-analysis"><span class="header-section-number">2.5</span> Statistical Analysis and Modeling</h2>
 <p>All data processing, mathematical modeling, and visualization were conducted using the R programming language (v. 4.3.1) <span class="citation" data-cites="R-base">(<a href="#ref-R-base" role="doc-biblioref">R Core Team, 2026</a>)</span>. Primary packages included <code>nlme</code> <span class="citation" data-cites="R-nlme">(<a href="#ref-R-nlme" role="doc-biblioref">Pinheiro et al., 2026</a>)</span> for non-linear kinetic modeling, <code>lme4</code> <span class="citation" data-cites="R-lme4">(<a href="#ref-R-lme4" role="doc-biblioref">Bates et al., 2026</a>)</span> for linear mixed-effects modeling, and <code>deSolve</code> and <code>ReacTran</code> for partial differential equation solving.</p>
-<section id="modeling-of-desorption-kinetics-and-the-activity-flux-j_0" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="modeling-of-desorption-kinetics-and-the-activity-flux-j_0"><span class="header-section-number">2.4.1</span> 1. Modeling of Desorption Kinetics and the Activity Flux (<span class="math inline">\(J_0\)</span>)</h3>
-<p>To derive the kinetic parameters, a non-linear mixed-effects model (<code>nlme</code>) was fitted to the exact solution of the first-order rate equation, utilizing the thermodynamically corrected activities:</p>
-<p><span class="math display">\[a(t) = a_{max} \times (1 - e^{-k \times t'})\]</span></p>
-<p>Where <span class="math inline">\(a(t)\)</span> is the P activity at time <span class="math inline">\(t\)</span>, <span class="math inline">\(a_{max}\)</span> is the maximum thermodynamic activity of the desorbable P pool (the asymptote), <span class="math inline">\(k\)</span> is the first-order desorption rate constant, and <span class="math inline">\(t'\)</span> is an adjusted time (<span class="math inline">\(t_{min} + 3 \text{ min}\)</span>) accounting for initial dissolution. Sample-specific deviations were modeled as random effects to capture the unique desorption characteristics of each soil.</p>
-<p>From these parameters, a novel predictor for agronomic availability, the <strong>Initial Activity Flux (<span class="math inline">\(J_0\)</span>)</strong>, was defined mathematically as the product of the rate constant and the maximum thermodynamic activity:</p>
-<p><span class="math display">\[J_0 = k \cdot a_{max}\]</span></p>
+<section id="modeling-of-desorption-kinetics-and-the-desorption-velocity-v_0" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="modeling-of-desorption-kinetics-and-the-desorption-velocity-v_0"><span class="header-section-number">2.5.1</span> 1. Modeling of Desorption Kinetics and the Desorption Velocity (<span class="math inline">\(v_0\)</span>)</h3>
+<p>To establish the foundational kinetic parameters, physical desorption curves were generated using a modified sequential extraction protocol based on <span class="citation" data-cites="flossmannExtractionMethodCharacterizing1982">Flossmann &amp; Richter (<a href="#ref-flossmannExtractionMethodCharacterizing1982" role="doc-biblioref">1982</a>)</span>. Soil samples were first pre-washed to discard readily soluble P, then resuspended in deionized water and continuously shaken. Subsamples were extracted across a high-resolution time series (2, 4, 10, 15, 20, 30, 45, and 60 minutes), and the orthophosphate concentration was determined colorimetrically using the malachite green method.</p>
+<p><strong>Deriving the Desorption Rate Constant (<span class="math inline">\(k\)</span>):</strong> A non-linear mixed-effects model (<code>nlme</code>) was fitted to these high-resolution extraction curves. The desorption process was modeled as a hyperbolic, asymptotic saturation curve derived from the exact solution of the first-order rate equation:</p>
+<p><span class="math display">\[c(t) = c_{max} \times (1 - e^{-k \times t'})\]</span></p>
+<p>Where <span class="math inline">\(c(t)\)</span> is the desorbed P concentration at time <span class="math inline">\(t\)</span>, <span class="math inline">\(c_{max}\)</span> is the maximum size of the desorbable P pool (the asymptote), <span class="math inline">\(k\)</span> is the first-order desorption rate constant, and <span class="math inline">\(t'\)</span> is an adjusted time (<span class="math inline">\(t_{min} + 3 \text{ min}\)</span>) representing the empirically determined handling and resuspension time delay required to break apart the centrifuged pellet before true, uniform first-order desorption commenced. Sample-specific deviations were managed with the nested random effect structure <code>c_max + k ~ 1 | site / plot</code>, allowing both parameters to vary freely across sites and individual field plots.</p>
+<p><strong>Upscaling via Pedotransfer Function (PTF):</strong> Because this labor-intensive 60-minute kinetic extraction cannot be retroactively applied to the entire 30-year historical STYCS archive, a fundamental <strong>Pedotransfer Function (PTF)</strong> was constructed to predict the rate constant for missing soils and treatments. To ensure the upscaling process remained rigorously grounded in established mechanistic physics rather than arbitrary empirical correlations, the PTF was structured upon the Arrhenius equation—where reaction rates are driven by the competing activation energies of dominant sorption surfaces. Accordingly, a linear model (<code>lm</code>) was trained to predict <span class="math inline">\(\ln(k)\)</span> using explicitly pedogenetic predictor variables: the natural log of the ratio of amorphous aluminum to iron oxides (<span class="math inline">\(\ln(Al_{ox} / Fe_{ox})\)</span>) and soil pH.</p>
+<p>By anchoring the PTF to these inherently pedogenetic (treatment-independent) geochemical traits, we successfully extrapolated a predicted rate constant (<span class="math inline">\(k_{pred}\)</span>) for every spatial and temporal plot in the dataset.</p>
+<p>From these predicted parameters, a novel proxy for agronomic availability, the <strong>Dynamic Desorption Velocity (<span class="math inline">\(v_0\)</span>)</strong>, was defined mathematically as the product of the predicted rate constant and the historically measured static concentration pool:</p>
+<p><span class="math display">\[v_0 = k_{pred} \cdot P_{CO_2}\]</span></p>
 </section>
-<section id="thermodynamic-qi-isotherms-and-buffering-capacity" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="thermodynamic-qi-isotherms-and-buffering-capacity"><span class="header-section-number">2.4.2</span> 2. Thermodynamic <span class="math inline">\(Q(I)\)</span> Isotherms and Buffering Capacity</h3>
-<p>To deduce the Phosphorus Buffering Capacity (PBC), a thermodynamic Quantity-Intensity (<span class="math inline">\(Q/I\)</span>) framework was constructed. The <span class="math inline">\(P_{AAE10}\)</span> extraction was utilized as the standard mass Quantity (<span class="math inline">\(Q\)</span>, <span class="math inline">\(\text{mg P kg}^{-1}\)</span>), while the Davies-corrected <span class="math inline">\(a_{max}\)</span> was utilized as the native Intensity (<span class="math inline">\(I\)</span>, <span class="math inline">\(\mu\text{M}\)</span>).</p>
-<p>The relationship between these variables across the varying fertilizer treatments at each site was parameterized using a log-linearized <strong>Freundlich Isotherm</strong>:</p>
+<section id="thermodynamic-qi-isotherms-and-buffering-capacity" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="thermodynamic-qi-isotherms-and-buffering-capacity"><span class="header-section-number">2.5.2</span> 2. Thermodynamic <span class="math inline">\(Q(I)\)</span> Isotherms and Buffering Capacity</h3>
+<p>To deduce the Phosphorus Buffering Capacity (PBC), a thermodynamic Quantity-Intensity (<span class="math inline">\(Q/I\)</span>) framework was constructed. The <span class="math inline">\(P_{AAE10}\)</span> extraction was utilized as the standard mass Quantity (<span class="math inline">\(Q\)</span>, <span class="math inline">\(\text{mg P kg}^{-1}\)</span>), while the Davies-corrected <span class="math inline">\(a_{max}\)</span> was utilized as the native Intensity (<span class="math inline">\(I\)</span>, <span class="math inline">\(\mu\text{M}\)</span>). It must be acknowledged that relying on <span class="math inline">\(P_{AAE10}\)</span> as a proxy for absolute thermodynamic Quantity carries inherent mechanistic limitations. As demonstrated by isotopic exchange kinetics (IEK) studies, the extraction fluid’s EDTA chelator actively dissolves non-exchangeable calcium phosphates—particularly in high-pH or high-CEC clays—leading to isotopic recovery rates as low as 25% <span class="citation" data-cites="demariaExchangeabilityPhosphateExtracted2005">(<a href="#ref-demariaExchangeabilityPhosphateExtracted2005" role="doc-biblioref">Demaria et al., 2005</a>)</span>. Furthermore, in heavily buffered clay soils, the chelator physically saturates when overwhelmed by exchangeable background cations. Once saturated, the test becomes entirely “blind” to any further thermodynamic <span class="math inline">\(Q\)</span>, artificially collapsing the measured <span class="math inline">\(\Delta Q\)</span> parameter.</p>
+<p>The relationship between these variables across the varying fertilizer treatments at each site was parameterized using a log-linearized <strong>Freundlich Isotherm</strong> <span class="citation" data-cites="freundlich1906over">(<a href="#ref-freundlich1906over" role="doc-biblioref">Freundlich, 1906</a>)</span>, which is universally recognized for describing ion sorption on heterogeneous soil surfaces:</p>
 <p><span class="math display">\[Q = K_f \cdot I^{\frac{1}{n}}\]</span></p>
-<p>The true thermodynamic PBC for each specific site and state was then calculated analytically as the first derivative of the fitted Freundlich isotherm with respect to Intensity:</p>
+<p>The apparent Phosphorus Buffering Capacity (PBC) for each specific site and state was then calculated analytically as the first derivative of the fitted Freundlich isotherm with respect to Intensity:</p>
 <p><span class="math display">\[\text{PBC} = \frac{dQ}{dI} = K_f \cdot \frac{1}{n} \cdot I^{\left(\frac{1}{n} - 1\right)}\]</span></p>
-</section>
-<section id="agronomic-normalization-the-historical-baseline-strategy" class="level3" data-number="2.4.3">
-<h3 data-number="2.4.3" class="anchored" data-anchor-id="agronomic-normalization-the-historical-baseline-strategy"><span class="header-section-number">2.4.3</span> 3. Agronomic Normalization: The Historical Baseline Strategy</h3>
-<p>To statistically evaluate the predictive power of the chemical parameters across six diverse pedoclimatic sites, raw crop yield and P-uptake data required robust normalization to isolate chemical P-limitation from overarching climatic noise.</p>
-<p>Standard normalization (dividing by the maximum yield of a given site within the specific experimental year) was rejected, as it artificially masks broad climatic limitations (e.g., drought) and forces the best plot of a poor year to equal 100%, removing the biological penalty. Instead, a <strong>historical biological baseline strategy</strong> was employed.</p>
-<p>Using the 40-year STYCS historical dataset, the true biological potential (<span class="math inline">\(Y_{max}\)</span> and <span class="math inline">\(Uptake_{max}\)</span>) was calculated for each specific site and crop species by taking the 95th percentile of all fully fertilized (100% and 167% P) treatments. Current experimental yields and uptake values were divided by this historical baseline to calculate <strong>Relative Historical Yield (<span class="math inline">\(Y_{rel\_hist}\)</span>)</strong>, providing a stable metric representing the percentage of the crop’s long-term biological potential achieved.</p>
-</section>
-<section id="comparative-modeling-of-agronomic-outcomes" class="level3" data-number="2.4.4">
-<h3 data-number="2.4.4" class="anchored" data-anchor-id="comparative-modeling-of-agronomic-outcomes"><span class="header-section-number">2.4.4</span> 4. Comparative Modeling of Agronomic Outcomes</h3>
-<p>To test the core hypothesis, two competing sets of linear mixed-effects models (<code>lmer</code>) were constructed to predict <span class="math inline">\(Y_{rel\_hist}\)</span> and Relative P-Uptake. Both sets shared an identical random effects structure—<code>(1|year) + (1|Site) + (1|Site:block)</code>—to absorb unmeasured pedoclimatic and meteorological variance.</p>
+<p><strong>Predicting Quantity via Pedotransfer Functions (PTF)</strong> To evaluate the practical scalability of these thermodynamic concepts, empirical Quantity (<span class="math inline">\(P_{AAE10}\)</span>) was modeled directly from Intensity using a log-linear mixed-effects model (<code>lme</code>):</p>
+<p><span class="math display">\[\ln(Q) = \beta_0 + \beta_I \cdot \ln(I) + \sum (\beta_j \cdot Z_j) + \ln(I) \sum (\beta_{int,j} \cdot Z_j) + u_{site} + u_{plot|site}\]</span></p>
 <ul>
-<li><strong>Model 1: The Kinetic/Thermodynamic Approach:</strong> Utilized the novel Activity Flux (<span class="math inline">\(J_0\)</span>) as the primary fixed effect, testing the hypothesis that dynamic supply rate dictates plant availability.</li>
-<li><strong>Model 2: The Standard STP (GRUD) Approach:</strong> Utilized the standard Swiss static soil tests (<span class="math inline">\(P_{CO2}\)</span> and <span class="math inline">\(P_{AAE10}\)</span>) and their interaction as fixed effects.</li>
+<li><strong>The Covariates (<span class="math inline">\(Z_j\)</span>):</strong> Geochemical pedotransfer variables including soil fine texture (clay + silt), pH, <span class="math inline">\(C_{org}\)</span>, and exchangeable background cations (Ca, Mg, K). These are mechanistically justified as they structurally determine the density and binding energy of the soil’s sorption complexes (e.g., amorphous metal oxides and calcium carbonates).</li>
+<li><strong>Interaction Terms:</strong> The covariates directly interact with Intensity because the <em>slope</em> of the Q/I isotherm (the buffer power) is fundamentally altered by these intrinsic geochemical properties.</li>
+<li><strong>Random Effects (<span class="math inline">\(u_{year|site}\)</span>):</strong> Nested temporal and spatial intercepts designed to rigorously absorb unmeasured macro-climatic shifts and temporal biological chaos (e.g.&nbsp;frost timing, pest pressure, radiation) across the different experimental years, preventing pseudo-replication.</li>
+</ul>
+</section>
+<section id="agronomic-normalization-controlling-pedoclimatic-noise" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="agronomic-normalization-controlling-pedoclimatic-noise"><span class="header-section-number">2.5.3</span> 3. Agronomic Normalization: Controlling Pedoclimatic Noise</h3>
+<p>To rigorously separate underlying P-limitation from the immense baseline yield variance caused by pedoclimatic shifts and crop genetics, all raw yield and P-uptake metrics were normalized to a biologically strict empirical ceiling. For every combination of site, year, and crop, the absolute maximum value observed across all fertilization treatments was assigned as <span class="math inline">\(100\%\)</span> capacity.</p>
+<p><span class="math display">\[
+Y_{rel} = \frac{Y_{plot}}{\max_{treatment}(Y)_{site, year, crop}}
+\]</span></p>
+<p>Unlike using a specific fertilization label (e.g., the P166 treatment average), this method guarantees that the phenomenological Mitscherlich asymptote of <span class="math inline">\(1.0\)</span> is strictly bounded. It ensures that the unconstrained biological ceiling for that specific environment is defined by the actual absolute maximum biomass it produced, structurally eliminating random negative constraints (e.g., localized compaction or pest damage) that might artificially depress a specific treatment average. This mathematical operation removes the variance in the absolute biological ceiling, strictly isolating the chemical P-limitation from the overarching temporal pedoclimatic noise.</p>
+</section>
+<section id="comparative-modeling-of-agronomic-outcomes" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" class="anchored" data-anchor-id="comparative-modeling-of-agronomic-outcomes"><span class="header-section-number">2.5.4</span> 4. Comparative Modeling of Agronomic Outcomes</h3>
+<p>To test the core hypothesis, biological response variables were modeled using non-linear mixed-effects models (<code>nlme</code>), recognizing that plant growth and nutrient uptake follow saturating, asymptotic biological curves rather than linear relationships.</p>
+<p><strong>1. The Mitscherlich Yield Model</strong> The agronomic yield response was modeled using the classical Mitscherlich equation. The explicit mathematical formulation replaces the static rate constant with a dynamic effective rate (<span class="math inline">\(c_{eff}\)</span>):</p>
+<p><span class="math display">\[Y_{rel} = 1 - \exp\left(- c_{eff} \cdot (\text{STP} + E_{base}) \right)\]</span></p>
+<p>Where <span class="math inline">\(c_{eff}\)</span> is dynamically modulated by a set of fixed pedoclimatic covariates (<span class="math inline">\(Z_i\)</span>) and nested spatial random effects (<span class="math inline">\(u\)</span>):</p>
+<p><span class="math display">\[c_{eff} = (c_{base\_crop} + u_{site} + u_{plot|site}) \cdot \exp\left( \sum \beta_i \cdot Z_i \right)\]</span></p>
+<ul>
+<li><strong>The Diffusion Bottleneck (<span class="math inline">\(\beta_{invb}\)</span>):</strong> The inverse physical buffer power (<span class="math inline">\(1/b\)</span>) acts as the primary transport penalty. Soils with high buffer power cannot replenish the root depletion zone fast enough via diffusion, functionally decreasing the agronomic efficiency of the measured STP.</li>
+<li><strong>Speciation and Solubility (<span class="math inline">\(\beta_{pH}\)</span>):</strong> Soil pH fundamentally controls the speciation of orthophosphate in solution and drives precipitation dynamics, altering thermodynamic stability.</li>
+<li><strong>Stoichiometric Co-Limitation (<span class="math inline">\(\beta_{N}, \beta_{K}, \beta_{Mg}\)</span>):</strong> Following Liebig’s Law of the Minimum, the plant’s ability to efficiently convert P into biomass is inherently capped if Nitrogen, Potassium, or Magnesium are limiting.</li>
+<li><strong>Pedoclimatic Noise (<span class="math inline">\(\beta_{Temp}, \beta_{Prec}\)</span>):</strong> Temperature and precipitation anomalies dictate physical soil moisture (governing diffusion transport) and the basic biological metabolic rate.</li>
+</ul>
+<p><strong>2. The Plant Uptake Model (Michaelis-Menten)</strong> Actual mass-flux of P into the plant was modeled using a fractional Michaelis-Menten biological limit:</p>
+<p><span class="math display">\[Uptake_{rel} = \frac{U_{eff} \cdot \text{STP}}{K_{m} + \text{STP}}\]</span></p>
+<p>Where the effective maximum uptake capacity (<span class="math inline">\(U_{eff}\)</span>) expands upon the base physiological limit (<span class="math inline">\(U_{base}\)</span>) via critical covariates:</p>
+<p><span class="math display">\[U_{eff} = U_{base} + \beta_{temp} \cdot Z_{temp} + \beta_{N} \cdot Z_{N} + \beta_{v0} \cdot Z_{v0} + u_{site} + u_{year|site}\]</span></p>
+<ul>
+<li><strong>The Kinetics (<span class="math inline">\(\beta_{v0}\)</span>):</strong> The dynamic desorption velocity (<span class="math inline">\(v_0\)</span>) directly increases maximal uptake capacity by continuously resupplying the root depletion zone.</li>
+<li><strong>Crop-Specific Affinity (<span class="math inline">\(K_m\)</span>):</strong> The half-saturation constant (<span class="math inline">\(K_m\)</span>) is modeled as a fixed effect grouped by <em>crop species</em>, reflecting the differing physiological root architectures and transporter affinities of maize, wheat, etc.</li>
+<li><strong>Random Effects (<span class="math inline">\(u_{year|site}\)</span>):</strong> Nested <code>site/year</code> intercepts absorb the massive macro-climatic shifts (e.g., a regional drought year systemically lowering the overall <span class="math inline">\(U_{base}\)</span>).</li>
+</ul>
+<p><strong>3. The Tissue Concentration Model (<span class="math inline">\(C_P\)</span>)</strong> To expose the physiological dynamics of tissue concentrations, the apparent <span class="math inline">\(C_P\)</span> was modeled phenomenologically. Rigorous mixed-effects testing revealed that the classical Piper-Steenbjerg carbon dilution penalty was statistically undetectable across pedoclimatic noise. Instead, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration (<span class="math inline">\(C_{base}\)</span>), followed by a linear <strong>Luxury Accumulation</strong> phase (<span class="math inline">\(S_{acc}\)</span>):</p>
+<p><span class="math display">\[C_P = C_{base} + S_{acc} \cdot \text{STP}\]</span></p>
+<ul>
+<li><strong>Crop-Specific Baseline (<span class="math inline">\(C_{base}\)</span>):</strong> The fundamental, minimum tissue concentration required for the plant to physically exist, modeled as a fixed effect grouped by crop species.</li>
+<li><strong>Luxury Accumulation (<span class="math inline">\(S_{acc}\)</span>):</strong> Once basic metabolic needs are met, plants linearly accumulate “luxury” P in their tissues (primarily in the vegetative biomass). This slope (<span class="math inline">\(S_{acc}\)</span>) is significantly driven by the soil’s desorption velocity (<span class="math inline">\(v_0\)</span>) and buffer power (<span class="math inline">\(1/b\)</span>), which dictate how rapidly the soil can push excess phosphorus into the plant.</li>
+<li><strong>A Phenomenological <span class="math inline">\(P_{crit}\)</span>:</strong> Because field data rarely captures conditions severe enough to observe true Piper-Steenbjerg dilution, defining <span class="math inline">\(P_{crit}\)</span> via abstract mathematical minima of <span class="math inline">\(C_P\)</span> curves is flawed. Instead, we define <span class="math inline">\(P_{crit}\)</span> phenomenologically: as the threshold where the plant has achieved its physiological baseline (<span class="math inline">\(C_{base}\)</span>) <em>plus</em> a defined luxury reserve buffer (e.g., <span class="math inline">\(x\%\)</span>) strictly necessary to survive difficult environmental phases like pH swings or transient droughts.</li>
 </ul>
 <div class="cell">
 <div id="tbl-variables-updated" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3: Description of key variables used in the thermodynamic and agronomic models.
+Table&nbsp;3: Comprehensive description of all response variables and covariates used in the thermodynamic and agronomic models, including their explicit preprocessing pipelines.
 </figcaption>
 <div aria-describedby="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <table class="cell caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 9%">
-<col style="width: 18%">
-<col style="width: 8%">
-<col style="width: 63%">
-</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Abbreviation</th>
-<th style="text-align: left;">Variable</th>
-<th style="text-align: left;">Unit</th>
-<th style="text-align: left;">Description</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Abbreviation</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Variable</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Description</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Processing and Filtering</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(Y_{rel\_hist}\)</span></td>
-<td style="text-align: left;">Relative Yield (Historic)</td>
-<td style="text-align: left;">unitless</td>
-<td style="text-align: left;">Plot yield normalized by the site/crop-specific 95th percentile of historical well-fertilized yields.</td>
+<td style="text-align: left;">$Y_{rel}$</td>
+<td style="text-align: left;">Relative Yield</td>
+<td style="text-align: left;">Plot yield normalized by the local year's maximum.</td>
+<td style="text-align: left; width: 18em;">Normalized by the mean of the P166 treatment within the specific site $\times$ crop $\times$ year. Filtered for finite values.</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(Uptake_{rel}\)</span></td>
+<td style="text-align: left;">$Uptake_{rel}$</td>
 <td style="text-align: left;">Relative P Uptake</td>
-<td style="text-align: left;">unitless</td>
-<td style="text-align: left;">Plot P-uptake normalized by historical maximum uptake for the specific site and crop.</td>
+<td style="text-align: left;">Plot P-uptake normalized by the local year's maximum.</td>
+<td style="text-align: left; width: 18em;">Normalized by the local P166 maximum. Rows with 0 uptake dropped.</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{bal}\)</span></td>
-<td style="text-align: left;">Cumulative P Balance</td>
-<td style="text-align: left;">kg P ha⁻¹</td>
-<td style="text-align: left;">Long-term net P budget (inputs minus outputs).</td>
+<td style="text-align: left;">$\ln(P_{AAE10})$</td>
+<td style="text-align: left;">Log Quantity Pool</td>
+<td style="text-align: left;">Standard mass of extractable P (AAE10 method).</td>
+<td style="text-align: left; width: 18em;">Natural log transformed to ensure strictly positive predictions and stabilize variance in mixed models.</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(k\)</span></td>
-<td style="text-align: left;">Rate Constant</td>
-<td style="text-align: left;">min⁻¹</td>
+<td style="text-align: left;">$P_{CO2}$</td>
+<td style="text-align: left;">Empirical Intensity</td>
+<td style="text-align: left;">Water-extractable P ($CO_2$ saturated).</td>
+<td style="text-align: left; width: 18em;">Raw measured values. Log-transformed for PTF training.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">$a_{CO2}$</td>
+<td style="text-align: left;">Thermodynamic Intensity</td>
+<td style="text-align: left;">Thermodynamic activity of the water pool.</td>
+<td style="text-align: left; width: 18em;">Calculated via Davies equation accounting for ionic strength. Log-transformed.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$k$</td>
+<td style="text-align: left;">Desorption Rate</td>
 <td style="text-align: left;">First-order rate constant of P desorption.</td>
+<td style="text-align: left; width: 18em;">Missing historical plots were imputed using a pedogenetic PTF trained on log(Al/Fe) + pH. Standardized (z-score).</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(a_{max}\)</span></td>
-<td style="text-align: left;">Maximum Activity (Intensity)</td>
-<td style="text-align: left;">µM</td>
-<td style="text-align: left;">Davies-corrected thermodynamic activity asymptote of the water-desorbable P pool.</td>
+<td style="text-align: left;">$v_0$</td>
+<td style="text-align: left;">Desorption Velocity</td>
+<td style="text-align: left;">Initial dynamic supply rate.</td>
+<td style="text-align: left; width: 18em;">Calculated as product of predicted $k$ and empirical $P_{CO2}$. Standardized (z-score).</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(J_0\)</span></td>
-<td style="text-align: left;">Activity Flux</td>
-<td style="text-align: left;">µM min⁻¹</td>
-<td style="text-align: left;">Initial thermodynamic supply rate, calculated as <span class="math inline">\(k \times a_{max}\)</span>.</td>
+<td style="text-align: left;">$\text{PBC}^{-1}$ ($1/b$)</td>
+<td style="text-align: left;">Inverse Buffer Power</td>
+<td style="text-align: left;">Inverse of the dynamic $Q/I$ slope ($dI/dQ$).</td>
+<td style="text-align: left; width: 18em;">Analytically derived from predicted Freundlich isotherms. Standardized (z-score).</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(P_{AAE10}\)</span></td>
-<td style="text-align: left;">Standard Mass (Quantity)</td>
-<td style="text-align: left;">mg P kg⁻¹</td>
-<td style="text-align: left;">Physical mass of extractable P (AAE10 method), acting as the Q-factor.</td>
+<td style="text-align: left;">$Fe_{ox}, Al_{ox}$</td>
+<td style="text-align: left;">Amorphous Oxides</td>
+<td style="text-align: left;">Amorphous Iron and Aluminum oxides.</td>
+<td style="text-align: left; width: 18em;">Averaged into invariant site-means to remove management artifacts, log-transformed, and standardized.</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(\text{PBC}\)</span></td>
-<td style="text-align: left;">Phosphorus Buffering Capacity</td>
-<td style="text-align: left;">mg kg⁻¹ µM⁻¹</td>
-<td style="text-align: left;">The mathematical derivative (<span class="math inline">\(dQ/dI\)</span>) of the site-specific Freundlich isotherm.</td>
+<td style="text-align: left;">Fine Texture</td>
+<td style="text-align: left;">Clay + Silt</td>
+<td style="text-align: left;">Sum of clay and silt fractions.</td>
+<td style="text-align: left; width: 18em;">Log-transformed sum to linearize bounds, standardized. Missing values imputed with site-means.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">pH</td>
+<td style="text-align: left;">Soil pH ($H_2O$)</td>
+<td style="text-align: left;">Soil pH measured in water.</td>
+<td style="text-align: left; width: 18em;">Standardized directly.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$C_{org}$</td>
+<td style="text-align: left;">Organic Carbon</td>
+<td style="text-align: left;">Total organic carbon.</td>
+<td style="text-align: left; width: 18em;">Log-transformed and standardized. Missing values imputed with site-means.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ca, Mg, K</td>
+<td style="text-align: left;">Exchangeable Cations</td>
+<td style="text-align: left;">AAE10-extractable background cations.</td>
+<td style="text-align: left; width: 18em;">Missing values imputed using site medians (or global medians if site missing). Log-transformed and standardized.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">$Temp_{Anom}, Prec_{Anom}$</td>
+<td style="text-align: left;">Climate Anomalies</td>
+<td style="text-align: left;">Juvenile phase temp/prec deviations.</td>
+<td style="text-align: left; width: 18em;">Calculated as absolute deviation from the site's long-term historical mean. Standardized.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fert N</td>
+<td style="text-align: left;">Nitrogen Fertilizer</td>
+<td style="text-align: left;">Total applied nitrogen fertilizer.</td>
+<td style="text-align: left; width: 18em;">Standardized directly.</td>
 </tr>
 </tbody>
 </table>
@@ -669,16 +702,23 @@ Table&nbsp;3: Description of key variables used in the thermodynamic and agronom
 </div>
 </div>
 </section>
-<section id="mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" class="level3" data-number="2.4.5">
-<h3 data-number="2.4.5" class="anchored" data-anchor-id="mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification"><span class="header-section-number">2.4.5</span> 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)</h3>
-<p>To mechanistically validate the field-scale statistical findings and visualize the limitations of static buffering capacity, a modified radial transport model based on Barber-Cushman principles was constructed. Standard iterations of the Barber-Cushman model calculate radial diffusion using stoichiometric concentration (<span class="math inline">\(C_l\)</span>) and a static buffer power (<span class="math inline">\(b = \Delta Q / \Delta I\)</span>), effectively assuming instantaneous soil-solution equilibrium.</p>
-<p>To reflect the kinetic bottlenecks identified in this study, the partial differential equation (PDE) for radial transport in cylindrical coordinates was modified. The driving gradient was shifted to thermodynamic activity (<span class="math inline">\(a_l\)</span>), and the static buffer power was replaced with a dynamic, first-order kinetic source term (<span class="math inline">\(R_{desorption}\)</span>):</p>
-<p><span class="math display">\[\frac{\partial a_l}{\partial t} = D_e \left( \frac{\partial^2 a_l}{\partial r^2} + \frac{1}{r} \frac{\partial a_l}{\partial r} \right) + \frac{r_0 v_0}{r} \frac{\partial a_l}{\partial r} + R_{desorption}\]</span></p>
+<section id="mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification" class="level3" data-number="2.5.5">
+<h3 data-number="2.5.5" class="anchored" data-anchor-id="mechanistic-modeling-of-the-rhizosphere-barber-cushman-modification"><span class="header-section-number">2.5.5</span> 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)</h3>
+<p>To mechanistically validate the field-scale statistical findings and visualize the limitations of static buffering capacity, a modified radial transport model based on Barber-Cushman principles <span class="citation" data-cites="barber1981soil">(<a href="#ref-barber1981soil" role="doc-biblioref">Barber &amp; Cushman, 1981</a>)</span> was constructed. Standard iterations of the Barber-Cushman model calculate radial diffusion using stoichiometric concentration (<span class="math inline">\(C_l\)</span>) and a static buffer power (<span class="math inline">\(b = \Delta Q / \Delta I\)</span>), effectively assuming instantaneous soil-solution equilibrium.</p>
+<p>To reflect the kinetic bottlenecks identified in this study, the partial differential equation (PDE) for radial transport in cylindrical coordinates was modified. The driving gradient was kept as empirical concentration (<span class="math inline">\(c_l\)</span>), and the static buffer power was replaced with a dynamic, first-order kinetic source term (<span class="math inline">\(R_{desorption}\)</span>):</p>
+<p><span class="math display">\[\frac{\partial c_l}{\partial t} = D_e \left( \frac{\partial^2 c_l}{\partial r^2} + \frac{1}{r} \frac{\partial c_l}{\partial r} \right) + \frac{r_0 v_0}{r} \frac{\partial c_l}{\partial r} + R_{desorption}\]</span></p>
 <p>Where <span class="math inline">\(D_e\)</span> is the effective diffusion coefficient, <span class="math inline">\(r\)</span> is the radial distance, <span class="math inline">\(r_0\)</span> is the root radius, and <span class="math inline">\(v_0\)</span> is the water flux at the root surface. The kinetic source term resupplying the solution was defined using the experimentally derived parameters:</p>
-<p><span class="math display">\[R_{desorption} = k \cdot (a_{max} - a_l)\]</span></p>
-<p>Furthermore, the inner boundary condition at the root surface (<span class="math inline">\(r = r_0\)</span>) was upgraded to reflect a dual-affinity Michaelis-Menten uptake system, accounting for both high-affinity (PHT1) and low-affinity (LATS) transporter kinetics responding directly to chemical activity:</p>
-<p><span class="math display">\[J_r = \frac{V_{max1} \cdot (a_l - a_{min})}{K_{m1} + (a_l - a_{min})} + \frac{V_{max2} \cdot (a_l - a_{min})}{K_{m2} + (a_l - a_{min})}\]</span></p>
+<p><span class="math display">\[R_{desorption} = k \cdot (c_{max} - c_l)\]</span></p>
+<p>Furthermore, the inner boundary condition at the root surface (<span class="math inline">\(r = r_0\)</span>) was upgraded to reflect a dual-affinity Michaelis-Menten uptake system <span class="citation" data-cites="michaelis1913kinetik">(<a href="#ref-michaelis1913kinetik" role="doc-biblioref">Michaelis &amp; Menten, 1913</a>)</span>, accounting for both high-affinity (PHT1) and low-affinity (LATS) transporter kinetics. The binding kinetics of these transporters are governed by the fundamental thermodynamic driving force of the substrate: its chemical activity (<span class="math inline">\(a\)</span>), not its total stoichiometric concentration (<span class="math inline">\(c\)</span>) <span class="citation" data-cites="Atkins2011Physical Minton2001Macromolecular">(<a href="#ref-Atkins2011Physical" role="doc-biblioref">Atkins &amp; Paula, 2011</a>; <a href="#ref-Minton2001Macromolecular" role="doc-biblioref">Minton, 2001</a>)</span>. The boundary condition was defined as:</p>
+<p><span class="math display">\[J_r = \frac{V_{max1} \cdot (c_l - c_{min})}{K_{m1} + (c_l - c_{min})} + \frac{V_{max2} \cdot (c_l - c_{min})}{K_{m2} + (c_l - c_{min})}\]</span></p>
 <p>The modified PDEs were solved numerically in R utilizing the <code>ReacTran</code> and <code>deSolve</code> packages to generate dynamic spatial profiles of the P-depletion zone over time.</p>
+</section>
+<section id="derivation-of-critical-thresholds-p_crit" class="level3" data-number="2.5.6">
+<h3 data-number="2.5.6" class="anchored" data-anchor-id="derivation-of-critical-thresholds-p_crit"><span class="header-section-number">2.5.6</span> 6. Derivation of Critical Thresholds (<span class="math inline">\(P_{crit}\)</span>)</h3>
+<p>To translate the phenomenological models into actionable agronomic metrics, the critical Soil Test Phosphorus (<span class="math inline">\(P_{crit}\)</span>) threshold was analytically derived from all three modeling frameworks. Rather than relying on arbitrary inflection points, each derivation represents a distinct physiological or agronomic paradigm:</p>
+<p><strong>1. The Relative Yield Paradigm (The Production Target)</strong> Agronomically, <span class="math inline">\(P_{crit}\)</span> is classically defined as the STP required to achieve a specific operational threshold, commonly set as an <span class="math inline">\(x\%\)</span> relative yield target (<span class="math inline">\(q_Y\)</span>, e.g., 0.95). By setting the relative yield target to <span class="math inline">\(q_Y\)</span> in the full Mitscherlich equation (<span class="math inline">\(Y_{rel} = 1 - \exp(-c_{eff} \cdot (\text{STP} + E_{base}))\)</span>), the required soil concentration is extracted: <span class="math display">\[P_{crit\_Y} = \frac{-\ln(1 - q_Y)}{c_{eff}} - E_{base}\]</span> Where the effective rate constant incorporates the pedoclimatic penalties: <span class="math inline">\(c_{eff} = c_{base} \cdot \exp(\beta_{kin} \cdot \text{Kinetics} + \dots)\)</span>.</p>
+<p><strong>2. The Tissue Concentration Paradigm (The Physiological Buffer)</strong> Because true Piper-Steenbjerg minima were statistically absent, the tissue concentration critical limit was redefined as the threshold necessary to guarantee the plant’s fundamental metabolic baseline (<span class="math inline">\(C_{base}\)</span>) <em>plus</em> a luxury reserve (<span class="math inline">\(\gamma\)</span>, representing an <span class="math inline">\(x\%\)</span> safety buffer). Solving the linear mixed-effects model (<span class="math inline">\(C_P = C_{base} + S_{acc} \cdot \text{STP}\)</span>) for the target <span class="math inline">\(C_{base}(1 + \gamma)\)</span> yields: <span class="math display">\[P_{crit\_C} = \frac{\gamma \cdot C_{base}}{S_{base} + \beta_{v0} \cdot v_0 + \beta_{invb} \cdot \frac{1}{b}}\]</span> This derivation explicitly demonstrates that soils with a faster desorption velocity (<span class="math inline">\(v_0\)</span>) or stronger buffer power (<span class="math inline">\(1/b\)</span>) create a steeper accumulation slope (<span class="math inline">\(S_{acc}\)</span>), inherently reducing the <span class="math inline">\(P_{crit}\)</span> required in the soil to safely buffer the crop against stress.</p>
+<p><strong>3. The Relative Uptake Paradigm (The Mass-Transfer Limit)</strong> While yield integrates the entire season, instantaneous phosphorus uptake is strictly governed by Michaelis-Menten kinetics at the root surface. Defining a critical threshold as the STP required to reach an <span class="math inline">\(x\%\)</span> relative uptake target (<span class="math inline">\(q_{up}\)</span>) yields a direct relationship with the effective half-saturation constant (<span class="math inline">\(K_{eff}\)</span>): <span class="math display">\[ q_{up} = \frac{P_{crit\_up}}{K_{eff} + P_{crit\_up}} \implies P_{crit\_up} = \left(\frac{q_{up}}{1 - q_{up}}\right) K_{eff} \]</span> Where <span class="math inline">\(K_{eff}\)</span> structurally expands upon the base crop affinity (<span class="math inline">\(K_m\)</span>) via the same physical kinetic bottlenecks identified in the field data.</p>
 <div style="page-break-after: always;"></div>
 <!-- {{< include writing/_25-results.qmd >}} -->
 <div style="page-break-after: always;"></div>
@@ -694,29 +734,59 @@ Table&nbsp;3: Description of key variables used in the thermodynamic and agronom
 <section id="references" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-Atkins2011Physical" class="csl-entry" role="listitem">
+Atkins, P., &amp; Paula, J. de. (2011). <em>Physical chemistry for the life sciences</em> (2nd ed.). Oxford University Press.
+</div>
+<div id="ref-barber1981soil" class="csl-entry" role="listitem">
+Barber, S. A., &amp; Cushman, J. H. (1981). Nitrogen uptake model for agronomic crops. In I. K. Iskandar (Ed.), <em>Modeling wastewater renovation land treatment</em> (pp. 382–409). Wiley.
+</div>
 <div id="ref-R-lme4" class="csl-entry" role="listitem">
 Bates, D., Maechler, M., Bolker, B., Walker, S., Jagan, M., &amp; Ly, A. (2026). <em>lme4: Linear mixed-effects models using eigen and S4</em>. <a href="https://github.com/lme4/lme4/">https://github.com/lme4/lme4/</a>
 </div>
 <div id="ref-Brady2016Soils" class="csl-entry" role="listitem">
-Brady, N. C., &amp; Weil, R. R. (2016). <em>The nature and properties of soils</em>. Pearson.
+Brady, N. C., &amp; Weil, R. R. (2016). <em>The nature and properties of soils</em> (15th ed.). Pearson.
 </div>
-<div id="ref-FAL1996Methodenbuch" class="csl-entry" role="listitem">
-FAL, R., &amp; FAW, R. (1996). <em>Schweizerisches landwirtschaftliches methodenbuch</em>. Forschungsanstalten Agroscope.
+<div id="ref-demariaExchangeabilityPhosphateExtracted2005" class="csl-entry" role="listitem">
+Demaria, P., Flisch, R., Frossard, E., &amp; Sinaj, S. (2005). Exchangeability of phosphate extracted by four chemical methods. <em>Z. Pflanzenernähr. Bodenk.</em>, <em>168</em>(1), 89–93. <a href="https://doi.org/10.1002/jpln.200421463">https://doi.org/10.1002/jpln.200421463</a>
+</div>
+<div id="ref-fardeau1996dynamics" class="csl-entry" role="listitem">
+Fardeau, J.-C. (1996). Dynamics of phosphate in soils. An isotopic outlook. <em>Fertilizer Research</em>, <em>45</em>, 91–100.
 </div>
 <div id="ref-flossmannExtractionMethodCharacterizing1982" class="csl-entry" role="listitem">
 Flossmann, R., &amp; Richter, D. (1982). <em>Extraction method for characterizing the kinetics of phosphorus release from solid soil to soil solution.</em>
 </div>
+<div id="ref-FAL1996Methodenbuch" class="csl-entry" role="listitem">
+Forschungsanstalt für Agrarökologie und Landbau (FAL). (1996). <em>Methodenbuch für boden-, pflanzen- und nährstoffanalysen</em>. FAL.
+</div>
+<div id="ref-freundlich1906over" class="csl-entry" role="listitem">
+Freundlich, H. (1906). <span>Ü</span>ber die <span>A</span>dsorption in <span>L</span><span>ö</span>sungen. <em>Zeitschrift f<span>ü</span>r Physikalische Chemie</em>, <em>57</em>(1), 385–470.
+</div>
 <div id="ref-Frossard2000Processes" class="csl-entry" role="listitem">
-Frossard, E., Condron, L. M., Oberson, A., Sinaj, S., &amp; Fardeau, J.-C. (2000). Processes governing phosphorus availability in temperate soils. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 15–23.
+Frossard, E., Condron, L. M., Oberson, A., Sinaj, S., &amp; Fardeau, J. C. (2000). Processes governing phosphorus availability in temperate soils. <em>Journal of Environmental Quality</em>, <em>29</em>(1), 15–23. <a href="https://doi.org/10.2134/jeq2000.00472425002900010003x">https://doi.org/10.2134/jeq2000.00472425002900010003x</a>
+</div>
+<div id="ref-galletEffectPhosphateFertilization2003" class="csl-entry" role="listitem">
+Gallet, A., Flisch, R., Ryser, J.-P., Frossard, E., &amp; Sinaj, S. (2003). Effect of phosphate fertilization on crop yield and soil phosphorus status. <em>Z. Pflanzenernähr. Bodenk.</em>, <em>166</em>(5), 568–578. <a href="https://doi.org/10.1002/jpln.200321081">https://doi.org/10.1002/jpln.200321081</a>
 </div>
 <div id="ref-hirteYieldResponseSoil2021" class="csl-entry" role="listitem">
 Hirte, J., Richner, W., Orth, B., Liebisch, F., &amp; Flisch, R. (2021). Yield response to soil test phosphorus in <span>Switzerland</span>: <span>Pedoclimatic</span> drivers of critical concentrations for optimal crop yields using multilevel modelling. <em>Science of The Total Environment</em>, <em>755</em>, 143453. <a href="https://doi.org/10.1016/j.scitotenv.2020.143453">https://doi.org/10.1016/j.scitotenv.2020.143453</a>
 </div>
+<div id="ref-jordan-meilleOverviewFertilizerPRecommendations2012" class="csl-entry" role="listitem">
+Jordan-Meille, L., Rubæk, G. H., Ehlert, P. A. I., Genot, V., Hofman, G., Goulding, K., Recknagel, J., Provolo, G., &amp; Barraclough, P. (2012). An overview of fertilizer-<span>P</span> recommendations in <span>Europe</span>: Soil testing, calibration and fertilizer recommendations. <em>Soil Use and Management</em>, <em>28</em>(4), 419–435. <a href="https://doi.org/10.1111/j.1475-2743.2012.00453.x">https://doi.org/10.1111/j.1475-2743.2012.00453.x</a>
+</div>
+<div id="ref-lookman1995geostatistical" class="csl-entry" role="listitem">
+Lookman, R., Desmet, J., Grobet, P., Merckx, R., &amp; Vlassak, K. (1995). A geostatistical assessment of the regional distribution of phosphate sorption capacity parameters (feox and alox) in northern belgium. <em>Geoderma</em>, <em>66</em>(3-4), 285–296.
+</div>
+<div id="ref-michaelis1913kinetik" class="csl-entry" role="listitem">
+Michaelis, L., &amp; Menten, M. L. (1913). Die <span>K</span>inetik der <span>I</span>nvertinwirkung. <em>Biochemische Zeitschrift</em>, <em>49</em>, 333–369.
+</div>
+<div id="ref-Minton2001Macromolecular" class="csl-entry" role="listitem">
+Minton, A. P. (2001). The influence of macromolecular crowding and macromolecular confinement on biochemical reactions in physiological media. <em>Journal of Biological Chemistry</em>, <em>276</em>(14), 10577–10580.
+</div>
 <div id="ref-Nye2000Solute" class="csl-entry" role="listitem">
-Nye, P. H., &amp; Tinker, P. B. (2000). <em>Solute movement in the soil-root system</em>. Univ of California Press.
+Nye, P. H., &amp; Tinker, P. B. (2000). <em>Solute movement in the rhizosphere</em>. Oxford University Press.
 </div>
 <div id="ref-Olsen1954" class="csl-entry" role="listitem">
-Olsen, S. R., Cole, C., Watanabe, F. S., &amp; Dean, L. (1954). <em>Estimation of available phosphorus in soils by extraction with sodium bicarbonate</em>.
+Olsen, S. R., Cole, C. V., Watanabe, F. S., &amp; Dean, L. A. (1954). <em>Estimation of available phosphorus in soils by extraction with sodium bicarbonate</em> (Circular No. 939). United States Department of Agriculture.
 </div>
 <div id="ref-R-nlme" class="csl-entry" role="listitem">
 Pinheiro, J., Bates, D., &amp; R Core Team. (2026). <em>Nlme: Linear and nonlinear mixed effects models</em>. <a href="https://svn.r-project.org/R-packages/trunk/nlme/">https://svn.r-project.org/R-packages/trunk/nlme/</a>
@@ -724,11 +794,17 @@ Pinheiro, J., Bates, D., &amp; R Core Team. (2026). <em>Nlme: Linear and nonline
 <div id="ref-R-base" class="csl-entry" role="listitem">
 R Core Team. (2026). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals">https://doi.org/10.32614/R.manuals</a>
 </div>
+<div id="ref-schwertmann1964differenzierung" class="csl-entry" role="listitem">
+Schwertmann, U. (1964). Differenzierung der <span>E</span>isenoxide des <span>B</span>odens durch <span>E</span>xtraktion mit <span>A</span>mmoniumoxalat-l<span>ö</span>sung. <em>Zeitschrift f<span>ü</span>r Pflanzenern<span>ä</span>hrung, D<span>ü</span>ngung, Bodenkunde</em>, <em>105</em>(3), 194–202.
+</div>
 <div id="ref-Sposito2008Chemistry" class="csl-entry" role="listitem">
-Sposito, G. (2008). <em>The chemistry of soils</em>. Oxford university press.
+Sposito, G. (2008). <em>The chemistry of soils</em> (2nd ed.). Oxford University Press.
+</div>
+<div id="ref-steinfurthThresholdsTargetPhosphorus2022" class="csl-entry" role="listitem">
+<span class="nocase">Steinfurth, K., Börjesson, G., Denoroy, P., Eichler-Löbermann, B., Gans, W., Heyn, J., Hirte, J., Huyghebaert, B., Jouany, C., Koch, D., Merbach, I., Mokry, M., Mollier, A., Morel, C., Panten, K., Peiter, E., Poulton, P. R., Reitz, T., Rubæk, G. H., … Buczko, U.</span> (2022). Thresholds of target phosphorus fertility classes in <span>European</span> fertilizer recommendations in relation to critical soil test phosphorus values derived from the analysis of 55 <span>European</span> long-term field experiments. <em>Agriculture, Ecosystems &amp; Environment</em>, <em>332</em>, 107926. <a href="https://doi.org/10.1016/j.agee.2022.107926">https://doi.org/10.1016/j.agee.2022.107926</a>
 </div>
 <div id="ref-VanVeldhoven1987Malachite" class="csl-entry" role="listitem">
-Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosphate measurements in the nanomolar range. <em>Analytical Biochemistry</em>, <em>161</em>(1), 45–48.
+Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosphorus in the scheldt estuary. <em>Estuarine, Coastal and Shelf Science</em>, <em>25</em>(6), 755–765.
 </div>
 </div>
 <div style="page-break-after: always;"></div>
@@ -747,7 +823,7 @@ Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosp
 </section>
 <section id="a.2.-justification-for-the-davies-equation" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="a.2.-justification-for-the-davies-equation"><span class="header-section-number">4.2</span> A.2. Justification for the Davies Equation</h2>
-<p>Because the <span class="math inline">\(P_{CO_2}\)</span> extract adopts the native ionic composition of the soil, reading the orthophosphate concentrations against an <span class="math inline">\(I=0\)</span> (distilled water) calibration curve introduces systematic error. The true thermodynamic driving force for P-availability is the chemical <strong>activity</strong>, not the stoichiometric concentration.</p>
+<p>Because the <span class="math inline">\(P_{CO_2}\)</span> extract adopts the native ionic composition of the soil, reading the orthophosphate concentrations against an <span class="math inline">\(I=0\)</span> (distilled water) calibration curve introduces systematic error. The fundamental thermodynamic driving force for P-availability is the chemical <strong>activity</strong>, not the stoichiometric concentration.</p>
 <p>To correct for this, an activity coefficient (<span class="math inline">\(\gamma\)</span>) must be applied. While the Pitzer equations are the standard method for high-ionic-strength solutions (<span class="math inline">\(I &gt; 0.5 \text{ M}\)</span>, such as the P-AAE10 extractant), the ionic strength of native agricultural soil solutions is typically much lower (<span class="math inline">\(I &lt; 0.1 \text{ M}\)</span>).</p>
 <p>In this low-to-moderate ionic strength regime, the <strong>Davies equation</strong> (an empirical extension of the Debye-Hückel theory) is highly accurate and does not require complex, ion-specific interaction parameters.</p>
 <p>The Davies equation calculates the activity coefficient (<span class="math inline">\(\gamma\)</span>) as follows: <span class="math display">\[\log_{10}(\gamma) = -A z^2 \left( \frac{\sqrt{I}}{1 + \sqrt{I}} - 0.3 I \right)\]</span> Where: * <strong><span class="math inline">\(A\)</span></strong> is a temperature-dependent constant (<span class="math inline">\(\approx 0.509 \text{ L}^{0.5} \text{mol}^{-0.5}\)</span> for water at 25 °C). * <strong><span class="math inline">\(z\)</span></strong> is the charge of the ion in question (for orthophosphate, <span class="math inline">\(z\)</span> depends on pH, predominantly <span class="math inline">\(-1\)</span> for <span class="math inline">\(H_2PO_4^-\)</span> and <span class="math inline">\(-2\)</span> for <span class="math inline">\(HPO_4^{2-}\)</span>). * <strong><span class="math inline">\(I\)</span></strong> is the total ionic strength of the extracted solution, calculated from the measured concentrations of major cations (<span class="math inline">\(Ca^{2+}, Mg^{2+}, K^+\)</span>).</p>
@@ -760,7 +836,7 @@ Van Veldhoven, P. P., &amp; Mannaerts, G. P. (1987). Inorganic and organic phosp
 <li><strong>Calculate the Activity Coefficient (<span class="math inline">\(\gamma\)</span>):</strong> Applying the Davies equation based on the sample’s specific <span class="math inline">\(I\)</span>.</li>
 <li><strong>Compute Chemical Activity:</strong> <span class="math display">\[\text{Activity} (P) = [P_{CO_2}] \times \gamma\]</span></li>
 </ol>
-<p>By standardizing the measurements to their true thermodynamic activity, we remove the analytical bias introduced by varying soil salinity and pedoclimatic history, allowing for an absolute comparison of P-Intensity across all STYCS experimental sites. ## A.4 Supplementary Materials and Reproducibility</p>
+<p>By standardizing the measurements to their corrected thermodynamic activity, we remove the analytical bias introduced by varying soil salinity and pedoclimatic history, allowing for an absolute comparison of P-Intensity across all STYCS experimental sites. ## A.4 Supplementary Materials and Reproducibility</p>
 <p>This Master’s thesis was produced using a fully reproducible workflow with the <strong>Quarto</strong> publishing system. All data, R scripts, and analytical notebooks used to generate the figures, tables, and results presented in this work are openly available.</p>
 <p>The complete project can be cloned from the author’s GitHub repository, which contains the raw data, the R code for the kinetic and statistical models, and the Quarto source files.</p>
 <p><strong>GitHub Repository URL:</strong> <a href="https://github.com/ptochosgeorgos/Article-P-desorption-kinetics"><strong>[https://github.com/ptochosgeorgos/Article-P-desorption-kinetics]</strong></a></p>
