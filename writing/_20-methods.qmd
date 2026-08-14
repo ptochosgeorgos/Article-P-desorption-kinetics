@@ -285,7 +285,7 @@ variables_df <- data.frame(
 )
 
 # Apply styling to handle the long text in the processing column
-knitr::kable(variables_df) |>
+knitr::kable(variables_df, escape = FALSE) |>
   kableExtra::column_spec(4, width = "18em")
 ```
 
