@@ -259,6 +259,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#converting-to-field-scale-kg-p-ha" id="toc-converting-to-field-scale-kg-p-ha" class="nav-link" data-scroll-target="#converting-to-field-scale-kg-p-ha"><span class="header-section-number">18.1</span> Converting to Field-Scale (kg P / ha)</a></li>
   </ul></li>
+  <li><a href="#appendix-export-models-for-manuscript" id="toc-appendix-export-models-for-manuscript" class="nav-link" data-scroll-target="#appendix-export-models-for-manuscript"><span class="header-section-number">19</span> Appendix: Export Models for Manuscript</a></li>
   </ul>
 </nav>
     </div>
@@ -2695,9 +2696,41 @@ Random effect variances not available. Returned R2 does not account for random e
 </blockquote>
 <p>These plots perfectly bridge theory and practice: 1. <strong>The Phase Diagram (Left):</strong> Analytically proves that a soil’s environmental storage capacity is strictly bounded by its thermodynamic buffer power <span class="math inline">\(b\)</span>. 2. <strong>The GRUD Validation (Right):</strong> Re-derives the official Swiss GRUD guidelines from first principles. Heavy soils (high fine texture) and soils with high organic matter (<span class="math inline">\(C_{org}\)</span>) have mathematically higher buffer capacities, meaning their safe <span class="math inline">\(P_{AAE10}\)</span> limits are proportionally higher.</p>
 <p>The mathematical simulation confirms that out of all interacting variables, the system is strictly bounded by a single overarching parameter: <strong>pH 7.20</strong>. Above this pH, the required fertilizer addition (<span class="math inline">\(\Delta Q\)</span>) explodes. This perfectly validates our earlier physical hypothesis: the Fe/Al-based buffer model is not valid for calcareous soils, as apatite precipitation takes over at pH &gt; 7.2.</p>
-
-
 </section>
+</section>
+<section id="appendix-export-models-for-manuscript" class="level2" data-number="19">
+<h2 data-number="19" class="anchored" data-anchor-id="appendix-export-models-for-manuscript"><span class="header-section-number">19</span> Appendix: Export Models for Manuscript</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"models"</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Export Data</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(D_ready, <span class="st">"models/D_ready.rds"</span>)</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(D_ptf, <span class="st">"models/D_ptf.rds"</span>)</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(D_Yield, <span class="st">"models/D_Yield.rds"</span>)</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"D_Long_Agro"</span>)) <span class="fu">saveRDS</span>(D_Long_Agro, <span class="st">"models/D_Long_Agro.rds"</span>)</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Export PTF Models</span></span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ptf_agro_raw, <span class="st">"models/ptf_agro_raw.rds"</span>)</span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ptf_agro_thm, <span class="st">"models/ptf_agro_thm.rds"</span>)</span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ptf_geo_raw, <span class="st">"models/ptf_geo_raw.rds"</span>)</span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ptf_geo_thm, <span class="st">"models/ptf_geo_thm.rds"</span>)</span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Export Yield Models</span></span>
+<span id="cb75-16"><a href="#cb75-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"m_yield_raw_co2"</span>)) <span class="fu">saveRDS</span>(m_yield_raw_co2, <span class="st">"models/m_yield_raw_co2.rds"</span>)</span>
+<span id="cb75-17"><a href="#cb75-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"m_yield_thm_co2"</span>)) <span class="fu">saveRDS</span>(m_yield_thm_co2, <span class="st">"models/m_yield_thm_co2.rds"</span>)</span>
+<span id="cb75-18"><a href="#cb75-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"m_yield_raw_aae"</span>)) <span class="fu">saveRDS</span>(m_yield_raw_aae, <span class="st">"models/m_yield_raw_aae.rds"</span>)</span>
+<span id="cb75-19"><a href="#cb75-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-20"><a href="#cb75-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Export Plant Uptake Models (using variable names expected from the chunk)</span></span>
+<span id="cb75-21"><a href="#cb75-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"pup_agro_raw"</span>)) <span class="fu">saveRDS</span>(pup_agro_raw, <span class="st">"models/pup_agro_raw.rds"</span>)</span>
+<span id="cb75-22"><a href="#cb75-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"pup_agro_thm"</span>)) <span class="fu">saveRDS</span>(pup_agro_thm, <span class="st">"models/pup_agro_thm.rds"</span>)</span>
+<span id="cb75-23"><a href="#cb75-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"pup_geo_raw"</span>)) <span class="fu">saveRDS</span>(pup_geo_raw, <span class="st">"models/pup_geo_raw.rds"</span>)</span>
+<span id="cb75-24"><a href="#cb75-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">"pup_geo_thm"</span>)) <span class="fu">saveRDS</span>(pup_geo_thm, <span class="st">"models/pup_geo_thm.rds"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
