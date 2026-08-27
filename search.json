@@ -35,6 +35,13 @@
     "text": "The Breakdown of Covariance: Calcareous Soils\nThe Observable Phenomenon We do not measure “True P”. We measure the covariance between Intensity (\\(P_{CO2}\\)) and Quantity (\\(P_{AAE10}\\)). In non-calcareous soils (pH \\(\\le\\) 7.3), these two extractions co-vary predictably. However, when pH exceeds 7.3, this relationship violently breaks down: \\(P_{CO2}\\) continues to extract a wide variance of phosphorus, while \\(P_{AAE10}\\) collapses to near-zero.\nThe Chemical Mechanism This collapse is not a deviation from some unmeasurable truth; it is a physical failure of the AAE10 method itself. AAE10 uses an ammonium acetate-EDTA buffer calibrated to pH 4.65. In highly calcareous soils, the massive presence of free \\(CaCO_3\\) instantly neutralizes the acid buffer, and the flood of \\(Ca^{2+}\\) ions physically saturates the EDTA chelator. The affine mathematical model forced by the GRUD completely ignores this chemical boundary."
   },
   {
+    "objectID": "presentation_grud/index.html#the-illusion-of-precision-analytical-noise",
+    "href": "presentation_grud/index.html#the-illusion-of-precision-analytical-noise",
+    "title": "The GRUD Step Functions",
+    "section": "The Illusion of Precision: Analytical Noise",
+    "text": "The Illusion of Precision: Analytical Noise\nThe GRUD projects a false sense of administrative precision by forcing rigid class boundaries that the laboratory hardware itself cannot reliably support.\n\\(P_{AAE10}\\) Method Accuracy vs. Policy Boundaries - GRUD Bin Width: 5.0 mg P/kg - Lab Standard Deviation: 1.0 mg P/kg (95% CI = \\(\\pm\\) 2.0 mg P/kg) - The Reality: The 95% confidence interval spans 4.0 mg P/kg, consuming 80% of the entire classification bin. A sample with a true value of 9.0 mg P/kg (Class C) could easily measure as 7.0 (Class C) or 11.0 (Class B) strictly due to photometer noise.\n\\(P_{CO2}\\) Method Accuracy vs. Policy Boundaries - GRUD Bin Width: 0.31 mg P/kg (exactly 2.0 P-Testzahlen) - Lab Standard Deviation: up to ~0.36 Testzahlen (95% CI = \\(\\pm\\) 0.72 Testzahlen) - The Reality: The 95% confidence interval spans ~1.4 Testzahlen, consuming 70% of the bin width.\nBy imposing strict step-functions, the GRUD forces farmers over arbitrary fertilizer cliffs based on variance that is entirely within the margin of error of the photometer. A continuous mechanistic curve naturally absorbs this noise."
+  },
+  {
     "objectID": "notebooks/sanity_checks.html",
     "href": "notebooks/sanity_checks.html",
     "title": "Data Sanity Checks",
