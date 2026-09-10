@@ -73,8 +73,9 @@ bprior_yield <- c(
 )
 
 # HMC config
-cores_n <- 8
+cores_n <- 16
 chains_n <- 4
+threads_n <- 4
 iter_n <- 2000
 
 
@@ -82,12 +83,14 @@ iter_n <- 2000
 # Yield
 mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
-    cores = cores_n, chains = chains_n, iter = iter_n, file = "../models/base_yield")
+    cores = cores_n, chains = chains_n, threads = threading(threads_n), 
+    iter = iter_n, file = "../models/base_yield")
 
 # Uptake
 mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
-    cores = cores_n, chains = chains_n, iter = iter_n, file = "../models/base_uptake")
+    cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, file = "../models/base_uptake")
 
 
 ## ----fit-null-----------------------------------------------------------------
@@ -101,8 +104,8 @@ bform_Y_null <- bf(
 )
 
 mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ], 
-    backend = "cmdstanr", cores = cores_n, chains = chains_n, iter = iter_n, 
-    control = list(adapt_delta = 0.95), file = "../models/null_yield")
+    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_yield")
 
 
 ## ----fit-heuristic------------------------------------------------------------
@@ -117,8 +120,8 @@ bform_Y_heur <- bf(
 )
 
 mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 8:9), ], 
-    backend = "cmdstanr", cores = cores_n, chains = chains_n, iter = iter_n, 
-    control = list(adapt_delta = 0.95), file = "../models/heur_yield")
+    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_yield")
 
 
 ## ----fit-mechanistic----------------------------------------------------------
@@ -133,8 +136,8 @@ bform_Y_mech <- bf(
 )
 
 mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7, ], 
-    backend = "cmdstanr", cores = cores_n, chains = chains_n, iter = iter_n, 
-    control = list(adapt_delta = 0.95), file = "../models/mech_yield")
+    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_yield")
 
 
 ## ----extract-metrics----------------------------------------------------------
