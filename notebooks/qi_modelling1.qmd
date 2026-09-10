@@ -920,9 +920,71 @@ A negative $\beta_{\text{invb}}$ means soils with higher buffer power (stronger 
 The original design anticipated that K and Mg fertilization treatments would introduce sufficient variance in ionic strength to meaningfully shift the thermodynamic activity coefficient $\gamma$, making $a_{\text{CO}_2} = \gamma \cdot c_{\text{CO}_2}$ substantially different from the raw concentration. In practice, the treatment-induced ionic strength variation was too small — the activity-corrected and raw concentrations were nearly collinear across the available treatment range. Raw $P_{\text{CO}_2}$ is therefore retained as the concentration metric.
 
 ```{r mitscherlich-yield-models, fig.width=14, fig.height=5}
+# ==============================================================================
+# 0. GRUD Supply Class Matrices (From Presentation)
+# ==============================================================================
+grud_co2_matrix <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.2, 1.4, 1.4, 1.3, 1.2, 1.1, 1.2, 1.2, 1.1, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8, 1.0, 1.0, 1.0, 0.8, 0.6, 1.0, 1.0, 0.8, 0.6, 0.0,
+  1.0, 0.8, 0.6, 0.0, 0.0, 0.8, 0.8, 0.4, 0.0, 0.0, 0.8, 0.6, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0, 0.6, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), ncol = 5, byrow = TRUE)
+
+grud_aae_matrix <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.4, 1.5, 1.5, 1.4, 1.4, 1.2, 1.5, 1.4, 1.4, 1.2, 1.2,
+  1.4, 1.4, 1.2, 1.2, 1.0, 1.4, 1.2, 1.2, 1.0, 1.0, 1.2, 1.2, 1.2, 1.0, 1.0,
+  1.2, 1.0, 1.0, 1.0, 1.0, 1.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8, 0.8, 1.0, 1.0, 0.8, 0.8, 0.6,
+  1.0, 1.0, 0.8, 0.8, 0.6, 1.0, 0.8, 0.8, 0.6, 0.6, 0.8, 0.8, 0.8, 0.6, 0.6,
+  0.8, 0.8, 0.6, 0.6, 0.4, 0.8, 0.6, 0.6, 0.4, 0.4, 0.6, 0.6, 0.6, 0.4, 0.4,
+  0.6, 0.6, 0.4, 0.4, 0.0, 0.6, 0.4, 0.4, 0.0, 0.0, 0.4, 0.4, 0.4, 0.0, 0.0,
+  0.4, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+), ncol = 5, byrow = TRUE)
+
+get_grud_co2 <- function(p_val, clay) {
+  if (is.na(p_val) || is.na(clay)) return(NA)
+  clay_idx <- min(5, max(1, floor(clay / 10) + 1))
+  thresholds <- c(0.15, 0.46, 0.77, 1.08, 1.39, 1.70, 2.01, 2.32, 2.63, 2.94, 3.25, 3.56, 3.88, 4.19, 4.50)
+  row_idx <- which(p_val <= thresholds)[1]
+  if (is.na(row_idx)) row_idx <- 16
+  return(grud_co2_matrix[row_idx, clay_idx])
+}
+
+get_grud_aae <- function(p_val, clay) {
+  if (is.na(p_val) || is.na(clay)) return(NA)
+  clay_idx <- min(5, max(1, floor(clay / 10) + 1))
+  thresholds <- seq(4.9, 124.9, by = 5)
+  row_idx <- which(p_val <= thresholds)[1]
+  if (is.na(row_idx)) row_idx <- 26
+  return(grud_aae_matrix[row_idx, clay_idx])
+}
+
+get_grud_co2_vec <- Vectorize(get_grud_co2)
+get_grud_aae_vec <- Vectorize(get_grud_aae)
+
+# ==============================================================================
 # 1. Prepare the Dataset for YIELD (Grouped by Site AND Crop)
+# ==============================================================================
 D_Yield <- D_ready |>
     filter(!is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(fert_N_tot)) |>
+    
+    # Clean and aggregate Crop classes for purely arable cash-crop GRUD baseline
+    filter(!crop %in% c("SM", "WS", "CH", "KW", "ZF")) |>
+    mutate(crop = as.character(crop)) |>
+    mutate(crop = case_when(
+        crop %in% c("WW", "SW") ~ "Wheat",
+        TRUE ~ crop
+    )) |>
+    mutate(crop = factor(crop)) |>
+    
+    # Calculate the GRUD Supply Class Multipliers
+    mutate(
+        Supply_class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
+        Supply_class_AAE10 = get_grud_aae_vec(rollMean_soil_0_20_P_AAE10, rollMean_soil_0_20_clay)
+    ) |>
 
     # Calculate the Physical Highway (1/b) using Agro PTF (consistent with uptake models)
     mutate(
