@@ -100,7 +100,7 @@ bform_Y_null <- bf(
   nl = TRUE
 )
 
-mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3], 
+mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, iter = iter_n, 
     control = list(adapt_delta = 0.95), file = "../models/null_yield")
 
@@ -116,7 +116,7 @@ bform_Y_heur <- bf(
   nl = TRUE
 )
 
-mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 8:9)], 
+mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 8:9), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, iter = iter_n, 
     control = list(adapt_delta = 0.95), file = "../models/heur_yield")
 
@@ -132,7 +132,7 @@ bform_Y_mech <- bf(
   nl = TRUE
 )
 
-mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7], 
+mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, iter = iter_n, 
     control = list(adapt_delta = 0.95), file = "../models/mech_yield")
 
