@@ -42,7 +42,7 @@ d_brms <- d_brms |>
       site = as.factor(site),
       year = as.factor(year)
     ) |>
-    filter(is.finite(C_P), C_P > 0, !is.na(annual_yield_mp_DM), !is.na(z_inv_b_cons))
+    filter(is.finite(C_P), C_P > 0, !is.na(annual_yield_mp_DM), !is.na(z_inv_b))
 
 # Standard Priors
 priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
@@ -119,7 +119,7 @@ mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 8:9)]
 ```{r fit-mechanistic}
 # Yield Mechanistic: The exact model from bayesian_modelling.qmd using 1/b and Temp/Prec
 bform_Y_mech <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b_cons + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) * soil_0_20_P_CO2)),
+  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) * soil_0_20_P_CO2)),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
   cbase ~ crop - 1,
