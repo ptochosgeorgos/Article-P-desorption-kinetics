@@ -1,8 +1,18 @@
 ## ----setup, message=FALSE, warning=FALSE--------------------------------------
-library(tidyverse)
-library(brms)
-library(cmdstanr)
-library(loo)
+# Auto-install and load required packages
+required_pkgs <- c("tidyverse", "brms", "loo", "cmdstanr")
+for (pkg in required_pkgs) {
+  if (!require(pkg, character.only = TRUE)) {
+    if (pkg == "cmdstanr") {
+      install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+      library(cmdstanr)
+      cmdstanr::install_cmdstan()
+    } else {
+      install.packages(pkg, repos = "https://cloud.r-project.org")
+      library(pkg, character.only = TRUE)
+    }
+  }
+}
 
 if (!dir.exists("../models")) dir.create("../models")
 
