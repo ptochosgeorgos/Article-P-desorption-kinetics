@@ -27,6 +27,26 @@ if (!dir.exists("../models")) dir.create("../models")
 # Load pre-cleaned data
 d_brms <- readRDS("../data/D_Yield_clean.rds")
 
+# Recreate GRUD Supply Class logic natively
+grud_co2_matrix <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.2, 1.4, 1.4, 1.3, 1.2, 1.1, 1.2, 1.2, 1.1, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8, 1.0, 1.0, 1.0, 0.8, 0.6, 1.0, 1.0, 0.8, 0.6, 0.0,
+  1.0, 0.8, 0.6, 0.0, 0.0, 0.8, 0.8, 0.4, 0.0, 0.0, 0.8, 0.6, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0, 0.6, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), ncol = 5, byrow = TRUE)
+
+get_grud_co2 <- function(p_val, clay) {
+  if (is.na(p_val) || is.na(clay)) return(NA)
+  clay_idx <- min(5, max(1, floor(clay / 10) + 1))
+  thresholds <- c(0.15, 0.46, 0.77, 1.08, 1.39, 1.70, 2.01, 2.32, 2.63, 2.94, 3.25, 3.56, 3.88, 4.19, 4.50)
+  row_idx <- which(p_val <= thresholds)[1]
+  if (is.na(row_idx)) row_idx <- 16
+  return(grud_co2_matrix[row_idx, clay_idx])
+}
+get_grud_co2_vec <- Vectorize(get_grud_co2)
+
 # Inject GRUD Reference Targets
 crop_refs <- data.frame(
   crop = c("Wheat", "KA", "KM", "RA", "SJ", "WG", "ZR", "FR"),
@@ -38,6 +58,7 @@ d_brms <- d_brms |>
     left_join(crop_refs, by = "crop") |>
     mutate(
       C_P = annual_P_uptake / annual_yield_mp_DM,
+      Supply_class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
       crop = as.factor(crop),
       site = as.factor(site),
       year = as.factor(year)
