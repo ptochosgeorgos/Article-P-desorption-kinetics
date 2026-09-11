@@ -25,3 +25,23 @@ As a peer collaborating on scientific writing and complex engineering (R, Quarto
 
 ### 4. Trigger 
 Addressing the agent as "Deneal" is the absolute override to drop all default assistant behaviors and strictly adhere to this peer-level, high-friction, high-rigor dynamic.
+
+## Project Context: STYCS Phosphorus Desorption Kinetics
+
+### Scientific Focus & Findings
+- **Core Problem:** Current empirical Soil Test Phosphorus (STP) methods ($P_{CO_2}$, $P_{AAE10}$) use static pools and arbitrary supply classes that ignore the physics of how soils release P over time.
+- **Mechanistic Alternative:** We use a sequential extraction method and non-linear kinetic models to derive true thermodynamic parameters: maximum equilibrium intensity ($P_{desorb}$), buffer capacity ($b$), and desorption rate constant ($k$ or $v_0$).
+- **Key Results:**
+  - **Short-Term (Yield/Uptake):** For predicting site-normalized yield or crop P-uptake, empirical STPs perform adequately or superiorly because plant biology and local micro-climates dictate short-term outcomes more than fundamental soil physics.
+  - **Long-Term (P-Balance):** For predicting the 30-year cumulative P-Balance, empirical STPs completely fail. The kinetic model (specifically $P_{desorb}$) explains 57% of the variance because it respects the thermodynamic buffering of the soil.
+  - **The Disconnect:** Standard STP "Classes" (e.g., AAE10 Class C) smear chaotically across true physical buffer capacities. Two soils in the same "Adequate" empirical class can have fundamentally different physical abilities to maintain P supply over decades.
+
+### Methodological Evolution: The Shift to Bayesian Non-Linear Mixed Models
+- **Why Bayesian?** Initial frequentist non-linear mixed-effects models (e.g., `nlme`) failed to converge and fell into local minima when solving highly non-linear exponential asymptotes (like Mitscherlich or Michaelis-Menten curves). 
+- **Priors & Regularization:** By applying constrained priors (e.g., `normal(0,1)` for environmental covariates), we successfully regularized the physical probability space, eliminating divergent Hamiltonian transitions.
+- **Effect Structure:**
+  - **Hierarchical Formulation:** We use `(1 | site/year)` or `(1 | Site:year_f)` as random intercepts.
+  - **Rationale:** This explicitly absorbs site-specific yield ceilings and temporal weather noise, cleanly isolating the pure agronomic P signal (Marginal $R^2$) from massive pedoclimatic noise (Conditional $R^2$).
+
+### Key References
+- **Hirte et al. (2021):** Defines the experimental design of the STYCS long-term field trials (completely randomized block, 100% GRUD secondary nutrients uniformly applied).

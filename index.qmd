@@ -55,19 +55,19 @@ knitr::opts_chunk$set(dev = "tikz")
 
 \newpage
 
-<!-- {{< include writing/_25-results.qmd >}} -->
+{{< include writing/_25-results.qmd >}}
 
 \newpage
 
-<!-- {{< include writing/_30-discussion.qmd >}} -->
+{{< include writing/_30-discussion.qmd >}}
 
 \newpage
 
-<!-- {{< include writing/_35-conclusion.qmd >}} -->
+{{< include writing/_35-conclusion.qmd >}}
 
 \newpage
 
-<!-- {{< include writing/_40-acknowledgments.qmd >}} -->
+{{< include writing/_40-acknowledgments.qmd >}}
 
 
 \newpage

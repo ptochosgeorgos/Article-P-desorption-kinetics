@@ -12,9 +12,9 @@ Crucially, all other macronutrients—including Nitrogen (N), Potassium (K), and
 
 While the fundamental experimental design and baseline data collection follow the protocols described in @hirteYieldResponseSoil2021, the specific processing of the agronomic variables for this study diverges to explicitly isolate the chemical P-limitation. 
 
-Crop yields were measured annually at harvest. Total fresh biomass was recorded, and representative subsamples were oven-dried to determine the absolute dry mass yield. Plant tissue phosphorus concentration ($C_P$) was subsequently quantified from these dried subsamples. The total phosphorus uptake ($P_{uptake}$) for each plot was calculated stoichiometrically as the product of the dry mass yield and the measured $C_P$.
+Crop yields were measured annually at harvest. Total fresh biomass was recorded, and representative subsamples were oven-dried to determine the absolute dry mass yield. Plant tissue phosphorus concentration ($C_P$) was subsequently quantified from these dried subsamples. The total phosphorus uptake ($P_{\text{uptake}}$) for each plot was calculated stoichiometrically as the product of the dry mass yield and the measured $C_P$.
 
-To accurately quantify the historical legacy of the different fertilization treatments, the **Cumulative P Balance ($Cum\_P\_bal$)** was calculated for each individual plot. $Cum\_P\_bal$ is defined as the net sum of all P inputs (from the annual TSP fertilization) minus all P outputs (specifically, the P removed from the field via the harvested crop biomass) accumulated over the entire 30-year duration of the trial. This provides a direct, continuous metric of the anthropogenic P surplus or deficit, which drives the underlying thermodynamic buffering systems.
+To accurately quantify the historical legacy of the different fertilization treatments, the **Cumulative P Balance ($Cum\_P\_{\text{bal}}$)** was calculated for each individual plot. $Cum\_P\_{\text{bal}}$ is defined as the net sum of all P inputs (from the annual TSP fertilization) minus all P outputs (specifically, the P removed from the field via the harvested crop biomass) accumulated over the entire 30-year duration of the trial. This provides a direct, continuous metric of the anthropogenic P surplus or deficit, which drives the underlying thermodynamic buffering systems.
 
 ## Analytical Workflow and Data Integration
 
@@ -45,8 +45,8 @@ To answer the research questions, the methodology is structured into three highl
 
 % --- Left Column: Data Sources ---
 \node[data] (kin_data) at (0, 6.5) {Time-Series Data\\(Water Extraction)};
-\node[data] (bio_data) at (0, 3.25) {Biological Data\\$Y_{rel}$, $C_P$, $\mathit{Uptake}_{rel}$};
-\node[data] (thermo_data) at (0, 0) {Equilibration Data\\($P_{AAE10}$ vs $P_{CO_2}$)};
+\node[data] (bio_data) at (0, 3.25) {Biological Data\\$Y_{\mathrm{rel}}$, $C_P$, $P_{\mathrm{up, rel}}$};
+\node[data] (thermo_data) at (0, 0) {Equilibration Data\\($P_{\mathrm{AAE10}}$ vs $P_{\mathrm{CO}_2}$)};
 
 % --- Middle Column: Sub-Models ---
 \node[box, kinetics] (kin_model) at (4.5, 6.5) {Kinetic NLME Model\\(Desorption Rate)};
@@ -101,6 +101,7 @@ The six experimental sites are located in the main crop-growing regions of Switz
 #| label: tbl-sites-corrected
 #| tbl-cap: "Soil characteristics of the six long-term experimental sites. Data adapted from Hirte et al. (2021)."
 #| echo: false
+#| results: asis
 
 sites_df_corrected <- data.frame(
   Site = c("ALT", "CAD", "ELL", "GRA", "OEN", "REC"),
@@ -132,7 +133,7 @@ To capture the desorption process with high temporal resolution while preserving
 
 ### Temporal Stability of Amorphous Metal Oxides
 
-Although the kinetic parameters ($k$) and geochemical structural variables ($Fe_{ox}$, $Al_{ox}$) were measured comprehensively in the year 2023, they were applied to the entire 26-year historical dataset. This is justified because oxalate-extractable iron and aluminum represent native, poorly-crystalline structural minerals rather than highly dynamic labile nutrient pools. Under constant arable management, these amorphous phases are widely recognized as pedologically stable over decadal timescales [@schwertmann1964differenzierung; @lookman1995geostatistical]. Thus, the 2023 measurements serve as robust, invariant site-means to characterize the fundamental sorption capacity of each experimental field.
+Although the kinetic parameters ($k$) and geochemical structural variables ($Fe_{\text{ox}}$, $Al_{\text{ox}}$) were measured comprehensively in the year 2023, they were applied to the entire 26-year historical dataset. This is justified because oxalate-extractable iron and aluminum represent native, poorly-crystalline structural minerals rather than highly dynamic labile nutrient pools. Under constant arable management, these amorphous phases are widely recognized as pedologically stable over decadal timescales [@schwertmann1964differenzierung; @lookman1995geostatistical]. Thus, the 2023 measurements serve as robust, invariant site-means to characterize the fundamental sorption capacity of each experimental field.
 
 ## Statistical Analysis and Modeling {#sec-statistical-analysis}
 
@@ -145,37 +146,47 @@ To establish the foundational kinetic parameters, physical desorption curves wer
 **Deriving the Desorption Rate Constant ($k$):**
 A non-linear mixed-effects model (`nlme`) was fitted to these high-resolution extraction curves. The desorption process was modeled as a hyperbolic, asymptotic saturation curve derived from the exact solution of the first-order rate equation:
 
-$$c(t) = c_{max} \times (1 - e^{-k \times t'})$$
+$$
+c(t) = c_{\text{max}} \times (1 - e^{-k \times t'})
+$$
 
-Where $c(t)$ is the desorbed P concentration at time $t$, $c_{max}$ is the maximum size of the desorbable P pool (the asymptote), $k$ is the first-order desorption rate constant, and $t'$ is an adjusted time ($t_{min} + 3 \text{ min}$) representing the empirically determined handling and resuspension time delay required to break apart the centrifuged pellet before true, uniform first-order desorption commenced. Sample-specific deviations were managed with the nested random effect structure `c_max + k ~ 1 | site / plot`, allowing both parameters to vary freely across sites and individual field plots.
+Where $c(t)$ is the desorbed P concentration at time $t$, $c_{\text{max}}$ is the maximum size of the desorbable P pool (the asymptote), $k$ is the first-order desorption rate constant, and $t'$ is an adjusted time ($t_{\text{min}} + 3 \text{ min}$) representing the empirically determined handling and resuspension time delay required to break apart the centrifuged pellet before true, uniform first-order desorption commenced. Sample-specific deviations were managed with the nested random effect structure `c_max + k ~ 1 | site / plot`, allowing both parameters to vary freely across sites and individual field plots.
 
 **Upscaling via Pedotransfer Function (PTF):**
-Because this labor-intensive 60-minute kinetic extraction cannot be retroactively applied to the entire 30-year historical STYCS archive, a fundamental **Pedotransfer Function (PTF)** was constructed to predict the rate constant for missing soils and treatments. To ensure the upscaling process remained rigorously grounded in established mechanistic physics rather than arbitrary empirical correlations, the PTF was structured upon the Arrhenius equation—where reaction rates are driven by the competing activation energies of dominant sorption surfaces. Accordingly, a linear model (`lm`) was trained to predict $\ln(k)$ using explicitly pedogenetic predictor variables: the natural log of the ratio of amorphous aluminum to iron oxides ($\ln(Al_{ox} / Fe_{ox})$) and soil pH.
+Because this labor-intensive 60-minute kinetic extraction cannot be retroactively applied to the entire 30-year historical STYCS archive, a fundamental **Pedotransfer Function (PTF)** was constructed to predict the rate constant for missing soils and treatments. To ensure the upscaling process remained rigorously grounded in established mechanistic physics rather than arbitrary empirical correlations, the PTF was structured upon the Arrhenius equation—where reaction rates are driven by the competing activation energies of dominant sorption surfaces. Accordingly, a linear model (`lm`) was trained to predict $\ln(k)$ using explicitly pedogenetic predictor variables: the natural log of the ratio of amorphous aluminum to iron oxides ($\ln(Al_{\text{ox}} / Fe_{\text{ox}})$) and soil pH.
 
 By anchoring the PTF to these inherently pedogenetic (treatment-independent) geochemical traits, we successfully extrapolated a predicted rate constant ($k_{pred}$) for every spatial and temporal plot in the dataset. 
 
 From these predicted parameters, a novel proxy for agronomic availability, the **Dynamic Desorption Velocity ($v_0$)**, was defined mathematically as the product of the predicted rate constant and the historically measured static concentration pool:
 
-$$v_0 = k_{pred} \cdot P_{CO_2}$$
+$$
+v_0 = k_{pred} \cdot P_{\text{CO}_2}
+$$
 
 ### 2. Thermodynamic $Q(I)$ Isotherms and Buffering Capacity
 
-To deduce the Phosphorus Buffering Capacity (PBC), a thermodynamic Quantity-Intensity ($Q/I$) framework was constructed. The $P_{AAE10}$ extraction was utilized as the standard mass Quantity ($Q$, $\text{mg P kg}^{-1}$), while the Davies-corrected $a_{max}$ was utilized as the native Intensity ($I$, $\mu\text{M}$). It must be acknowledged that relying on $P_{AAE10}$ as a proxy for absolute thermodynamic Quantity carries inherent mechanistic limitations. As demonstrated by isotopic exchange kinetics (IEK) studies, the extraction fluid's EDTA chelator actively dissolves non-exchangeable calcium phosphates—particularly in high-pH or high-CEC clays—leading to isotopic recovery rates as low as 25% [@demariaExchangeabilityPhosphateExtracted2005]. Furthermore, in heavily buffered clay soils, the chelator physically saturates when overwhelmed by exchangeable background cations. Once saturated, the test becomes entirely "blind" to any further thermodynamic $Q$, artificially collapsing the measured $\Delta Q$ parameter. 
+To deduce the Phosphorus Buffering Capacity (PBC), a thermodynamic Quantity-Intensity ($Q/I$) framework was constructed. The $P_{\text{AAE10}}$ extraction was utilized as the standard mass Quantity ($Q$, $\text{mg P kg}^{-1}$), while the Davies-corrected $a_{\text{max}}$ was utilized as the native Intensity ($I$, $\mu\text{M}$). It must be acknowledged that relying on $P_{\text{AAE10}}$ as a proxy for absolute thermodynamic Quantity carries inherent mechanistic limitations. As demonstrated by isotopic exchange kinetics (IEK) studies, the extraction fluid's EDTA chelator actively dissolves non-exchangeable calcium phosphates—particularly in high-pH or high-CEC clays—leading to isotopic recovery rates as low as 25% [@demariaExchangeabilityPhosphateExtracted2005]. Furthermore, in heavily buffered clay soils, the chelator physically saturates when overwhelmed by exchangeable background cations. Once saturated, the test becomes entirely "blind" to any further thermodynamic $Q$, artificially collapsing the measured $\Delta Q$ parameter. 
 
 The relationship between these variables across the varying fertilizer treatments at each site was parameterized using a log-linearized **Freundlich Isotherm** [@freundlich1906over], which is universally recognized for describing ion sorption on heterogeneous soil surfaces:
 
-$$Q = K_f \cdot I^{\frac{1}{n}}$$
+$$
+Q = K_f \cdot I^{\frac{1}{n}}
+$$
 
 The apparent Phosphorus Buffering Capacity (PBC) for each specific site and state was then calculated analytically as the first derivative of the fitted Freundlich isotherm with respect to Intensity:
 
-$$\text{PBC} = \frac{dQ}{dI} = K_f \cdot \frac{1}{n} \cdot I^{\left(\frac{1}{n} - 1\right)}$$
+$$
+\text{PBC} = \frac{dQ}{dI} = K_f \cdot \frac{1}{n} \cdot I^{\left(\frac{1}{n} - 1\right)}
+$$
 
 **Predicting Quantity via Pedotransfer Functions (PTF)**
-To evaluate the practical scalability of these thermodynamic concepts, empirical Quantity ($P_{AAE10}$) was modeled directly from Intensity using a log-linear mixed-effects model (`lme`):
+To evaluate the practical scalability of these thermodynamic concepts, empirical Quantity ($P_{\text{AAE10}}$) was modeled directly from Intensity using a log-linear mixed-effects model (`lme`):
 
-$$\ln(Q) = \beta_0 + \beta_I \cdot \ln(I) + \sum (\beta_j \cdot Z_j) + \ln(I) \sum (\beta_{int,j} \cdot Z_j) + u_{site} + u_{plot|site}$$
+$$
+\ln(Q) = \beta_0 + \beta_I \cdot \ln(I) + \sum (\beta_j \cdot Z_j) + \ln(I) \sum (\beta_{int,j} \cdot Z_j) + u_{site} + u_{plot|site}
+$$
 
-*   **The Covariates ($Z_j$):** Geochemical pedotransfer variables including soil fine texture (clay + silt), pH, $C_{org}$, and exchangeable background cations (Ca, Mg, K). These are mechanistically justified as they structurally determine the density and binding energy of the soil's sorption complexes (e.g., amorphous metal oxides and calcium carbonates).
+*   **The Covariates ($Z_j$):** Geochemical pedotransfer variables including soil fine texture (clay + silt), pH, $C_{\text{org}}$, and exchangeable background cations (Ca, Mg, K). These are mechanistically justified as they structurally determine the density and binding energy of the soil's sorption complexes (e.g., amorphous metal oxides and calcium carbonates).
 *   **Interaction Terms:** The covariates directly interact with Intensity because the *slope* of the Q/I isotherm (the buffer power) is fundamentally altered by these intrinsic geochemical properties.
 *   **Random Effects ($u_{year|site}$):** Nested temporal and spatial intercepts designed to rigorously absorb unmeasured macro-climatic shifts and temporal biological chaos (e.g. frost timing, pest pressure, radiation) across the different experimental years, preventing pseudo-replication.
 
@@ -184,67 +195,89 @@ $$\ln(Q) = \beta_0 + \beta_I \cdot \ln(I) + \sum (\beta_j \cdot Z_j) + \ln(I) \s
 To rigorously separate underlying P-limitation from the immense baseline yield variance caused by pedoclimatic shifts and crop genetics, all raw yield and P-uptake metrics were normalized to a biologically strict empirical ceiling. For every combination of site, year, and crop, the absolute maximum value observed across all fertilization treatments was assigned as $100\%$ capacity.
 
 $$
-Y_{rel} = \frac{Y_{plot}}{\max_{treatment}(Y)_{site, year, crop}}
+Y_{\text{rel}} = \frac{Y_{plot}}{\max_{treatment}(Y)_{site, year, crop}}
 $$
 
-Unlike using a specific fertilization label (e.g., the P166 treatment average), this method guarantees that the phenomenological Mitscherlich asymptote of $1.0$ is strictly bounded. It ensures that the unconstrained biological ceiling for that specific environment is defined by the actual absolute maximum biomass it produced, structurally eliminating random negative constraints (e.g., localized compaction or pest damage) that might artificially depress a specific treatment average. This mathematical operation removes the variance in the absolute biological ceiling, strictly isolating the chemical P-limitation from the overarching temporal pedoclimatic noise.
+Unlike using a specific fertilization label (e.g., the P166 treatment average), this method guarantees that the empirical Mitscherlich asymptote of $1.0$ is strictly bounded. It ensures that the unconstrained biological ceiling for that specific environment is defined by the actual absolute maximum biomass it produced, structurally eliminating random negative constraints (e.g., localized compaction or pest damage) that might artificially depress a specific treatment average. This mathematical operation removes the variance in the absolute biological ceiling, strictly isolating the chemical P-limitation from the overarching temporal pedoclimatic noise.
 
-### 4. Comparative Modeling of Agronomic Outcomes
+### 4. Bayesian Modeling of Agronomic Outcomes
 
-To test the core hypothesis, biological response variables were modeled using non-linear mixed-effects models (`nlme`), recognizing that plant growth and nutrient uptake follow saturating, asymptotic biological curves rather than linear relationships.
+To test the core hypothesis and rigorously handle the structural heteroskedasticity inherent in agronomic field data, the biological response variables were modeled using Bayesian non-linear mixed-effects models via the `brms` package [@bürknerBrmsPackageBayesian2017]. Unlike frequentist approaches that often suffer from algorithmic convergence failures (singularities) when fitting complex asymptotes near biological boundaries, the Bayesian framework allows us to define mathematically rigorous, biologically grounded priors to constrain the parameter space. 
 
-**1. The Mitscherlich Yield Model**
-The agronomic yield response was modeled using the classical Mitscherlich equation. The explicit mathematical formulation replaces the static rate constant with a dynamic effective rate ($c_{eff}$):
+Due to the extreme non-linearity of the models—which multiply asymptotic kinetics by exponential environmental covariates across hundreds of random intercepts—the computational load was massive. The models were compiled and executed using the highly optimized `cmdstanr` backend [@gabry2023cmdstanr], enabling within-chain multi-threading to parallelize the Hamiltonian trajectories. All models utilized the No-U-Turn Sampler (NUTS) with four Markov Chain Monte Carlo (MCMC) chains, each running for 2000 iterations (1000 warmup), ensuring robust exploration of the posterior distributions. 
 
-$$Y_{rel} = 1 - \exp\left(- c_{eff} \cdot (\text{STP} + E_{base}) \right)$$
+To aid clarity across the manuscript, the three core model architectures are explicitly labeled:
 
-Where $c_{eff}$ is dynamically modulated by a set of fixed pedoclimatic covariates ($Z_i$) and nested spatial random effects ($u$):
+**1. The Yield Model ($B_{Yield}$)**
+The agronomic yield response was modeled using the classical Mitscherlich equation. The explicit mathematical formulation replaces the static rate constant with a dynamic effective rate ($c_{\text{eff}}$):
 
-$$c_{eff} = (c_{base\_crop} + u_{site} + u_{plot|site}) \cdot \exp\left( \sum \beta_i \cdot Z_i \right)$$
+$$
+Y_{\text{rel}} = 1 - \exp\left(- c_{\text{eff}} \cdot (\text{STP} + E_{\text{base}}) \right)
+$$
 
-*   **The Diffusion Bottleneck ($\beta_{invb}$):** The inverse physical buffer power ($1/b$) acts as the primary transport penalty. Soils with high buffer power cannot replenish the root depletion zone fast enough via diffusion, functionally decreasing the agronomic efficiency of the measured STP.
+Where $c_{\text{eff}}$ is dynamically modulated by a set of fixed pedoclimatic covariates ($Z_i$) and nested spatial random effects ($u$):
+
+$$
+c_{\text{eff}} = (c_{\text{base\_crop}} + u_{site} + u_{plot|site}) \cdot \exp\left( \sum \beta_i \cdot Z_i \right)
+$$
+
+*   **The Diffusion Bottleneck ($\beta_{\text{invb}}$):** The inverse physical buffer power ($1/b$) acts as the primary transport penalty. Soils with high buffer power cannot replenish the root depletion zone fast enough via diffusion, functionally decreasing the agronomic efficiency of the measured STP.
 *   **Speciation and Solubility ($\beta_{pH}$):** Soil pH fundamentally controls the speciation of orthophosphate in solution and drives precipitation dynamics, altering thermodynamic stability.
 *   **Stoichiometric Co-Limitation ($\beta_{N}, \beta_{K}, \beta_{Mg}$):** Following Liebig's Law of the Minimum, the plant's ability to efficiently convert P into biomass is inherently capped if Nitrogen, Potassium, or Magnesium are limiting.
 *   **Pedoclimatic Noise ($\beta_{Temp}, \beta_{Prec}$):** Temperature and precipitation anomalies dictate physical soil moisture (governing diffusion transport) and the basic biological metabolic rate.
 
-**2. The Plant Uptake Model (Michaelis-Menten)**
+**2. The Plant Uptake Model ($B_{Uptake}$)**
 Actual mass-flux of P into the plant was modeled using a fractional Michaelis-Menten biological limit:
 
-$$Uptake_{rel} = \frac{U_{eff} \cdot \text{STP}}{K_{m} + \text{STP}}$$
+$$
+Uptake_{\text{rel}} = \frac{U_{\text{eff}} \cdot \text{STP}}{K_{m} + \text{STP}}
+$$
 
-Where the effective maximum uptake capacity ($U_{eff}$) expands upon the base physiological limit ($U_{base}$) via critical covariates:
+Where the effective maximum uptake capacity ($U_{\text{eff}}$) expands upon the base physiological limit ($U_{\text{base}}$) via critical covariates:
 
-$$U_{eff} = U_{base} + \beta_{temp} \cdot Z_{temp} + \beta_{N} \cdot Z_{N} + \beta_{v0} \cdot Z_{v0} + u_{site} + u_{year|site}$$
+$$
+U_{\text{eff}} = U_{\text{base}} + \beta_{\text{temp}} \cdot Z_{\text{temp}} + \beta_{N} \cdot Z_{N} + \beta_{v0} \cdot Z_{v0} + u_{site} + u_{year|site}
+$$
 
 *   **The Kinetics ($\beta_{v0}$):** The dynamic desorption velocity ($v_0$) directly increases maximal uptake capacity by continuously resupplying the root depletion zone.
 *   **Crop-Specific Affinity ($K_m$):** The half-saturation constant ($K_m$) is modeled as a fixed effect grouped by *crop species*, reflecting the differing physiological root architectures and transporter affinities of maize, wheat, etc.
-*   **Random Effects ($u_{year|site}$):** Nested `site/year` intercepts absorb the massive macro-climatic shifts (e.g., a regional drought year systemically lowering the overall $U_{base}$).
+*   **Random Effects ($u_{year|site}$):** Nested `site/year` intercepts absorb the massive macro-climatic shifts (e.g., a regional drought year systemically lowering the overall $U_{\text{base}}$).
 
-**3. The Tissue Concentration Model ($C_P$)**
-To expose the physiological dynamics of tissue concentrations, the apparent $C_P$ was modeled phenomenologically. Rigorous mixed-effects testing revealed that the classical Piper-Steenbjerg carbon dilution penalty was statistically undetectable across pedoclimatic noise. Instead, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration ($C_{base}$), followed by a linear **Luxury Accumulation** phase ($S_{acc}$):
+**3. The Tissue Concentration Model ($B_{C_P}$)**
+To expose the physiological dynamics of tissue concentrations, the apparent $C_P$ was modeled empirically using a **Mitscherlich** saturation curve. Because true Piper-Steenbjerg carbon dilution penalties (a drop in concentration at initial growth stages) were statistically undetectable across the pedoclimatic noise, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration ($C_{\text{min}}$), followed by an asymptotic **Luxury Accumulation** phase bounded by $\Delta C$:
 
-$$C_P = C_{base} + S_{acc} \cdot \text{STP}$$
+$$
+C_P = C_{\text{min}} + \Delta C \cdot \left(1 - \exp\left(- c_{\text{eff}} \cdot \text{STP}\right)\right)
+$$
 
-*   **Crop-Specific Baseline ($C_{base}$):** The fundamental, minimum tissue concentration required for the plant to physically exist, modeled as a fixed effect grouped by crop species.
-*   **Luxury Accumulation ($S_{acc}$):** Once basic metabolic needs are met, plants linearly accumulate "luxury" P in their tissues (primarily in the vegetative biomass). This slope ($S_{acc}$) is significantly driven by the soil's desorption velocity ($v_0$) and buffer power ($1/b$), which dictate how rapidly the soil can push excess phosphorus into the plant.
-*   **A Phenomenological $P_{crit}$:** Because field data rarely captures conditions severe enough to observe true Piper-Steenbjerg dilution, defining $P_{crit}$ via abstract mathematical minima of $C_P$ curves is flawed. Instead, we define $P_{crit}$ phenomenologically: as the threshold where the plant has achieved its physiological baseline ($C_{base}$) *plus* a defined luxury reserve buffer (e.g., $x\%$) strictly necessary to survive difficult environmental phases like pH swings or transient droughts.
+*   **Crop-Specific Baseline ($C_{\text{min}}$):** The fundamental, minimum tissue concentration required for the plant to physically exist, modeled as a fixed effect grouped by crop species (`~ crop - 1 + (1 | site/year)`).
+*   **Luxury Accumulation ($\Delta C$):** Once basic metabolic needs are met, plants accumulate "luxury" P in their tissues up to a theoretical maximum.
+*   **Accumulation Rate ($c_{\text{eff}}$):** This rate is significantly driven by pedoclimatic covariates and transport penalties, dictating how rapidly the soil can push excess phosphorus into the plant.
+
+**Bayesian Prior Elicitation and Biological Bounds**
+To prevent mathematical singularities and ensure the parameter space remained strictly within physical reality, informative bounds were placed on the fundamental biological constants:
+- **Baseline and Maximum Yield ($Y_0, A$):** Bounded strictly $> 0$ with `normal(50, 50)` and `normal(100, 50)` respectively, preventing the MCMC algorithm from proposing mathematically impossible negative yields.
+- **Maximum Uptake Velocity ($V_{\text{max}}$):** Bounded $> 0$ with `normal(30, 15)`, reflecting standard crop physiological limits (typically 15–45 kg P/ha).
+- **Tissue Concentration Minimum ($C_{\text{min}}$):** Bounded $> 0$ with `normal(1.5, 1.0)`, as a baseline tissue concentration of $\approx 1.5 \text{ g/kg DM}$ is universally required for basic cellular function in these crops.
+- **Environmental Covariates ($\beta$):** Strongly regularizing standard normal priors `normal(0, 1)` were applied to all standardized environmental $Z$-scores. This tight regularization was mathematically imperative; initial testing with weakly informative priors (`normal(0, 5)`) resulted in thousands of divergent transitions because the exponential parameterization ($\exp(\beta \cdot Z)$) caused rapid geometric explosions in the Hamiltonian gradients. Constraining the priors to $\pm 3$ standard deviations physically stabilized the MCMC sampler while allowing robust exploration of realistic agronomic effects.
 
 ```{r}
 #| label: tbl-variables-updated
 #| tbl-cap: "Comprehensive description of all response variables and covariates used in the thermodynamic and agronomic models, including their explicit preprocessing pipelines."
 #| echo: false
+#| results: asis
 
 variables_df <- data.frame(
   Abbreviation = c(
-    "$Y_{rel}$", "$Uptake_{rel}$", "$\\ln(P_{AAE10})$",
-    "$P_{CO2}$", "$a_{CO2}$", "$k$", "$v_0$", "$\\text{PBC}^{-1}$ ($1/b$)",
-    "$Fe_{ox}, Al_{ox}$", "Fine Texture", "pH", "$C_{org}$", "Ca, Mg, K",
-    "$Temp_{Anom}, Prec_{Anom}$", "Fert N"
+    "$Y_{\\text{rel}}$", "$P_{\\text{up, rel}}$", "$\\ln(P_{\\text{AAE10}})$",
+    "$P_{\\text{CO}_2}$", "$a_{\\text{CO}_2}$", "$k_{\\text{des}}$", "$v_{\\text{des}}$", "$\\text{PBC}^{-1}$",
+    "$Fe_{\\text{ox}}, Al_{\\text{ox}}$", "$\\text{Clay} + \\text{Silt}$", "$\\text{pH}_{\\text{H}_2\\text{O}}$", "$C_{\\text{org}}$", "$Ca_{\\text{ex}}, Mg_{\\text{ex}}, K_{\\text{ex}}$",
+    "$T_{\\text{anom}}, Pr_{\\text{anom}}$", "$N_{\\text{fert}}$"
   ),
   `Variable` = c(
     "Relative Yield", "Relative P Uptake", "Log Quantity Pool",
-    "Empirical Intensity", "Thermodynamic Intensity", "Desorption Rate", "Desorption Velocity", "Inverse Buffer Power",
-    "Amorphous Oxides", "Clay + Silt", "Soil pH ($H_2O$)", "Organic Carbon", "Exchangeable Cations",
+    "Empirical Intensity", "Thermodynamic Intensity", "Desorption Rate Constant", "Initial Desorption Velocity", "Inverse Buffer Power",
+    "Amorphous Oxides", "Fine Texture", "Soil pH", "Organic Carbon", "Exchangeable Cations",
     "Climate Anomalies", "Nitrogen Fertilizer"
   ),
   Description = c(
@@ -271,7 +304,7 @@ variables_df <- data.frame(
     "Raw measured values. Log-transformed for PTF training.",
     "Calculated via Davies equation accounting for ionic strength. Log-transformed.",
     "Missing historical plots were imputed using a pedogenetic PTF trained on log(Al/Fe) + pH. Standardized (z-score).",
-    "Calculated as product of predicted $k$ and empirical $P_{CO2}$. Standardized (z-score).",
+    "Calculated as product of predicted $k$ and empirical $P_{\text{CO}_2}$. Standardized (z-score).",
     "Analytically derived from predicted Freundlich isotherms. Standardized (z-score).",
     "Averaged into invariant site-means to remove management artifacts, log-transformed, and standardized.",
     "Log-transformed sum to linearize bounds, standardized. Missing values imputed with site-means.",
@@ -285,43 +318,54 @@ variables_df <- data.frame(
 )
 
 # Apply styling to handle the long text in the processing column
-knitr::kable(variables_df, escape = FALSE) |>
-  kableExtra::column_spec(4, width = "18em")
+knitr::kable(variables_df, format = "markdown", escape = FALSE)
 ```
 
 ### 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)
 
 To mechanistically validate the field-scale statistical findings and visualize the limitations of static buffering capacity, a modified radial transport model based on Barber-Cushman principles [@barber1981soil] was constructed. Standard iterations of the Barber-Cushman model calculate radial diffusion using stoichiometric concentration ($C_l$) and a static buffer power ($b = \Delta Q / \Delta I$), effectively assuming instantaneous soil-solution equilibrium.
 
-To reflect the kinetic bottlenecks identified in this study, the partial differential equation (PDE) for radial transport in cylindrical coordinates was modified. The driving gradient was kept as empirical concentration ($c_l$), and the static buffer power was replaced with a dynamic, first-order kinetic source term ($R_{desorption}$):
+To reflect the kinetic bottlenecks identified in this study, the partial differential equation (PDE) for radial transport in cylindrical coordinates was modified. The driving gradient was kept as empirical concentration ($c_l$), and the static buffer power was replaced with a dynamic, first-order kinetic source term ($R_{\text{desorption}}$):
 
-$$\frac{\partial c_l}{\partial t} = D_e \left( \frac{\partial^2 c_l}{\partial r^2} + \frac{1}{r} \frac{\partial c_l}{\partial r} \right) + \frac{r_0 v_0}{r} \frac{\partial c_l}{\partial r} + R_{desorption}$$
+$$
+\frac{\partial c_l}{\partial t} = D_e \left( \frac{\partial^2 c_l}{\partial r^2} + \frac{1}{r} \frac{\partial c_l}{\partial r} \right) + \frac{r_0 v_0}{r} \frac{\partial c_l}{\partial r} + R_{\text{desorption}}
+$$
 
 Where $D_e$ is the effective diffusion coefficient, $r$ is the radial distance, $r_0$ is the root radius, and $v_0$ is the water flux at the root surface. The kinetic source term resupplying the solution was defined using the experimentally derived parameters:
 
-$$R_{desorption} = k \cdot (c_{max} - c_l)$$
+$$
+R_{\text{desorption}} = k \cdot (c_{\text{max}} - c_l)
+$$
 
 Furthermore, the inner boundary condition at the root surface ($r = r_0$) was upgraded to reflect a dual-affinity Michaelis-Menten uptake system [@michaelis1913kinetik], accounting for both high-affinity (PHT1) and low-affinity (LATS) transporter kinetics. The binding kinetics of these transporters are governed by the fundamental thermodynamic driving force of the substrate: its chemical activity ($a$), not its total stoichiometric concentration ($c$) [@Atkins2011Physical; @Minton2001Macromolecular]. The boundary condition was defined as:
 
-$$J_r = \frac{V_{max1} \cdot (c_l - c_{min})}{K_{m1} + (c_l - c_{min})} + \frac{V_{max2} \cdot (c_l - c_{min})}{K_{m2} + (c_l - c_{min})}$$
+$$
+J_r = \frac{V_{max1} \cdot (c_l - c_{\text{min}})}{K_{m1} + (c_l - c_{\text{min}})} + \frac{V_{max2} \cdot (c_l - c_{\text{min}})}{K_{m2} + (c_l - c_{\text{min}})}
+$$
 
 The modified PDEs were solved numerically in R utilizing the `ReacTran` and `deSolve` packages to generate dynamic spatial profiles of the P-depletion zone over time.
 
-### 6. Derivation of Critical Thresholds ($P_{crit}$)
+### 6. Derivation of Critical Thresholds ($P_{\text{crit}}$)
 
-To translate the phenomenological models into actionable agronomic metrics, the critical Soil Test Phosphorus ($P_{crit}$) threshold was analytically derived from all three modeling frameworks. Rather than relying on arbitrary inflection points, each derivation represents a distinct physiological or agronomic paradigm:
+To translate the mechanistic models into actionable agronomic metrics, the critical Soil Test Phosphorus ($P_{\text{crit}}$) threshold was analytically derived from all three modeling frameworks. Rather than relying on arbitrary inflection points, each derivation represents a distinct physiological or agronomic paradigm:
 
 **1. The Relative Yield Paradigm (The Production Target)**
-Agronomically, $P_{crit}$ is classically defined as the STP required to achieve a specific operational threshold, commonly set as an $x\%$ relative yield target ($q_Y$, e.g., 0.95). By setting the relative yield target to $q_Y$ in the full Mitscherlich equation ($Y_{rel} = 1 - \exp(-c_{eff} \cdot (\text{STP} + E_{base}))$), the required soil concentration is extracted:
-$$P_{crit\_Y} = \frac{-\ln(1 - q_Y)}{c_{eff}} - E_{base}$$
-Where the effective rate constant incorporates the pedoclimatic penalties: $c_{eff} = c_{base} \cdot \exp(\beta_{kin} \cdot \text{Kinetics} + \dots)$.
+Agronomically, $P_{\text{crit}}$ is classically defined as the STP required to achieve a specific operational threshold, commonly set as an $x\%$ relative yield target ($q_Y$, e.g., 0.95). By setting the relative yield target to $q_Y$ in the full Mitscherlich equation ($Y_{\text{rel}} = 1 - \exp(-c_{\text{eff}} \cdot (\text{STP} + E_{\text{base}}))$), the required soil concentration is extracted:
+$$
+P_{crit\_Y} = \frac{-\ln(1 - q_Y)}{c_{\text{eff}}} - E_{\text{base}}
+$$
+Where the effective rate constant incorporates the pedoclimatic penalties: $c_{\text{eff}} = c_{\text{base}} \cdot \exp(\beta_{kin} \cdot \text{Kinetics} + \dots)$.
 
 **2. The Tissue Concentration Paradigm (The Physiological Buffer)**
-Because true Piper-Steenbjerg minima were statistically absent, the tissue concentration critical limit was redefined as the threshold necessary to guarantee the plant's fundamental metabolic baseline ($C_{base}$) *plus* a luxury reserve ($\gamma$, representing an $x\%$ safety buffer). Solving the linear mixed-effects model ($C_P = C_{base} + S_{acc} \cdot \text{STP}$) for the target $C_{base}(1 + \gamma)$ yields:
-$$P_{crit\_C} = \frac{\gamma \cdot C_{base}}{S_{base} + \beta_{v0} \cdot v_0 + \beta_{invb} \cdot \frac{1}{b}}$$
-This derivation explicitly demonstrates that soils with a faster desorption velocity ($v_0$) or stronger buffer power ($1/b$) create a steeper accumulation slope ($S_{acc}$), inherently reducing the $P_{crit}$ required in the soil to safely buffer the crop against stress.
+Because true Piper-Steenbjerg minima were statistically absent, the tissue concentration critical limit was redefined as the threshold necessary to guarantee the plant's fundamental metabolic baseline ($C_{\text{base}}$) *plus* a luxury reserve ($\gamma$, representing an $x\%$ safety buffer). Solving the linear mixed-effects model ($C_P = C_{\text{base}} + S_{\text{acc}} \cdot \text{STP}$) for the target $C_{\text{base}}(1 + \gamma)$ yields:
+$$
+P_{crit\_C} = \frac{\gamma \cdot C_{\text{base}}}{S_{\text{base}} + \beta_{v0} \cdot v_0 + \beta_{\text{invb}} \cdot \frac{1}{b}}
+$$
+This derivation explicitly demonstrates that soils with a faster desorption velocity ($v_0$) or stronger buffer power ($1/b$) create a steeper accumulation slope ($S_{\text{acc}}$), inherently reducing the $P_{\text{crit}}$ required in the soil to safely buffer the crop against stress.
 
 **3. The Relative Uptake Paradigm (The Mass-Transfer Limit)**
-While yield integrates the entire season, instantaneous phosphorus uptake is strictly governed by Michaelis-Menten kinetics at the root surface. Defining a critical threshold as the STP required to reach an $x\%$ relative uptake target ($q_{up}$) yields a direct relationship with the effective half-saturation constant ($K_{eff}$):
-$$ q_{up} = \frac{P_{crit\_up}}{K_{eff} + P_{crit\_up}} \implies P_{crit\_up} = \left(\frac{q_{up}}{1 - q_{up}}\right) K_{eff} $$
-Where $K_{eff}$ structurally expands upon the base crop affinity ($K_m$) via the same physical kinetic bottlenecks identified in the field data.
+While yield integrates the entire season, instantaneous phosphorus uptake is strictly governed by Michaelis-Menten kinetics at the root surface. Defining a critical threshold as the STP required to reach an $x\%$ relative uptake target ($q_{\text{up}}$) yields a direct relationship with the effective half-saturation constant ($K_{\text{eff}}$):
+$$
+q_{\text{up}} = \frac{P_{crit\_up}}{K_{\text{eff}} + P_{crit\_up}} \implies P_{crit\_up} = \left(\frac{q_{\text{up}}}{1 - q_{\text{up}}}\right) K_{\text{eff}}
+$$
+Where $K_{\text{eff}}$ structurally expands upon the base crop affinity ($K_m$) via the same physical kinetic bottlenecks identified in the field data.

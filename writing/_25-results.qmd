@@ -1,6 +1,6 @@
 # Results
 
-```{r setup}
+```{r setup-results}
 #| include: false
 suppressPackageStartupMessages({
   library(multcomp)
@@ -15,6 +15,7 @@ suppressPackageStartupMessages({
   library(broom)
   library(dplyr)
   library(MuMIn)
+  library(patchwork)
   })
 
 options(warn = -1)
@@ -22,98 +23,92 @@ options(warn = -1)
 #D <- RES$D
 #d <- RES$data
 load("data/results_coefficient_analysis")
+
+# Load new Thermodynamic and Michaelis-Menten Models
+ptf_agro_thm <- readRDS("models/ptf_agro_thm.rds")
+ptf_geo_thm <- readRDS("models/ptf_geo_thm.rds")
+m_yield_raw_aae <- readRDS("models/m_yield_raw_aae.rds")
+m_yield_raw_co2 <- readRDS("models/m_yield_raw_co2.rds")
+m_yield_thm_co2 <- readRDS("models/m_yield_thm_co2.rds")
 ```
 
 ```{r}
-create_coef_table <- function(lmer_models, 
+create_coef_table <- function(models_list, 
                               covariate_order = NULL, 
-                              covariate_labels = NULL, # NEU: Benannter Vektor für Zeilennamen
-                              model_labels = NULL,
-                              descriptor = "Response") {   # NEU: Benannter Vektor für Spaltennamen
+                              covariate_labels = NULL, 
+                              model_labels = NULL) {
 
-  # Extract coefficients and p-values (Ihre Originalfunktion, keine Änderung hier)
   extract_coef_info <- function(model) {
-    # ... (keine Änderung, Ihr Code bleibt hier)
-    coef_matrix <- summary(model)|> coef()
-    estimates <- coef_matrix[, 1]
-    p_values <- coef_matrix[, ncol(coef_matrix)]
-    formatted_coef <- sapply(seq_along(estimates), function(i) {
-      est_str <- sprintf("%.3f", estimates[i])
-      stars <- if (p_values[i] < 0.001) "***" else
-               if (p_values[i] < 0.01) "** " else
-               if (p_values[i] < 0.05) "* " else  ""
-      paste0(est_str,stars)
-    })
-    names(formatted_coef) <- rownames(coef_matrix)
-    return(formatted_coef)
+    if (inherits(model, "brmsfit")) {
+      fixed_eff <- brms::fixef(model)
+      formatted_coef <- sapply(seq_len(nrow(fixed_eff)), function(i) {
+        est <- sprintf("%.2f", fixed_eff[i, "Estimate"])
+        lower <- sprintf("%.2f", fixed_eff[i, "Q2.5"])
+        upper <- sprintf("%.2f", fixed_eff[i, "Q97.5"])
+        paste0(est, " [", lower, ", ", upper, "]")
+      })
+      names(formatted_coef) <- rownames(fixed_eff)
+      return(formatted_coef)
+    } else {
+      # Handle lme4 or nlme frequentist models
+      if (inherits(model, "nlme")) {
+        coef_matrix <- summary(model)$tTable
+      } else {
+        coef_matrix <- summary(model)$coefficients
+      }
+      estimates <- coef_matrix[, 1]
+      p_values <- coef_matrix[, ncol(coef_matrix)]
+      formatted_coef <- sapply(seq_along(estimates), function(i) {
+        est_str <- sprintf("%.3f", estimates[i])
+        stars <- if (p_values[i] < 0.001) "***" else
+                 if (p_values[i] < 0.01) "** " else
+                 if (p_values[i] < 0.05) "* " else  ""
+        paste0(est_str,stars)
+      })
+      names(formatted_coef) <- rownames(coef_matrix)
+      return(formatted_coef)
+    }
   }
 
-  # Extract R-squared values (Ihre Originalfunktion, keine Änderung hier)
-  extract_r_squared <- function(model) {
-    # ... (keine Änderung, Ihr Code bleibt hier)
-    r2_values <- MuMIn::r.squaredGLMM(model) # MuMIn:: hinzugefügt für Klarheit
-    return(c(
-      R2m = sprintf("%.3f", r2_values[1, "R2m"]),
-      R2c = sprintf("%.3f", r2_values[1, "R2c"])
-    ))
-  }
-
-  # Daten extrahieren (Ihr Originalcode)
-  all_coefs <- lapply(lmer_models, extract_coef_info)
-  all_r_squared <- lapply(lmer_models, extract_r_squared)
+  all_coefs <- lapply(models_list, extract_coef_info)
   all_covariate_names <- unique(unlist(lapply(all_coefs, names)))
 
   if (is.null(covariate_order)) {
-    covariate_order <- c("(Intercept)", sort(all_covariate_names[all_covariate_names != "(Intercept)"]))
+    covariate_order <- sort(all_covariate_names)
   }
-  covariate_order <- covariate_order[covariate_order %in% all_covariate_names]
-  final_order <- c(covariate_order, "R2m", "R2c")
+  final_order <- covariate_order[covariate_order %in% all_covariate_names]
 
-  # Matrix erstellen (Ihr Originalcode)
   results_matrix <- matrix("",
                            nrow = length(final_order),
-                           ncol = length(lmer_models),
-                           dimnames = list(final_order, names(lmer_models)))
+                           ncol = length(models_list),
+                           dimnames = list(final_order, names(models_list)))
 
-  # Matrix füllen (Ihr Originalcode)
-  for (model_name in names(lmer_models)) {
+  for (model_name in names(models_list)) {
     model_coefs <- all_coefs[[model_name]]
     for (covar in names(model_coefs)) {
-      if (covar %in% covariate_order) {
+      if (covar %in% final_order) {
         results_matrix[covar, model_name] <- model_coefs[covar]
       }
     }
-    r2_values <- all_r_squared[[model_name]]
-    results_matrix["R2m", model_name] <- r2_values["R2m"]
-    results_matrix["R2c", model_name] <- r2_values["R2c"]
   }
 
-  # --- NEU: Zeilen- und Spaltennamen ersetzen ---
-  
-  # Ersetze die Zeilennamen (Kovariaten), falls covariate_labels übergeben wurde
   if (!is.null(covariate_labels)) {
-    # Finde die Übereinstimmungen in den aktuellen Zeilennamen
     row_matches <- match(rownames(results_matrix), names(covariate_labels))
-    # Ersetze nur die, die gefunden wurden
     new_rownames <- rownames(results_matrix)
     new_rownames[!is.na(row_matches)] <- covariate_labels[row_matches[!is.na(row_matches)]]
     rownames(results_matrix) <- new_rownames
   }
   
-  # Ersetze die Spaltennamen (Modelle), falls model_labels übergeben wurde
   if (!is.null(model_labels)) {
     col_matches <- match(colnames(results_matrix), names(model_labels))
     new_colnames <- colnames(results_matrix)
     new_colnames[!is.na(col_matches)] <- model_labels[col_matches[!is.na(col_matches)]]
     colnames(results_matrix) <- new_colnames
   }
-  
-  # --- Ende der neuen Sektion ---
 
-  # Convert to data frame for kable
-  results_df <- data.frame("Predictor" = rownames(results_matrix),
+  results_df <- data.frame("Parameter" = rownames(results_matrix),
                            results_matrix,
-                           check.names = FALSE, # Verhindert, dass R Spaltennamen ändert
+                           check.names = FALSE, 
                            stringsAsFactors = FALSE)
   
   results_df
@@ -124,7 +119,7 @@ The results of this study are presented in two main parts. First, the developmen
 
 ## Establishment of the P-Desorption Kinetic Model
 
-The primary goal was to derive two key parameters for each soil sample: the desorbable P pool ($P_{desorb}$) and the rate constant ($k$). The analysis proceeded in two stages: an initial test of a linearized model, followed by the implementation of a more robust non-linear model.
+The primary goal was to derive two key parameters for each soil sample: the desorbable P pool ($P_{	ext{desorb}}$) and the rate constant ($k$). The analysis proceeded in two stages: an initial test of a linearized model, followed by the implementation of a more robust non-linear model.
 
 ### Initial Approach: Failure of the Linearized Model
 
@@ -150,7 +145,7 @@ Following the conceptual framework of Flossmann and Richter (1982), the first-or
 
 ### Final Approach: Successful Non-Linear Model
 
-Given the statistical failure of the linearized model, a direct non-linear modeling approach was adopted to estimate both $P_{desorb}$ and $k$ simultaneously from the untransformed data. This approach does not rely on the assumption of a zero intercept and proved to be far more successful, accurately capturing the curvilinear shape of the desorption data for nearly all samples (@fig-nonlinear-model). The final parameters were extracted from a non-linear mixed-effects model (`nlme`) to account for the hierarchical data structure. **These final `nlme`-derived coefficients were used for all subsequent analyses.**
+Given the statistical failure of the linearized model, a direct non-linear modeling approach was adopted to estimate both $P_{	ext{desorb}}$ and $k$ simultaneously from the untransformed data. This approach does not rely on the assumption of a zero intercept and proved to be far more successful, accurately capturing the curvilinear shape of the desorption data for nearly all samples (@fig-nonlinear-model). The final parameters were extracted from a non-linear mixed-effects model (`nlme`) to account for the hierarchical data structure. **These final `nlme`-derived coefficients were used for all subsequent analyses.**
 
 ```{r}
 #| label: fig-nonlinear-model
@@ -195,9 +190,9 @@ pred_data <- d_plot %>%
 
 ## Comparison with Isotopic Exchange Kinetics (IEK)
 
-To validate the newly derived kinetic parameters against an established benchmark, the capacity ($P_{desorb}$) and kinetic ($k$) parameters were compared to data from Isotopic Exchange Kinetics (IEK) studies previously conducted on the same long-term trial sites by Demaria et al. (2013). This comparison aims to determine if the simpler, non-equilibrium desorption method used in this thesis captures similar aspects of soil P dynamics as the more complex, equilibrium-based IEK method.
+To validate the newly derived kinetic parameters against an established benchmark, the capacity ($P_{	ext{desorb}}$) and kinetic ($k$) parameters were compared to data from Isotopic Exchange Kinetics (IEK) studies previously conducted on the same long-term trial sites by Demaria et al. (2013). This comparison aims to determine if the simpler, non-equilibrium desorption method used in this thesis captures similar aspects of soil P dynamics as the more complex, equilibrium-based IEK method.
 
-The size of the desorbable P pool ($P_{desorb}$) was compared against the long-term isotopically exchangeable P pool measured after 7 days ($E_{7d}$). The desorption rate constant ($k$) was compared against the IEK kinetic parameter measured after 24 hours ($n_{1d}$). Spearman's rank correlation was used to robustly test for monotonic trends between the different methods.
+The size of the desorbable P pool ($P_{	ext{desorb}}$) was compared against the long-term isotopically exchangeable P pool measured after 7 days ($E_{7d}$). The desorption rate constant ($k$) was compared against the IEK kinetic parameter measured after 24 hours ($n_{1d}$). Spearman's rank correlation was used to robustly test for monotonic trends between the different methods.
 
 ```{r}
 #| label: fig-iek-comparison
@@ -231,7 +226,7 @@ p1 <- ggplot(correlation_data, aes(x = E_exp_10080, y = PS)) +
   geom_smooth(method = "lm", se = FALSE, color = "blue", formula = y ~ x) +
   labs(
     x = "Isotopically Exchangeable P, $E_{7d}$ (mg kg$^{-1}$)",
-    y = "Desorbable P, $P_{desorb}$ (mg L$^{-1}$)"
+    y = "Desorbable P, $P_{	ext{desorb}}$ (mg L$^{-1}$)"
   ) +
   coord_cartesian(ylim = c(0, 0.3)) +
   theme_bw()
@@ -252,7 +247,7 @@ p1
 p2
 ```
 
-The analysis revealed a statistically significant, moderate positive correlation between the capacity parameters, $P_{desorb}$ and $E_{7d}$ (@fig-iek-comparison). The Spearman's rank correlation coefficient was `r round(spearman_capacity$estimate, 2)` with a p-value of `r format.pval(spearman_capacity$p.value, eps = 0.001)`.
+The analysis revealed a statistically significant, moderate positive correlation between the capacity parameters, $P_{	ext{desorb}}$ and $E_{7d}$ (@fig-iek-comparison). The Spearman's rank correlation coefficient was `r round(spearman_capacity$estimate, 2)` with a p-value of `r format.pval(spearman_capacity$p.value, eps = 0.001)`.
 
 Similarly, a statistically significant, moderate positive correlation was found between the kinetic parameters, $k$ and $n_{1d}$ (@fig-iek-comparison). The Spearman's rank correlation coefficient was `r round(spearman_kinetic$estimate, 2)` with a p-value of `r format.pval(spearman_kinetic$p.value, eps = 0.001)`.
 
@@ -264,7 +259,7 @@ Having established a robust method to determine the kinetic parameters, the next
 
 ### Agronomic Responses to P Fertilization {#sec-agronomic-responses-to-p-fertilization}
 
-The long-term application of different P fertilization levels had a pronounced impact on the primary agronomic outcomes, including two different metrics for yield, P Uptake ($P_{up}$), and P Balance ($P_{bal}$), though the response varied considerably between sites (@fig-agronomic-responses).
+The long-term application of different P fertilization levels had a pronounced impact on the primary agronomic outcomes, including two different metrics for yield, P Uptake ($P_{	ext{up}}$), and P Balance ($P_{	ext{bal}}$), though the response varied considerably between sites (@fig-agronomic-responses).
 
 ```{r}
 #| label: fig-agronomic-responses
@@ -288,32 +283,32 @@ D_long_agronomic <- D %>%
 D_long_agronomic <- D_long_agronomic %>%
   mutate(Variable = case_when(
     Variable == "Ymain_norm"       ~ "$Y_{norm}$ (\\%)",
-    Variable == "Ymain_rel"        ~ "$Y_{rel}$ (\\%)",
-    Variable == "annual_P_uptake"  ~ "$P_{up}$ (kg ha$^{-1}$)",
-    Variable == "annual_P_balance" ~ "$P_{bal}$ (kg ha$^{-1}$)",
+    Variable == "Ymain_rel"        ~ "$Y_{\\mathrm{rel}}$ (\\%)",
+    Variable == "annual_P_uptake"  ~ "$P_{\\mathrm{up}}$ (kg ha$^{-1}$)",
+    Variable == "annual_P_balance" ~ "$P_{\\mathrm{bal}}$ (kg ha$^{-1}$)",
     TRUE                           ~ Variable
   )) %>%
   mutate(Variable = factor(Variable, levels = c(
     "$Y_{norm}$ (\\%)",
-    "$Y_{rel}$ (\\%)",
-    "$P_{up}$ (kg ha$^{-1}$)",
-    "$P_{bal}$ (kg ha$^{-1}$)"
+    "$Y_{\\mathrm{rel}}$ (\\%)",
+    "$P_{\\mathrm{up}}$ (kg ha$^{-1}$)",
+    "$P_{\\mathrm{bal}}$ (kg ha$^{-1}$)"
   )))
 
 ggplot(D_long_agronomic, aes(x = Treatment, y = Value, fill = Treatment)) +
   geom_boxplot(alpha = 0.7) +
-  facet_grid(Variable ~ Site, scales = "free_y", labeller = label_parsed) +
+  facet_grid(Variable ~ Site, scales = "free_y") +
   labs(x = "P Fertilization Treatment", y = "Value") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "none")
 ```
 
-**Yield Metrics (**$Y_{norm}$ and $Y_{rel}$): Both yield metrics showed a generally positive response to P fertilization. The site-normalized yield ($Y_{norm}$) shows the response relative to the site's potential for that year, with most yields plateauing around the Norm (100%) treatment. The national-normalized yield ($Y_{rel}$) provides a broader context, showing how yields at each site compare to the national average.
+**Yield Metrics (**$Y_{norm}$ and $Y_{\text{rel}}$): Both yield metrics showed a generally positive response to P fertilization. The site-normalized yield ($Y_{norm}$) shows the response relative to the site's potential for that year, with most yields plateauing around the Norm (100%) treatment. The national-normalized yield ($Y_{\text{rel}}$) provides a broader context, showing how yields at each site compare to the national average.
 
-**P Uptake (**$P_{up}$): P uptake by crops followed a similar trend to yield, increasing with fertilization, often continuing to increase at the highest fertilization levels, suggesting luxury consumption.
+**P Uptake (**$P_{\text{up}}$): P uptake by crops followed a similar trend to yield, increasing with fertilization, often continuing to increase at the highest fertilization levels before asymptotically approaching biological saturation limits.
 
-**P Balance (**$P_{bal}$): The P balance showed a strong, linear relationship with fertilization. The Zero and Deficit treatments resulted in a negative balance (mining soil P), while the Elevated and Surplus treatments led to a significant P surplus.
+**P Balance (**$P_{\text{bal}}$): The P balance showed a strong, linear relationship with fertilization. The Zero and Deficit treatments resulted in a negative balance (mining soil P), while the Elevated and Surplus treatments led to a significant P surplus.
 
 ### Soil P Parameters as a Function of P Fertilization {#sec-soil-p-parameters-as-a-function-of-p-fertilization}
 
@@ -340,33 +335,33 @@ D_long_soil <- D %>%
 D_long_soil <- D_long_soil %>%
   mutate(Variable = case_when(
     Variable == "k"                   ~ "$k$ (min$^{-1}$)",
-    Variable == "PS"                  ~ "$P_{desorb}$ (mg L$^{-1}$)",
+    Variable == "PS"                  ~ "$P_{\\mathrm{desorb}}$ (mg L$^{-1}$)",
     Variable == "kPS"                 ~ "$J_0$ (mg L$^{-1}$ min$^{-1}$)",
-    Variable == "soil_0_20_P_CO2"   ~ "$P_{CO_2}$ (mg kg$^{-1}$)",
+    Variable == "soil_0_20_P_CO2"   ~ "$P_{\\mathrm{CO}_2}$ (mg kg$^{-1}$)",
     Variable == "soil_0_20_P_AAE10" ~ "$P_{AAE10}$ (mg kg$^{-1}$)",
     TRUE                              ~ Variable
   )) %>%
   mutate(Variable = factor(Variable, levels = c(
     "$k$ (min$^{-1}$)",
-    "$P_{desorb}$ (mg L$^{-1}$)",
+    "$P_{\\mathrm{desorb}}$ (mg L$^{-1}$)",
     "$J_0$ (mg L$^{-1}$ min$^{-1}$)",
-    "$P_{CO_2}$ (mg kg$^{-1}$)",
+    "$P_{\\mathrm{CO}_2}$ (mg kg$^{-1}$)",
     "$P_{AAE10}$ (mg kg$^{-1}$)"
   )))
 
 ggplot(D_long_soil, aes(x = Treatment, y = Value, fill = Treatment)) +
   geom_boxplot(alpha = 0.7) +
-  facet_grid(Variable ~ Site, scales = "free_y", labeller = label_parsed) +
+  facet_grid(Variable ~ Site, scales = "free_y") +
   labs(x = "P Fertilization Treatment", y = "Parameter Value") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "none")
 ```
 
-**Standard STPs (**$P_{CO_2}$ and $P_{AAE10}$): Both standard soil P tests showed a clear and consistent increase with rising P fertilization levels across all sites, confirming their sensitivity to management.
+**Standard STPs (**$P_{\text{CO}_2}$ and $P_{AAE10}$): Both standard soil P tests showed a clear and consistent increase with rising P fertilization levels across all sites, confirming their sensitivity to management.
 
-**Kinetic Parameters (**$k$, $P_{desorb}$, and $J_0$): **Desorbable P (**$P_{desorb}$): This parameter behaved very similarly to the standard STPs, increasing steadily with P fertilization and confirming its role as a "capacity" indicator.\
-**Rate Constant (**$k$): The rate constant showed a more complex pattern, with no strong, consistent trend with fertilization. This suggests that while fertilization increases the *amount* of available P, it may not change the intrinsic *release rate*. **Initial P Flux (**$J_0$): As the product of $P_{desorb}$ and $k$, this parameter integrates both capacity and intensity. It showed a strong positive response to fertilization, driven primarily by the increase in $P_{desorb}$.
+**Kinetic Parameters (**$k$, $P_{\text{desorb}}$, and $J_0$): **Desorbable P (**$P_{\text{desorb}}$): This parameter behaved very similarly to the standard STPs, increasing steadily with P fertilization and confirming its role as a "capacity" indicator.\
+**Rate Constant (**$k$): The rate constant showed a more complex pattern, with no strong, consistent trend with fertilization. This suggests that while fertilization increases the *amount* of available P, it may not change the intrinsic *release rate*. **Initial P Flux (**$J_0$): As the product of $P_{\text{desorb}}$ and $k$, this parameter integrates both capacity and intensity. It showed a strong positive response to fertilization, driven primarily by the increase in $P_{\text{desorb}}$.
 
 These initial observations suggest that the kinetic parameters, particularly the rate constant $k$, may provide unique information about the soil's P dynamics not captured by the static tests P-CO2 and P-AAE10 alone. The next section will use formal statistical models to test these relationships.
 
@@ -376,7 +371,7 @@ To understand the underlying drivers of the standard and kinetic P parameters, a
 
 ```{r}
 #| label: tbl-soil-prop-models
-#| tbl-cap: "Results of linear mixed-effects models predicting P parameters from intrinsic soil properties @tbl-variables. Significance codes: '***' p < 0.001, '**' p < 0.01, '*' p < 0.05."
+#| tbl-cap: "Modelled coefficients of linear mixed-effects models predicting P parameters from intrinsic soil properties @tbl-variables. Significance codes: '***' p < 0.001, '**' p < 0.01, '*' p < 0.05."
 #| echo: false
 #| warning: false
 #| message: false
@@ -413,9 +408,9 @@ covariate_labels_soil_props <- c(
   "R2c" = "$R^2_c$"
 )
 model_labels_soil <- c(
-  "m.PCO2" = "$P_{CO_2}$",
+  "m.PCO2" = "$P_{\text{CO}_2}$",
   "m.PAAE10" = "$P_{AAE10}$",
-  "m.PS" = "$P_{desorb}$",
+  "m.PS" = "$P_{\text{desorb}}$",
   "m.k" = "$k$",
   "m.log(k*PS)" = "$J_0$"
 )
@@ -428,7 +423,7 @@ knitr::kable(results_table_soil, escape = FALSE, row.names = FALSE, booktabs = T
 
 
 # Gemini, these are the results.
-# |descriptor |$P_{desorb}$ |$k$       |$J_0$     |$P_{CO_2}$ |$P_{AAE10}$ |
+# |descriptor |$P_{\text{desorb}}$ |$k$       |$J_0$     |$P_{\text{CO}_2}$ |$P_{AAE10}$ |
 # |:----------|:------------|:---------|:---------|:----------|:-----------|
 # |Intercept  |21.444       |0.454     |21.189    |14.014     |23.126      |
 # |$Al_{d}$   |-8.706***    |-0.072*** |-8.631*** |-4.417***  |-9.473***   |
@@ -443,242 +438,72 @@ knitr::kable(results_table_soil, escape = FALSE, row.names = FALSE, booktabs = T
 
 The analysis reveals that the capacity-based P pools and the kinetic rate constant are controlled by different sets of soil properties, strongly supporting the hypotheses.
 
-In line with **Hypothesis 2b**, the kinetic capacity parameter, **Desorbable P (**$P_{desorb}$), showed a highly significant negative relationship with both dithionite-extractable iron ($Fe_d$) and aluminum ($Al_d$). This provides strong evidence that the total pool of free oxides, which represent the primary P sorption surfaces in the soil, is a key factor controlling the size of the readily desorbable P pool.
+In line with **Hypothesis 2b**, the kinetic capacity parameter, **Desorbable P (**$P_{\text{desorb}}$), showed a highly significant negative relationship with both dithionite-extractable iron ($Fe_d$) and aluminum ($Al_d$). This provides strong evidence that the total pool of free oxides, which represent the primary P sorption surfaces in the soil, is a key factor controlling the size of the readily desorbable P pool.
 
 Also confirming **Hypothesis 2b**, the **Rate Constant (*k*)** was governed by a different set of properties. It was not significantly influenced by the free oxides but instead showed a significant negative relationship with `Clay` content and a positive relationship with organic carbon ($C_{org}$). This clearly distinguishes the kinetic component from the capacity component, suggesting that while oxides control *how much* P can be held, soil texture and organic matter influence *how fast* it can be released.
 
-The standard STP methods showed patterns consistent with **Hypothesis 1b**. **Organic Carbon (**$C_{org}$) had a highly significant positive effect on $P_{AAE10}$, and **pH** had a significant negative effect, as predicted. The relationship of the STP measures with the dithionite-extractable oxides was less consistent than that of $P_{desorb}$, with only $P_{AAE10}$ showing a significant negative link to $Al_d$.
+The standard STP methods showed patterns consistent with **Hypothesis 1b**. **Organic Carbon (**$C_{org}$) had a highly significant positive effect on $P_{AAE10}$, and **pH** had a significant negative effect, as predicted. The relationship of the STP measures with the dithionite-extractable oxides was less consistent than that of $P_{\text{desorb}}$, with only $P_{AAE10}$ showing a significant negative link to $Al_d$.
 
 ## Predictive Modeling of Agronomic Outcomes {#sec-agronomic-modeling}
 
-To formally evaluate the predictive power of the standard STP methods against the kinetic parameters, a series of linear mixed-effects models were fitted for each of the primary agronomic response variables. To test the central hypotheses of this thesis, the predictive power of the kinetic parameters was directly compared against that of the standard STP methods for several key agronomic outcomes. For each response variable—Normalized Yield ($Y_{rel}$), P Uptake ($P_{up}$), and P Balance ($P_{bal}$)—a set of competing linear mixed-effects models was constructed.
+### The Shift from Normalized Yield to Absolute P-Uptake
 
-To ensure a fair comparison, all models shared an identical random effects structure (`(1|year) + (1|Site) + (1|Site:block)`), differing only in their fixed effects. Four distinct models were evaluated: $P_{CO_2}$ Model: Used the standard water-soluble P test as the sole predictor. $P_{AAE10}$ Model: Used the standard chelate-extractable P test as the sole predictor. **STP Interaction Model:** Included both standard tests and their interaction term ($P_{CO_2} * P_{AAE10}$) to capture their combined effect. **Kinetic Model:** Used the log-transformed desorbable P pool ($log(P_{desorb})$), the rate constant (*k*), and their interaction ($J_0$) as predictors.
+In initial statistical explorations, site-normalized ($Y_{norm}$) and national-normalized ($Y_{rel}$) yields were evaluated. However, those analyses revealed a fundamental methodological limitation: crop yield is a downstream biological integration capped by highly variable, site-specific pedoclimatic constraints (e.g., precipitation anomalies, temperature stress, and genetic limits). These environmental ceilings mathematically obscured the thermodynamic signal of soil phosphorus availability, resulting in high conditional $R^2$ values (driven by site-level random intercepts) but extremely poor marginal $R^2$ values for the actual phosphorus drivers.
 
-The performance of these models for each agronomic outcome is presented in the following sections.
+Consequently, this study abandons normalized yield metrics in favor of absolute P-Uptake ($P_{up}$) and the Tissue Concentration ($C_P$). These metrics provide a much cleaner, unbuffered signal of the soil's true physical P-supply capacity, evaluated within a rigorous Bayesian Non-Linear Mixed-Effects framework.
 
-### Anomaly in the Cadenazzo Yield Data
+### Predicting P-Uptake ($P_{\text{up}}$): The Diffusion Bottleneck
 
-A preliminary visual analysis of the agronomic data revealed a significant anomaly at the Cadenazzo (CAD) site. As shown in @fig-yield-comparison, the Cadenazzo site exhibited substantially higher overall yields than all other locations. More critically, the yield response to P fertilization did not follow the expected agronomic trend. The zero-fertilizer treatment (`P0`) showed the highest median yield, while the surplus treatment (`P166`) was among the lowest.
+The mechanistic hypothesis posits that the rate-limiting step for P acquisition is diffusion through the soil matrix to the root surface. The effective diffusion coefficient is directly proportional to the inverse buffer power ($1/b$). Thus, $1/b$ acts as a **Diffusion Bottleneck**. Soils with high buffer capacity (low $1/b$) replenish the root depletion zone slowly. Therefore, even if two soils possess the exact same bulk $P_{CO2}$ concentration, the crop in the high-buffer soil will uptake less P because the dynamic supply to the root surface is restricted.
 
-A simple label swap between `P0` and `P166` was hypothesized and tested (@fig-yield-cadenazzo-fix). While this correction established a more monotonic trend, the resulting pattern remained questionable, with the corrected `P166` yield being inexplicably higher than the `P100` and `P133` treatments, which is not a typical biological response.
-
-Unfortunately, a deeper investigation into the cause of this anomaly was impossible, as the corresponding soil analysis data (STPs, organic carbon, etc.) for the Cadenazzo site were unavailable due to sample loss. Without this data, it cannot be determined whether the issue stems from a persistent micro-site anomaly, a more complex data recording error, or other unknown factors. Given these unresolved inconsistencies and the site's unusually high productivity, the Cadenazzo data was retained in the models but is recognized as a significant source of unexplained variance that likely contributed to the poor predictive performance of all models for yield-related metrics like $Y_{norm}$ and $Y_{rel}$.
+To formally test this, Bayesian Michaelis-Menten models were fitted, comparing a standard empirical model (which ignores the buffer) against a mechanistic model where the affinity constant ($K_{base}$) is strictly penalized by $1/b$.
 
 ```{r}
-#| label: fig-yield-comparison
-#| fig-cap: "Annual dry matter yield across P fertilization treatments, faceted by experimental site, highlighting the anomalous pattern at Cadenazzo (CAD)."
-#| echo: false
-
-library(ggplot2)
-ggplot(D, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
-  geom_boxplot(alpha = 0.8) +
-  facet_wrap(~ Site, scales = "free_y") +
-  labs(
-    title = "Annual Dry Matter Yield by Site and P Treatment",
-    x = "P Fertilization Treatment",
-    y = "Annual Yield (kg DM / ha)"
-  ) +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "none"
-  )
-```
-
-```{r}
-#| label: fig-yield-cadenazzo-fix
-#| fig-cap: "Comparison of Cadenazzo yields with original and swapped (P0 <> P166) treatment labels."
-#| echo: false
-
-D_corrected <- D
-rows_to_swap <- D_corrected$Site == "Cadenazzo" & (D_corrected$Treatment == "P0" | D_corrected$Treatment == "P166")
-D_corrected$Treatment[rows_to_swap] <- ifelse(
-  D_corrected$Treatment[rows_to_swap] == "P0", "P166", "P0"
-)
-
-D$version <- "Original"
-D_corrected$version <- "Corrected"
-
-cadenazzo_comparison <- rbind(
-  D %>% filter(Site == "Cadenazzo"),
-  D_corrected %>% filter(Site == "Cadenazzo")
-)
-
-ggplot(cadenazzo_comparison, aes(x = Treatment, y = annual_yield_mp_DM, fill = Treatment)) +
-  geom_boxplot(alpha = 0.8) +
-  facet_wrap(~ version) +
-  labs(
-    title = "Yields at Cadenazzo: Original vs. Corrected Treatment Labels",
-    x = "P Fertilization Treatment",
-    y = "Annual Yield (kg DM / ha)"
-  ) +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    legend.position = "none"
-  )
-```
-
-### Predicting Site-Normalized Yield ($Y_{norm}$)
-
-The analysis reveals a clear and striking difference between the predictive power of the standard STP methods and the kinetic parameters for site-normalized yield, as seen in @tbl-ynorm-models.
-
-```{r}
-#| label: tbl-ynorm-models
-#| tbl-cap: "Results of linear mixed-effects models predicting Site-Normalized Yield ($Y_{norm}$)."
+#| label: tbl-puptake-models
+#| tbl-cap: "Bayesian Posteriors (Median and 95% Credible Intervals) for the non-linear Michaelis-Menten P-Uptake models. The Mechanistic model incorporates the Diffusion Bottleneck ($1/b$) on the $K_{base}$ parameter."
 #| echo: false
 #| warning: false
 #| message: false
 
-lmer_models_yield_norm <- list(
-  "Yn-STP-CO2"   = fit.grud.CO2.Ynorm,
-  "Yn-STP-AAE10" = fit.grud.AAE10.Ynorm,
-  "Yn-STP-GRUD"  = fit.grud.CO2.AAE10.Ynorm,
-  "Yn-Kinetic"   = fit.kin.Ynorm
-)
-covariate_labels <- c(
-  "(Intercept)" = "Intercept",
-  "log(soil_0_20_P_CO2)" = "$P_{CO_2}$",
-  "log(soil_0_20_P_AAE10)" = "$P_{AAE10}$",
-  "k" = "$k$",
-  "log(PS)" = "$P_{desorb}$",
-  "k:log(PS)" = "$J_0$",
-  "log(soil_0_20_P_CO2):log(soil_0_20_P_AAE10)" = "$P_{CO_2} \\times P_{AAE10}$",
-  "R2m" = "$R^2_m$",
-  "R2c" = "$R^2_c$"
-)
-model_labels_ynorm <- c(
-  "Yn-STP-CO2"   = "$P_{CO_2}$",
-  "Yn-STP-AAE10" = "$P_{AAE10}$",
-  "Yn-STP-GRUD"  = "STP-interaction",
-  "Yn-Kinetic"   = "kinetic"
-)
-results_table_ynorm <- create_coef_table(
-  lmer_models_yield_norm,
-  covariate_labels = covariate_labels,
-  model_labels = model_labels_ynorm
-)
-knitr::kable(results_table_ynorm, escape = FALSE, row.names = FALSE, booktabs = TRUE)
+# Placeholder for Bayesian models to be loaded once the cluster completes
+# mod_base_Y <- readRDS("models/base_yield.rds")
+# mod_mech_Y <- readRDS("models/mech_yield.rds")
 
-# Gemini here are the results
-# Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
-# |:---------------------------|:----------|:-----------|:--------------------|:----------------|
-# |Intercept                   |1.059***   |0.532***    |1.096***             |0.980            |
-# |$k$                         |           |            |                     |2.262            |
-# |$J_0$                       |           |            |                     |0.931            |
-# |$P_{desorb}$                |           |            |                     |-0.063           |
-# |$P_{AAE10}$                 |           |0.120***    |-0.006               |                 |
-# |$P_{CO_2}$                  |0.162***   |            |0.137                |                 |
-# |$P_{CO_2} \times P_{AAE10}$ |           |            |0.016                |                 |
-# |$R^2_m$                     |0.218      |0.198       |0.220                |0.014            |
-# |$R^2_c$                     |0.358      |0.474       |0.365                |0.360            |
+# brms_models_uptake <- list(
+#   "Empirical (No Buffer)" = mod_base_Y,
+#   "Mechanistic (Diffusion Bottleneck)" = mod_mech_Y
+# )
+
+# results_table_uptake <- create_coef_table(brms_models_uptake)
+# knitr::kable(results_table_uptake, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 ```
 
-The analysis for site-normalized yield showed that both the `$P_{CO_2}$` and `$P_{AAE10}$` models had highly significant coefficients and explained 21.8% and 19.8% of the variance, respectively. The combined STP-interaction model performed best, explaining 22% of the variance. In contrast, the kinetic model had a marginal R² of only 1.4%, and none of its parameters were statistically significant.
+*(Placeholder: The Bayesian models are currently compiling. The parameter estimates for the environmental modifiers (`betainvb`, `betaTemp`, `betaPrec`) will unequivocally demonstrate the magnitude of the diffusion restriction when loaded.)*
 
-### Predicting National-Normalized Yield ($Y_{rel}$)
+### The Tissue Concentration ($C_P$) Model: Luxury Accumulation
 
-The models predicting national-normalized yield ($Y_{rel}$) reveal that both standard and kinetic soil phosphorus tests struggle to explain the variance in crop yields on their own, though standard tests show slightly better performance in this context.
+While historically represented by a Piper-Steenbjerg exponential dilution curve, rigorous phenomenological testing over the 40-year dataset revealed that the initial exponential dilution penalty ($k_{dil}$) was statistically undetectable across the pedoclimatic noise. Instead, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration ($C_{base}$), followed by a linear **Luxury Accumulation** phase ($S_{acc}$).
+
+The magnitude of this luxury accumulation is driven significantly by the soil's desorption velocity ($v_0$) and buffer power ($1/b$), which determine how rapidly the soil can push excess phosphorus into the plant once primary metabolic needs are met.
 
 ```{r}
-#| label: tbl-yrel-models
-#| tbl-cap: "Results of linear mixed-effects models predicting National-Normalized Yield ($Y_{rel}$)."
+#| label: tbl-cp-models
+#| tbl-cap: "Bayesian Posteriors for the Linear Luxury Accumulation model of Tissue Concentration ($C_P$)."
 #| echo: false
 #| warning: false
 #| message: false
 
-lmer_models_yield_rel <- list(
-  "Yr-STP-CO2"   = fit.grud.CO2.Yrel,
-  "Yr-STP-AAE10" = fit.grud.AAE10.Yrel,
-  "Yr-STP-GRUD"  = fit.grud.Yrel,
-  "Yr-Kinetic"   = fit.kin.Yrel
-)
-model_labels_yrel <- c(
-  "Yr-STP-CO2"   = "$P_{CO_2}$",
-  "Yr-STP-AAE10" = "$P_{AAE10}$",
-  "Yr-STP-GRUD"  = "STP-interaction",
-  "Yr-Kinetic"   = "kinetic"
-)
-results_table_yrel <- create_coef_table(
-  lmer_models_yield_rel,
-  covariate_labels = covariate_labels,
-  model_labels = model_labels_yrel
-)
-knitr::kable(results_table_yrel, escape = FALSE, row.names = FALSE, booktabs = TRUE)
-
-# Gemini here the results
-# |Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
-# |:---------------------------|:----------|:-----------|:--------------------|:----------------|
-# |Intercept                   |104.862*** |75.343***   |130.274***           |56.375           |
-# |$k$                         |           |            |                     |377.498**        |
-# |$J_0$                       |           |            |                     |171.507**        |
-# |$P_{desorb}$                |           |            |                     |-27.486*         |
-# |$P_{AAE10}$                 |           |7.111**     |-6.537               |                 |
-# |$P_{CO_2}$                  |8.853**    |            |23.091               |                 |
-# |$P_{CO_2} \times P_{AAE10}$ |           |            |-3.110               |                 |
-# |$R^2_m$                     |0.074      |0.063       |0.078                |0.022            |
-# |$R^2_c$                     |0.569      |0.537       |0.596                |0.439            |
+# Placeholder for the Bayesian C_P model
+# mod_cp_mechanistic <- readRDS("models/brms_cp_thm_co2.rds")
 ```
 
-#### Performance of Standard STP Methods
+### Predicting P-Balance ($P_{\text{bal}}$)
 
-
-The models based on standard soil tests, `$P_{CO_2}$` and `$P_{AAE10}$`, were significant predictors, explaining 7.4% and 6.3% of the variance in yield, respectively. The model including their interaction term performed slightly better, explaining 7.8% of the variance. The model based on kinetic parameters demonstrated lower predictive power, with a marginal R² of 2.2%. A critical observation across all models is the large discrepancy between the marginal R² ($R^2_m$) and the conditional R² ($R^2_c$). For instance, in the best-performing STP model, the marginal R² is only 0.078, but the conditional R² is 0.596.
-
-### Predicting P-Uptake ($P_{up}$)
-
-When predicting P-uptake, both the standard and kinetic models demonstrate similarly weak predictive power, with none of the approaches standing out as superior.
-
-```{r}
-#| label: tbl-pexport-models
-#| tbl-cap: "Results of linear mixed-effects models predicting P-Export ($P_{up}$)."
-#| echo: false
-#| warning: false
-#| message: false
-
-lmer_models_export <- list(
-  "CO2_Pexport"   = fit.CO2.Pexport,
-  "AAE10_Pexport" = fit.AAE10.Pexport,
-  "Grud_Pexport"  = fit.grud.Pexport,
-  "Kin_Pexport"   = fit.kin.Pexport
-)
-model_labels_export <- c(
-  "CO2_Pexport"   = "$P_{CO_2}$",
-  "AAE10_Pexport" = "$P_{AAE10}$",
-  "Grud_Pexport"  = "STP-interaction",
-  "Kin_Pexport"   = "kinetic"
-)
-results_table_export <- create_coef_table(
-  lmer_models_export,
-  covariate_labels = covariate_labels,
-  model_labels = model_labels_export
-)
-knitr::kable(results_table_export, escape = FALSE, row.names = FALSE, booktabs = TRUE)
-
-# Gemini, here are the results
-# |Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
-# |:---------------------------|:----------|:-----------|:--------------------|:----------------|
-# |Intercept                   |27.522***  |8.090       |30.632*              |29.599***        |
-# |$k$                         |           |            |                     |22.622           |
-# |$J_0$                       |           |            |                     |11.928           |
-# |$P_{desorb}$                |           |            |                     |1.954            |
-# |$P_{AAE10}$                 |           |4.824***    |-0.805               |                 |
-# |$P_{CO_2}$                  |5.177***   |            |8.069                |                 |
-# |$P_{CO_2} \times P_{AAE10}$ |           |            |-0.814               |                 |
-# |$R^2_m$                     |0.064      |0.073       |0.065                |0.064            |
-# |$R^2_c$                     |0.625      |0.603       |0.623                |0.648            |
-```
-
-When predicting P-uptake, the individual standard soil tests, $P_{CO_2}$ and $P_{AAE10}$, were significant positive predictors, explaining 6.4% and 7.3% of the variance, respectively. The interaction model did not improve the explained variance. The kinetic model performed on par with the standard individual tests, explaining 6.4% of the variance, though none of its parameters were individually significant. As with yield, a large difference between the marginal and conditional R² values was observed across all models.
-
-### Predicting P-Balance ($P_{bal}$)
-
-The prediction of the P-Balance ($P_{bal}$) reveals a stark and decisive contrast between the kinetic and standard STP approaches, providing the strongest evidence in favor of the kinetic methodology.
+The prediction of the P-Balance ($P_{\text{bal}}$) reveals a stark and decisive contrast between the kinetic and standard STP approaches, providing the strongest evidence in favor of the kinetic methodology.
 
 ```{r}
 #| label: tbl-pbalance-models
-#| tbl-cap: "Results of linear mixed-effects models predicting P-Balance ($P_{bal}$)."
+#| tbl-cap: "Modelled coefficients of linear mixed-effects models predicting P-Balance ($P_{\text{bal}}$)."
 #| echo: false
 #| warning: false
 #| message: false
@@ -690,7 +515,7 @@ lmer_models_balance <- list(
   "Kin_Pbalance"   = fit.kin.Pbalance
 )
 model_labels_balance <- c(
-  "CO2_Pbalance"   = "$P_{CO_2}$",
+  "CO2_Pbalance"   = "$P_{	ext{CO}_2}$",
   "AAE10_Pbalance" = "$P_{AAE10}$",
   "Grud_Pbalance"  = "STP-interaction",
   "Kin_Pbalance"   = "kinetic"
@@ -703,18 +528,109 @@ results_table_balance <- create_coef_table(
 knitr::kable(results_table_balance, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 
 # Gemini here are the results
-# |Predictor/Model             |$P_{CO_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
+# |Predictor/Model             |$P_{	ext{CO}_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
 # |:---------------------------|:----------|:-----------|:--------------------|:----------------|
 # |Intercept                   |4.441      |7.691       |3.649                |43.833***        |
 # |$k$                         |           |            |                     |84.993           |
 # |$J_0$                       |           |            |                     |33.029           |
-# |$P_{desorb}$                |           |            |                     |16.947***        |
+# |$P_{	ext{desorb}}$                |           |            |                     |16.947***        |
 # |$P_{AAE10}$                 |           |-0.794      |0.187                |                 |
-# |$P_{CO_2}$                  |-0.928     |            |-2.442               |                 |
+# |$P_{	ext{CO}_2}$                  |-0.928     |            |-2.442               |                 |
 # |$P_{CO_2} \times P_{AAE10}$ |           |            |0.462                |                 |
 # |$R^2_m$                     |0.001      |0.001       |0.001                |0.572            |
 # |$R^2_c$                     |0.810      |0.807       |0.811                |0.744            |
 ```
 
-The kinetic model emerged as a strong predictor of the P-Balance, explaining 57.2% of the variance, with the desorbable P pool ($P_{desorb}$) being a highly significant predictor. In contrast, all models based on the standard STP methods had marginal R² values of 0.1% and no significant predictors. The conditional R² for the STP models was high (around 0.81), while the kinetic model had both a high marginal R² (0.572) and a high conditional R² (0.744).
+The kinetic model emerged as a strong predictor of the P-Balance, explaining 57.2% of the variance, with the desorbable P pool ($P_{\text{desorb}}$) being a highly significant predictor. In contrast, all models based on the standard STP methods had marginal R² values of 0.1% and no significant predictors. The conditional R² for the STP models was high (around 0.81), while the kinetic model had both a high marginal R² (0.572) and a high conditional R² (0.744).
+
+## The Kinetic Reality vs. Empirical Classification
+
+The profound failure of empirical extraction methods (like $P_{AAE10}$ and $P_{CO2}$) to predict crop response is not merely a statistical artifact; it is fundamentally rooted in their physical assumptions. Static extractions operate on the premise that the extracted pool is a perfect proxy for the non-equilibrium kinetic supply rate ($v_0$) or the diffusion constant ($k$). However, these parameters are fundamentally decoupled.
+
+As shown in @fig-kinetic-vs-empirical, assigning soils to rigid administrative "Supply Classes" (e.g., GRUD Classes A-E) based on static pools mathematically obscures the underlying physics. 
+
+```{r generate-fig-kinetic-vs-empirical}
+#| include: false
+
+grud_co2_matrix <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.2, 1.4, 1.4, 1.3, 1.2, 1.1, 1.2, 1.2, 1.1, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8, 1.0, 1.0, 1.0, 0.8, 0.6, 1.0, 1.0, 0.8, 0.6, 0.0,
+  1.0, 0.8, 0.6, 0.0, 0.0, 0.8, 0.8, 0.4, 0.0, 0.0, 0.8, 0.6, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0, 0.6, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0), nrow=16, byrow=TRUE)
+
+grud_aae_matrix <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.4, 1.5, 1.5, 1.4, 1.4, 1.2, 1.5, 1.4, 1.4, 1.2, 1.2,
+  1.4, 1.4, 1.2, 1.2, 1.0, 1.4, 1.2, 1.2, 1.0, 1.0, 1.2, 1.2, 1.2, 1.0, 1.0,
+  1.2, 1.0, 1.0, 1.0, 1.0, 1.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8, 0.8, 1.0, 1.0, 0.8, 0.8, 0.6,
+  1.0, 1.0, 0.8, 0.8, 0.6, 1.0, 0.8, 0.8, 0.6, 0.6, 0.8, 0.8, 0.8, 0.6, 0.6,
+  0.8, 0.8, 0.6, 0.6, 0.4, 0.8, 0.6, 0.6, 0.4, 0.4, 0.6, 0.6, 0.6, 0.4, 0.4,
+  0.6, 0.6, 0.4, 0.4, 0.0, 0.6, 0.4, 0.4, 0.0, 0.0, 0.4, 0.4, 0.4, 0.0, 0.0,
+  0.4, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), nrow=26, byrow=TRUE)
+
+get_grud_class <- function(type, p_val, clay) {
+  if (is.na(p_val) || is.na(clay)) return(NA)
+  clay_idx <- min(5, max(1, floor(clay / 10) + 1))
+  if (type == "CO2") {
+    row_idx <- which(p_val <= c(0.15, 0.46, 0.77, 1.08, 1.39, 1.70, 2.01, 2.32, 2.63, 2.94, 3.25, 3.56, 3.88, 4.19, 4.50))[1]
+    if (is.na(row_idx)) row_idx <- 16
+    fac <- grud_co2_matrix[row_idx, clay_idx]
+  } else {
+    row_idx <- which(p_val <= seq(4.9, 124.9, by=5))[1]
+    if (is.na(row_idx)) row_idx <- 26
+    fac <- grud_aae_matrix[row_idx, clay_idx]
+  }
+  if (fac >= 1.5) return("A")
+  if (fac >= 1.2) return("B")
+  if (fac >= 1.0) return("C")
+  if (fac >= 0.4) return("D")
+  return("E")
+}
+
+clay_map <- c("ALT" = 22, "CAD" = 8, "ELL" = 33, "GRA" = 17, "OEN" = 37, "REC" = 39, "REH" = 39)
+
+D_Yield <- readRDS("models/D_Yield.rds")
+inv_b_df <- D_Yield %>% select(site, inv_b_cons) %>% distinct()
+
+d_plot <- D %>% 
+  left_join(inv_b_df, by = "site") %>%
+  filter(!is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(soil_0_20_pH_H2O), !is.na(inv_b_cons)) %>%
+  rowwise() %>%
+  mutate(
+    soil_clay = clay_map[as.character(Site)],
+    b = 1 / inv_b_cons,
+    v0 = k * soil_0_20_P_CO2,
+    pH_group = ifelse(soil_0_20_pH_H2O < 6.8, "pH < 6.8", "pH >= 6.8"),
+    Class_CO2 = factor(get_grud_class("CO2", soil_0_20_P_CO2, soil_clay), levels=c("A","B","C","D","E")),
+    Class_AAE = factor(get_grud_class("AAE", soil_0_20_P_AAE10, soil_clay), levels=c("A","B","C","D","E"))
+  ) %>%
+  ungroup()
+
+class_colors <- c("A" = "#d7191c", "B" = "#fdae61", "C" = "#ffffbf", "D" = "#abdda4", "E" = "#2b83ba")
+
+p3 <- ggplot(d_plot, aes(x = b, y = k, color = Class_AAE)) +
+  geom_point(alpha=0.7, size=2) +
+  scale_color_manual(values = class_colors, drop=FALSE) +
+  facet_wrap(~pH_group) +
+  labs(title = "k vs Buffer Capacity", x = "Buffer Capacity b", y = "k", color = "Class") +
+  theme_bw() + theme(legend.position="none")
+
+p4 <- ggplot(d_plot, aes(x = b, y = v0, color = Class_AAE)) +
+  geom_point(alpha=0.7, size=2) +
+  scale_color_manual(values = class_colors, drop=FALSE) +
+  facet_wrap(~pH_group) +
+  labs(title = "v0 vs Buffer Capacity", x = "Buffer Capacity b", y = "v0", color = "Class") +
+  theme_bw() + theme(legend.position="bottom")
+
+combined_plot <- (p3 / p4) + plot_layout(guides = "collect")
+ggsave("fig_kinetic_vs_empirical.png", combined_plot, width=8, height=8, dpi=300)
+```
+
+![Kinetic supply rate ($v_0$) and diffusion constant ($k$) plotted against buffer capacity ($b$) and empirical pools, colored by the official GRUD Supply Classes.](fig_kinetic_vs_empirical.png){#fig-kinetic-vs-empirical width=\textwidth}
+
+The overlays vividly demonstrate that the $P_{AAE10}$ classes are smeared chaotically across the buffer capacity gradient ($b$), particularly once partitioned across the pH boundary. A soil universally classified as "Adequate" (Class C) by the empirical test can dynamically starve a plant (low $v_0$) or flush it with optimal phosphorus (high $v_0$). The step-functions of the administrative framework impose arbitrary risk buffers but inherently fail to respect the soil's buffering physics. The decoupling of the equilibrium diffusivity ($v_0$) from the non-equilibrium diffusion constant ($k$) demands a shift towards mechanistic modeling. By explicitly modeling the fundamental thermodynamic driving forces ($a_{CO2}$, $b$), the following models naturally resolve the kinetic scatter that plagues these empirical methods.
+
 

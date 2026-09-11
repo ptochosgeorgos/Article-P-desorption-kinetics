@@ -4,9 +4,12 @@ project:
   execute-dir: project
   render:
     - index.qmd
-    - "notebooks/qi_modelling1.qmd"  # Explicitly render this specific notebook
+    - "notebooks/qi_modelling1.qmd"
+    - "notebooks/qi_modelling_parallel.qmd"
+    - "notebooks/bayesian_modelling.qmd"
     - "notebooks/sanity_checks.qmd"
     - "presentation/index.qmd"
+    - "presentation_grud/index.qmd"
 
 execute:
   freeze: auto
@@ -24,11 +27,18 @@ website:
         menu:
           - text: "Q/I & Thermodynamic Showdown"
             href: notebooks/qi_modelling1.html
+          - text: "Digital Annex: Q/I Modeling of P Kinetics"
+            href: notebooks/qi_modelling_parallel.html
+          - text: "Bayesian Yield & Uptake Models"
+            href: notebooks/bayesian_modelling.html
           - text: "Data Sanity Checks"
             href: notebooks/sanity_checks.html
       
-      - text: "Presentation"
+      - text: "Presentation (Main)"
         href: presentation/index.html
+      
+      - text: "Presentation (GRUD)"
+        href: presentation_grud/index.html
 
 # --- Top-level settings ---
 bibliography: 
