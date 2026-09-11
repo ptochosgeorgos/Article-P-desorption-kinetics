@@ -172,7 +172,7 @@ bform_Y_heur <- bf(
   nl = TRUE
 )
 
-mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 8:9), ], 
+mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 9:10), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_yield", file_refit = "on_change")
 
@@ -189,7 +189,7 @@ bform_U_heur <- bf(
   betaClay + betapH ~ 1,
   nl = TRUE
 )
-mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 7:8), ], 
+mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_uptake", file_refit = "on_change")
 
