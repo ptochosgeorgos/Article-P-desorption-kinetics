@@ -67,7 +67,9 @@ d_brms <- d_brms |>
       !is.na(annual_P_uptake), 
       !is.na(z_inv_b),
       !is.na(Y_ref),
-      !is.na(Supply_class_CO2)
+      !is.na(Supply_class_CO2),
+      !is.na(juvdev_temp),
+      !is.na(juvdev_prec)
     )
 
 # Standard Priors
@@ -199,7 +201,7 @@ rm(mod_heur_U); gc()
 ## ----fit-mechanistic----------------------------------------------------------
 # Yield Mechanistic: The exact model from bayesian_modelling.qmd using 1/b and Temp/Prec
 bform_Y_mech <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) * soil_0_20_P_CO2)),
+  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaN * z_fert_N + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) * soil_0_20_P_CO2)),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
   cbase ~ crop - 1,
@@ -219,7 +221,7 @@ rm(mod_mech_Y); gc()
 
 # Uptake Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
 bform_U_mech <- bf(
-  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betainvb * z_inv_b + betaTemp * rollMean_Temp + betaPrec * rollMean_Prec)) + soil_0_20_P_CO2),
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betainvb * z_inv_b + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) + soil_0_20_P_CO2),
   Vmax ~ crop - 1 + (1 | site/year),
   Kbase ~ crop - 1,
   betainvb + betaTemp + betaPrec ~ 1,
