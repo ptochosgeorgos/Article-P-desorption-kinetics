@@ -98,11 +98,15 @@ mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year
     cores = cores_n, chains = chains_n, threads = threading(threads_n), 
     iter = iter_n, file = "../models/base_yield")
 
+loo_base <- loo(mod_base_Y, cores = 1)
+rm(mod_base_Y); gc()
+
 # Uptake
 mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake")
+rm(mod_base_U); gc()
 
 
 ## ----fit-null-----------------------------------------------------------------
@@ -118,6 +122,10 @@ bform_Y_null <- bf(
 mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_yield")
+
+loo_null <- loo(mod_null_Y, cores = 1)
+ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
+rm(mod_null_Y); gc()
 
 
 ## ----fit-heuristic------------------------------------------------------------
@@ -135,6 +143,11 @@ mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 8:9),
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_yield")
 
+loo_heur <- loo(mod_heur_Y, cores = 1)
+ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
+params_heur <- fixef(mod_heur_Y)
+rm(mod_heur_Y); gc()
+
 
 ## ----fit-mechanistic----------------------------------------------------------
 # Yield Mechanistic: The exact model from bayesian_modelling.qmd using 1/b and Temp/Prec
@@ -151,29 +164,18 @@ mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7, ],
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_yield")
 
+loo_mech <- loo(mod_mech_Y, cores = 1)
+ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
+params_mech <- fixef(mod_mech_Y)
+r2_mech <- bayes_R2(mod_mech_Y)
+rm(mod_mech_Y); gc()
+
 
 ## ----extract-metrics----------------------------------------------------------
 cat("Extracting LOO metrics for direct comparison...\n")
 
-# Compute LOO for each (ignoring the 12 outliers to save re-fitting time)
-loo_base <- loo(mod_base_Y, cores = cores_n)
-loo_null <- loo(mod_null_Y, cores = cores_n)
-loo_heur <- loo(mod_heur_Y, cores = cores_n)
-loo_mech <- loo(mod_mech_Y, cores = cores_n)
-
 # Direct Stacked Predictive Comparison
 comp_yield <- loo_compare(loo_base, loo_null, loo_heur, loo_mech)
-
-# Generate lightweight Prediction Dataframes for Plotting (Marginal Effects)
-cat("Generating prediction coordinates for local plotting...\n")
-ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
-ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
-ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
-
-cat("Extracting posterior parameter summaries and R2...\n")
-params_mech <- fixef(mod_mech_Y)
-params_heur <- fixef(mod_heur_Y)
-r2_mech <- bayes_R2(mod_mech_Y)
 
 # Export exactly what we need for the paper
 export_payload <- list(
