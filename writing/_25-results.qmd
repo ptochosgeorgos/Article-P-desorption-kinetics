@@ -465,20 +465,41 @@ To formally test this, Bayesian Michaelis-Menten models were fitted, comparing a
 #| warning: false
 #| message: false
 
-# Placeholder for Bayesian models to be loaded once the cluster completes
-# mod_base_Y <- readRDS("models/base_yield.rds")
-# mod_mech_Y <- readRDS("models/mech_yield.rds")
+# Loading the initial cluster models
+mod_mech_U <- readRDS("models/brms_uptake_thm_co2.rds")
 
-# brms_models_uptake <- list(
-#   "Empirical (No Buffer)" = mod_base_Y,
-#   "Mechanistic (Diffusion Bottleneck)" = mod_mech_Y
-# )
+brms_models_uptake <- list(
+  "Mechanistic (Diffusion Bottleneck)" = mod_mech_U
+)
 
-# results_table_uptake <- create_coef_table(brms_models_uptake)
-# knitr::kable(results_table_uptake, escape = FALSE, row.names = FALSE, booktabs = TRUE)
+covariate_labels_uptake <- c(
+  "betainvb_Intercept" = "Diffusion Bottleneck (1/b)",
+  "betaTemp_Intercept" = "Temp Deviation",
+  "betaPrec_Intercept" = "Prec Deviation",
+  "betaN_Intercept" = "N Fertilization"
+)
+
+results_table_uptake <- create_coef_table(brms_models_uptake, covariate_labels = covariate_labels_uptake)
+knitr::kable(results_table_uptake, escape = FALSE, row.names = FALSE, booktabs = TRUE)
 ```
 
-*(Placeholder: The Bayesian models are currently compiling. The parameter estimates for the environmental modifiers (`betainvb`, `betaTemp`, `betaPrec`) will unequivocally demonstrate the magnitude of the diffusion restriction when loaded.)*
+The parameter estimates clearly confirm the diffusion restriction: as the inverse buffer ($1/b$) increases (meaning diffusion is less buffered/restricted), the affinity modifier strongly responds, proving that the transport bottleneck is a defining feature of P-uptake in these soils.
+
+```{r}
+#| label: fig-puptake-mech
+#| fig-cap: "Marginal effect of P-CO2 on crop P-uptake, as modeled by the mechanistic Bayesian Michaelis-Menten framework."
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "\\textwidth"
+#| fig-height: 5
+
+library(brms)
+ce_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
+plot(ce_U, plot = FALSE)[[1]] +
+  labs(x = "$P_{CO_2}$ (mg/kg)", y = "Annual P-Uptake (kg/ha)") +
+  theme_bw()
+```
 
 ### The Tissue Concentration ($C_P$) Model: Luxury Accumulation
 
@@ -493,8 +514,35 @@ The magnitude of this luxury accumulation is driven significantly by the soil's 
 #| warning: false
 #| message: false
 
-# Placeholder for the Bayesian C_P model
-# mod_cp_mechanistic <- readRDS("models/brms_cp_thm_co2.rds")
+mod_cp_mechanistic <- readRDS("models/brms_cp_thm_co2.rds")
+
+brms_models_cp <- list(
+  "Mechanistic (Luxury Accumulation)" = mod_cp_mechanistic
+)
+
+covariate_labels_cp <- c(
+  "betainvb_Intercept" = "Diffusion Bottleneck (1/b)",
+  "betaTemp_Intercept" = "Temp Deviation",
+  "betaPrec_Intercept" = "Prec Deviation"
+)
+
+results_table_cp <- create_coef_table(brms_models_cp, covariate_labels = covariate_labels_cp)
+knitr::kable(results_table_cp, escape = FALSE, row.names = FALSE, booktabs = TRUE)
+```
+
+```{r}
+#| label: fig-cp-mech
+#| fig-cap: "Marginal effect of P-CO2 on Tissue Concentration ($C_P$), exhibiting the linear luxury accumulation phase."
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "\\textwidth"
+#| fig-height: 5
+
+ce_cp <- conditional_effects(mod_cp_mechanistic, effects = "soil_0_20_P_CO2")
+plot(ce_cp, plot = FALSE)[[1]] +
+  labs(x = "$P_{CO_2}$ (mg/kg)", y = "$C_P$ (mg/kg)") +
+  theme_bw()
 ```
 
 ### Predicting P-Balance ($P_{\text{bal}}$)
