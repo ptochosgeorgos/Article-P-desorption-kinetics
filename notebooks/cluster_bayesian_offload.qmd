@@ -55,6 +55,11 @@ crop_refs <- data.frame(
 ) |> mutate(P_conc_ref = (P_up_ref * 10) / Y_ref)
 
 d_brms <- d_brms |>
+    # Harmonize Wheat codes to match the GRUD reference
+    mutate(crop = case_when(
+      crop %in% c("WW", "SW", "WS") ~ "Wheat",
+      TRUE ~ as.character(crop)
+    )) |>
     left_join(crop_refs, by = "crop") |>
     mutate(
       C_P = annual_P_uptake / annual_yield_mp_DM,
@@ -63,7 +68,14 @@ d_brms <- d_brms |>
       site = as.factor(site),
       year = as.factor(year)
     ) |>
-    filter(is.finite(C_P), C_P > 0, !is.na(annual_yield_mp_DM), !is.na(z_inv_b))
+    # CRITICAL: Drop any rows missing GRUD targets so ALL models train on the exact same rows!
+    filter(
+      is.finite(C_P), C_P > 0, 
+      !is.na(annual_yield_mp_DM), 
+      !is.na(z_inv_b),
+      !is.na(Y_ref),
+      !is.na(Supply_class_CO2)
+    )
 
 # Standard Priors
 priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
@@ -161,14 +173,14 @@ mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7, ],
 ```{r extract-metrics}
 cat("Extracting LOO metrics for direct comparison...\n")
 
-# Run exact LOO
-mod_base_Y <- add_criterion(mod_base_Y, "loo")
-mod_null_Y <- add_criterion(mod_null_Y, "loo")
-mod_heur_Y <- add_criterion(mod_heur_Y, "loo")
-mod_mech_Y <- add_criterion(mod_mech_Y, "loo")
+# Compute LOO for each (moment_match = TRUE handles pareto_k outliers)
+loo_base <- loo(mod_base_Y, moment_match = TRUE, cores = cores_n)
+loo_null <- loo(mod_null_Y, moment_match = TRUE, cores = cores_n)
+loo_heur <- loo(mod_heur_Y, moment_match = TRUE, cores = cores_n)
+loo_mech <- loo(mod_mech_Y, moment_match = TRUE, cores = cores_n)
 
 # Direct Stacked Predictive Comparison
-comp_yield <- loo_compare(mod_base_Y, mod_null_Y, mod_heur_Y, mod_mech_Y)
+comp_yield <- loo_compare(loo_base, loo_null, loo_heur, loo_mech)
 
 # Generate lightweight Prediction Dataframes for Plotting (Marginal Effects)
 cat("Generating prediction coordinates for local plotting...\n")
