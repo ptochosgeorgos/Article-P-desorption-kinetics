@@ -155,11 +155,11 @@ mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7, ],
 ## ----extract-metrics----------------------------------------------------------
 cat("Extracting LOO metrics for direct comparison...\n")
 
-# Compute LOO for each (moment_match = TRUE handles pareto_k outliers)
-loo_base <- loo(mod_base_Y, moment_match = TRUE, cores = cores_n)
-loo_null <- loo(mod_null_Y, moment_match = TRUE, cores = cores_n)
-loo_heur <- loo(mod_heur_Y, moment_match = TRUE, cores = cores_n)
-loo_mech <- loo(mod_mech_Y, moment_match = TRUE, cores = cores_n)
+# Compute LOO for each (ignoring the 12 outliers to save re-fitting time)
+loo_base <- loo(mod_base_Y, cores = cores_n)
+loo_null <- loo(mod_null_Y, cores = cores_n)
+loo_heur <- loo(mod_heur_Y, cores = cores_n)
+loo_mech <- loo(mod_mech_Y, cores = cores_n)
 
 # Direct Stacked Predictive Comparison
 comp_yield <- loo_compare(loo_base, loo_null, loo_heur, loo_mech)
