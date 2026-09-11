@@ -495,7 +495,7 @@ The parameter estimates clearly confirm the diffusion restriction: as the invers
 #| fig-height: 5
 
 library(brms)
-ce_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
+ce_U <- conditional_effects(mod_mech_U, effects = "a_CO2_total_mg_L")
 plot(ce_U, plot = FALSE)[[1]] +
   labs(x = "$P_{CO_2}$ (mg/kg)", y = "Annual P-Uptake (kg/ha)") +
   theme_bw()
@@ -539,7 +539,7 @@ knitr::kable(results_table_cp, escape = FALSE, row.names = FALSE, booktabs = TRU
 #| out-width: "\\textwidth"
 #| fig-height: 5
 
-ce_cp <- conditional_effects(mod_cp_mechanistic, effects = "soil_0_20_P_CO2")
+ce_cp <- conditional_effects(mod_cp_mechanistic, effects = "a_CO2_total_mg_L")
 plot(ce_cp, plot = FALSE)[[1]] +
   labs(x = "$P_{CO_2}$ (mg/kg)", y = "$C_P$ (mg/kg)") +
   theme_bw()
