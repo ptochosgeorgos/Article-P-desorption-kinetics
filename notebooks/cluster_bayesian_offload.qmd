@@ -70,9 +70,7 @@ d_brms <- d_brms |>
     ) |>
     # CRITICAL: Drop any rows missing GRUD targets so ALL models train on the exact same rows!
     filter(
-      is.finite(C_P), C_P > 0, 
       !is.na(annual_yield_mp_DM), 
-      !is.na(annual_P_uptake), 
       !is.na(z_inv_b),
       !is.na(Y_ref),
       !is.na(Supply_class_CO2),
