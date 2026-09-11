@@ -115,7 +115,7 @@ create_coef_table <- function(models_list,
 }
 ```
 
-## The Kinetic Reality vs. Empirical Classification
+## Desorption Kinetics against Soil Test Phosphorus
 
 The profound failure of empirical extraction methods (like $P_{AAE10}$ and $P_{CO2}$) to predict crop response is not merely a statistical artifact; it is fundamentally rooted in their physical assumptions. Static extractions operate on the premise that the extracted pool is a perfect proxy for the non-equilibrium kinetic supply rate ($v_0$) or the diffusion constant ($k$). However, these parameters are fundamentally decoupled.
 
@@ -123,46 +123,6 @@ As shown in @fig-kinetic-vs-empirical, assigning soils to rigid administrative "
 
 ```{r generate-fig-kinetic-vs-empirical}
 #| include: false
-
-grud_co2_matrix <- matrix(c(
-  1.5, 1.5, 1.5, 1.4, 1.2, 1.4, 1.4, 1.3, 1.2, 1.1, 1.2, 1.2, 1.1, 1.0, 1.0,
-  1.0, 1.0, 1.0, 1.0, 0.8, 1.0, 1.0, 1.0, 0.8, 0.6, 1.0, 1.0, 0.8, 0.6, 0.0,
-  1.0, 0.8, 0.6, 0.0, 0.0, 0.8, 0.8, 0.4, 0.0, 0.0, 0.8, 0.6, 0.0, 0.0, 0.0,
-  0.6, 0.4, 0.0, 0.0, 0.0, 0.6, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0,
-  0.4, 0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0, 0.0, 0.0), nrow=16, byrow=TRUE)
-
-grud_aae_matrix <- matrix(c(
-  1.5, 1.5, 1.5, 1.4, 1.4, 1.5, 1.5, 1.4, 1.4, 1.2, 1.5, 1.4, 1.4, 1.2, 1.2,
-  1.4, 1.4, 1.2, 1.2, 1.0, 1.4, 1.2, 1.2, 1.0, 1.0, 1.2, 1.2, 1.2, 1.0, 1.0,
-  1.2, 1.0, 1.0, 1.0, 1.0, 1.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8, 0.8, 1.0, 1.0, 0.8, 0.8, 0.6,
-  1.0, 1.0, 0.8, 0.8, 0.6, 1.0, 0.8, 0.8, 0.6, 0.6, 0.8, 0.8, 0.8, 0.6, 0.6,
-  0.8, 0.8, 0.6, 0.6, 0.4, 0.8, 0.6, 0.6, 0.4, 0.4, 0.6, 0.6, 0.6, 0.4, 0.4,
-  0.6, 0.6, 0.4, 0.4, 0.0, 0.6, 0.4, 0.4, 0.0, 0.0, 0.4, 0.4, 0.4, 0.0, 0.0,
-  0.4, 0.4, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), nrow=26, byrow=TRUE)
-
-get_grud_class <- function(type, p_val, clay) {
-  if (is.na(p_val) || is.na(clay)) return(NA)
-  clay_idx <- min(5, max(1, floor(clay / 10) + 1))
-  if (type == "CO2") {
-    row_idx <- which(p_val <= c(0.15, 0.46, 0.77, 1.08, 1.39, 1.70, 2.01, 2.32, 2.63, 2.94, 3.25, 3.56, 3.88, 4.19, 4.50))[1]
-    if (is.na(row_idx)) row_idx <- 16
-    fac <- grud_co2_matrix[row_idx, clay_idx]
-  } else {
-    row_idx <- which(p_val <= seq(4.9, 124.9, by=5))[1]
-    if (is.na(row_idx)) row_idx <- 26
-    fac <- grud_aae_matrix[row_idx, clay_idx]
-  }
-  if (fac >= 1.5) return("A")
-  if (fac >= 1.2) return("B")
-  if (fac >= 1.0) return("C")
-  if (fac >= 0.4) return("D")
-  return("E")
-}
-
-clay_map <- c("ALT" = 22, "CAD" = 8, "ELL" = 33, "GRA" = 17, "OEN" = 37, "REC" = 39, "REH" = 39)
 
 D_Yield <- readRDS("models/D_Yield.rds")
 inv_b_df <- D_Yield %>% select(site, inv_b_cons) %>% distinct()
@@ -172,11 +132,8 @@ d_plot <- D %>%
   filter(!is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(soil_0_20_pH_H2O), !is.na(inv_b_cons)) %>%
   rowwise() %>%
   mutate(
-    soil_clay = clay_map[as.character(Site)],
     inv_b = inv_b_cons,
-    v0 = k * soil_0_20_P_CO2,
-    Class_CO2 = factor(get_grud_class("CO2", soil_0_20_P_CO2, soil_clay), levels=c("A","B","C","D","E")),
-    Class_AAE = factor(get_grud_class("AAE", soil_0_20_P_AAE10, soil_clay), levels=c("A","B","C","D","E"))
+    v0 = k * soil_0_20_P_CO2
   ) %>%
   ungroup()
 
