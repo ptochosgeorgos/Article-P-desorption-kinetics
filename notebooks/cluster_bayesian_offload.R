@@ -75,9 +75,8 @@ priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
 
 
 bprior_uptake <- c(
-  prior(normal(10, 10), nlpar = "Y0", lb = 0),     
-  prior(normal(40, 20), nlpar = "A", lb = 0),     
-  prior(lognormal(-2, 2), nlpar = "cbase", lb = 0), 
+  prior(normal(30, 15), nlpar = "Vmax", lb = 0),     
+  prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),     
   prior(normal(0, 1), nlpar = "betainvb"),
   prior(normal(0, 1), nlpar = "betaN"),
   prior(normal(0, 1), nlpar = "betaTemp"),
@@ -141,15 +140,14 @@ loo_null <- loo(mod_null_Y, cores = 1)
 ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
 rm(mod_null_Y); gc()
 
-# Uptake Null: No pedoclimatic modifiers on the rate constant
+# Uptake Null: Michaelis-Menten (No pedoclimatic modifiers)
 bform_U_null <- bf(
-  annual_P_uptake ~ Y0 + (A - Y0) * (1 - exp(-(cbase) * soil_0_20_P_CO2)),
-  Y0 ~ crop - 1 + (1 | site/year),
-  A ~ crop - 1 + (1 | site/year),
-  cbase ~ 1,
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / (Kbase + soil_0_20_P_CO2),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
   nl = TRUE
 )
-mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:3, ], 
+mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_uptake")
 
@@ -179,15 +177,15 @@ ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
 params_heur <- fixef(mod_heur_Y)
 rm(mod_heur_Y); gc()
 
-# Uptake Heuristic: Blindly add pH and Clay to the rate exponent
+# Uptake Heuristic: Michaelis-Menten with pH and Clay on Kbase
 bform_U_heur <- bf(
-  annual_P_uptake ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betaClay * rollMean_soil_0_20_clay + betapH * soil_0_20_pH_H2O)) * soil_0_20_P_CO2)),
-  Y0 ~ crop - 1 + (1 | site/year),
-  A ~ crop - 1 + (1 | site/year),
-  cbase + betaClay + betapH ~ 1,
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betaClay * rollMean_soil_0_20_clay + betapH * soil_0_20_pH_H2O)) + soil_0_20_P_CO2),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betaClay + betapH ~ 1,
   nl = TRUE
 )
-mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:3, 8:9), ], 
+mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 7:8), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_uptake")
 
@@ -219,15 +217,15 @@ params_mech <- fixef(mod_mech_Y)
 r2_mech <- bayes_R2(mod_mech_Y)
 rm(mod_mech_Y); gc()
 
-# Uptake Mechanistic: The exact model from bayesian_modelling.qmd using 1/b and Temp/Prec
+# Uptake Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
 bform_U_mech <- bf(
-  annual_P_uptake ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaTemp * rollMean_Temp + betaPrec * rollMean_Prec)) * soil_0_20_P_CO2)),
-  Y0 ~ crop - 1 + (1 | site/year),
-  A ~ crop - 1 + (1 | site/year),
-  cbase + betainvb + betaTemp + betaPrec ~ 1,
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betainvb * z_inv_b + betaTemp * rollMean_Temp + betaPrec * rollMean_Prec)) + soil_0_20_P_CO2),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betainvb + betaTemp + betaPrec ~ 1,
   nl = TRUE
 )
-mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[1:7, ], 
+mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:3, 5:6), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_uptake")
 
