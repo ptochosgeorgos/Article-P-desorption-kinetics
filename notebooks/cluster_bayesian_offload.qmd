@@ -188,6 +188,11 @@ ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
 ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
 ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
 
+cat("Extracting posterior parameter summaries and R2...\n")
+params_mech <- fixef(mod_mech_Y)
+params_heur <- fixef(mod_heur_Y)
+r2_mech <- bayes_R2(mod_mech_Y)
+
 # Export exactly what we need for the paper
 export_payload <- list(
     yield_comparison = comp_yield,
@@ -195,7 +200,12 @@ export_payload <- list(
         null = ce_null[[1]],
         heur = ce_heur[[1]],
         mech = ce_mech[[1]]
-    )
+    ),
+    parameters = list(
+        mech = params_mech,
+        heur = params_heur
+    ),
+    r2_mech = r2_mech
 )
 
 saveRDS(export_payload, "../data/cluster_results.rds")
