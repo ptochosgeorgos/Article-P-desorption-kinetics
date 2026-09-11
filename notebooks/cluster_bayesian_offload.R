@@ -64,6 +64,7 @@ d_brms <- d_brms |>
     filter(
       !is.na(annual_yield_mp_DM), 
       !is.na(z_inv_b),
+      !is.na(z_k),
       !is.na(Y_ref),
       !is.na(Supply_class_CO2),
       !is.na(juvdev_temp),
@@ -78,6 +79,7 @@ bprior_uptake <- c(
   prior(normal(30, 15), nlpar = "Vmax", lb = 0),     
   prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),     
   prior(normal(0, 1), nlpar = "betainvb"),
+  prior(normal(0, 1), nlpar = "betak"),
   prior(normal(0, 1), nlpar = "betaN"),
   prior(normal(0, 1), nlpar = "betaTemp"),
   prior(normal(0, 1), nlpar = "betaPrec"),
@@ -90,6 +92,7 @@ bprior_yield <- c(
   prior(normal(100, 50), nlpar = "A", lb = 0),     
   prior(lognormal(-2, 2), nlpar = "cbase", lb = 0), 
   prior(normal(0, 1), nlpar = "betainvb"),
+  prior(normal(0, 1), nlpar = "betak"),
   prior(normal(0, 1), nlpar = "betaN"),
   prior(normal(0, 1), nlpar = "betaTemp"),
   prior(normal(0, 1), nlpar = "betaPrec"),
@@ -199,15 +202,15 @@ rm(mod_heur_U); gc()
 ## ----fit-mechanistic----------------------------------------------------------
 # Yield Mechanistic: The exact model from bayesian_modelling.qmd using 1/b and Temp/Prec
 bform_Y_mech <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaN * z_fert_N + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) * soil_0_20_P_CO2)),
+  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betak * z_k + betaN * z_fert_N + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) * soil_0_20_P_CO2)),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
   cbase ~ crop - 1,
-  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  betainvb + betak + betaN + betaTemp + betaPrec ~ 1,
   nl = TRUE
 )
 
-mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:7, ], 
+mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:8, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_yield", file_refit = "on_change")
 
@@ -219,13 +222,13 @@ rm(mod_mech_Y); gc()
 
 # Uptake Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
 bform_U_mech <- bf(
-  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betainvb * z_inv_b + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) + soil_0_20_P_CO2),
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betainvb * z_inv_b + betak * z_k + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) + soil_0_20_P_CO2),
   Vmax ~ crop - 1 + (1 | site/year),
   Kbase ~ crop - 1,
-  betainvb + betaTemp + betaPrec ~ 1,
+  betainvb + betak + betaTemp + betaPrec ~ 1,
   nl = TRUE
 )
-mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:3, 5:6), ], 
+mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:4, 6:7), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_uptake", file_refit = "on_change")
 
