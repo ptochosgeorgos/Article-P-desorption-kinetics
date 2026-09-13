@@ -182,7 +182,8 @@ mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 9:10)
 
 loo_heur <- loo(mod_heur_Y, cores = 1)
 ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
-params_heur <- fixef(mod_heur_Y)
+params_heur <- summary(mod_heur_Y)$fixed
+  r2_heur <- list(conditional = bayes_R2(mod_heur_Y), marginal = bayes_R2(mod_heur_Y, re_formula = NA))
 rmse_heur <- get_rmse(mod_heur_Y, d_brms$annual_yield_mp_DM)
 rm(mod_heur_Y); gc()
 
@@ -200,7 +201,8 @@ mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9)
 
 loo_heur_U <- loo(mod_heur_U, cores = 1)
 ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2")
-params_heur_U <- fixef(mod_heur_U)
+params_heur_U <- summary(mod_heur_U)$fixed
+  r2_heur_U <- list(conditional = bayes_R2(mod_heur_U), marginal = bayes_R2(mod_heur_U, re_formula = NA))
 rmse_heur_U <- get_rmse(mod_heur_U, d_brms$annual_P_uptake)
 rm(mod_heur_U); gc()
 
@@ -223,8 +225,8 @@ mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:8, ],
 
 loo_mech <- loo(mod_mech_Y, cores = 1)
 ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
-params_mech <- fixef(mod_mech_Y)
-r2_mech <- bayes_R2(mod_mech_Y)
+params_mech <- summary(mod_mech_Y)$fixed
+r2_mech <- list(conditional = bayes_R2(mod_mech_Y), marginal = bayes_R2(mod_mech_Y, re_formula = NA))
 rmse_mech <- get_rmse(mod_mech_Y, d_brms$annual_yield_mp_DM)
 rm(mod_mech_Y); gc()
 
@@ -242,8 +244,8 @@ mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:4, 6:7)
 
 loo_mech_U <- loo(mod_mech_U, cores = 1)
 ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
-params_mech_U <- fixef(mod_mech_U)
-r2_mech_U <- bayes_R2(mod_mech_U)
+params_mech_U <- summary(mod_mech_U)$fixed
+r2_mech_U <- list(conditional = bayes_R2(mod_mech_U), marginal = bayes_R2(mod_mech_U, re_formula = NA))
 rmse_mech_U <- get_rmse(mod_mech_U, d_brms$annual_P_uptake)
 rm(mod_mech_U); gc()
 
@@ -266,6 +268,7 @@ export_payload <- list(
         plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], mech = ce_mech[[1]]),
         parameters = list(mech = params_mech, heur = params_heur),
         r2_mech = r2_mech,
+        r2_heur = r2_heur,
         rmse = list(base = rmse_base, null = rmse_null, heur = rmse_heur, mech = rmse_mech)
     ),
     uptake = list(
@@ -273,6 +276,7 @@ export_payload <- list(
         plot_data = list(null = ce_null_U[[1]], heur = ce_heur_U[[1]], mech = ce_mech_U[[1]]),
         parameters = list(mech = params_mech_U, heur = params_heur_U),
         r2_mech = r2_mech_U,
+        r2_heur = r2_heur_U,
         rmse = list(base = rmse_base_U, null = rmse_null_U, heur = rmse_heur_U, mech = rmse_mech_U)
     )
 )
