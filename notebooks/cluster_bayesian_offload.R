@@ -116,6 +116,7 @@ mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year
     iter = iter_n, file = "../models/base_yield", file_refit = "on_change")
 
 loo_base <- loo(mod_base_Y, cores = 1)
+rmse_base <- get_rmse(mod_base_Y, d_brms$annual_yield_mp_DM)
 rm(mod_base_Y); gc()
 
 # Uptake
@@ -123,6 +124,7 @@ mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake", file_refit = "on_change")
+rmse_base_U <- get_rmse(mod_base_U, d_brms$annual_P_uptake)
 rm(mod_base_U); gc()
 
 
@@ -142,6 +144,7 @@ mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ],
 
 loo_null <- loo(mod_null_Y, cores = 1)
 ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
+rmse_null <- get_rmse(mod_null_Y, d_brms$annual_yield_mp_DM)
 rm(mod_null_Y); gc()
 
 # Uptake Null: Michaelis-Menten (No pedoclimatic modifiers)
@@ -157,6 +160,7 @@ mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ],
 
 loo_null_U <- loo(mod_null_U, cores = 1)
 ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2")
+rmse_null_U <- get_rmse(mod_null_U, d_brms$annual_P_uptake)
 rm(mod_null_U); gc()
 
 
@@ -179,6 +183,7 @@ mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 9:10)
 loo_heur <- loo(mod_heur_Y, cores = 1)
 ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
 params_heur <- fixef(mod_heur_Y)
+rmse_heur <- get_rmse(mod_heur_Y, d_brms$annual_yield_mp_DM)
 rm(mod_heur_Y); gc()
 
 # Uptake Heuristic: Michaelis-Menten with pH and Clay on Kbase
@@ -196,6 +201,7 @@ mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9)
 loo_heur_U <- loo(mod_heur_U, cores = 1)
 ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2")
 params_heur_U <- fixef(mod_heur_U)
+rmse_heur_U <- get_rmse(mod_heur_U, d_brms$annual_P_uptake)
 rm(mod_heur_U); gc()
 
 
@@ -219,6 +225,7 @@ loo_mech <- loo(mod_mech_Y, cores = 1)
 ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
 params_mech <- fixef(mod_mech_Y)
 r2_mech <- bayes_R2(mod_mech_Y)
+rmse_mech <- get_rmse(mod_mech_Y, d_brms$annual_yield_mp_DM)
 rm(mod_mech_Y); gc()
 
 # Uptake Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
@@ -237,6 +244,7 @@ loo_mech_U <- loo(mod_mech_U, cores = 1)
 ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
 params_mech_U <- fixef(mod_mech_U)
 r2_mech_U <- bayes_R2(mod_mech_U)
+rmse_mech_U <- get_rmse(mod_mech_U, d_brms$annual_P_uptake)
 rm(mod_mech_U); gc()
 
 
@@ -257,13 +265,15 @@ export_payload <- list(
         comparison = comp_yield,
         plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], mech = ce_mech[[1]]),
         parameters = list(mech = params_mech, heur = params_heur),
-        r2_mech = r2_mech
+        r2_mech = r2_mech,
+        rmse = list(base = rmse_base, null = rmse_null, heur = rmse_heur, mech = rmse_mech)
     ),
     uptake = list(
         comparison = comp_uptake,
         plot_data = list(null = ce_null_U[[1]], heur = ce_heur_U[[1]], mech = ce_mech_U[[1]]),
         parameters = list(mech = params_mech_U, heur = params_heur_U),
-        r2_mech = r2_mech_U
+        r2_mech = r2_mech_U,
+        rmse = list(base = rmse_base_U, null = rmse_null_U, heur = rmse_heur_U, mech = rmse_mech_U)
     )
 )
 
