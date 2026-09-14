@@ -147,7 +147,7 @@ mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ],
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield", file_refit = "on_change")
 
 loo_null <- loo(mod_null_Y, cores = 1)
-ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
+ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2:crop")
 rmse_null <- get_rmse(mod_null_Y, d_brms$annual_yield_mp_DM)
 rm(mod_null_Y); gc()
 
@@ -163,7 +163,7 @@ mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ],
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_uptake", file_refit = "on_change")
 
 loo_null_U <- loo(mod_null_U, cores = 1)
-ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2")
+ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2:crop")
 rmse_null_U <- get_rmse(mod_null_U, d_brms$annual_P_uptake)
 rm(mod_null_U); gc()
 
@@ -185,7 +185,7 @@ mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 9:10)
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield", file_refit = "on_change")
 
 loo_heur <- loo(mod_heur_Y, cores = 1)
-ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
+ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2:crop")
 params_heur <- summary(mod_heur_Y)$fixed
   r2_heur <- list(conditional = bayes_R2(mod_heur_Y), marginal = bayes_R2(mod_heur_Y, re_formula = NA))
 rmse_heur <- get_rmse(mod_heur_Y, d_brms$annual_yield_mp_DM)
@@ -204,7 +204,7 @@ mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9)
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_uptake", file_refit = "on_change")
 
 loo_heur_U <- loo(mod_heur_U, cores = 1)
-ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2")
+ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2:crop")
 params_heur_U <- summary(mod_heur_U)$fixed
   r2_heur_U <- list(conditional = bayes_R2(mod_heur_U), marginal = bayes_R2(mod_heur_U, re_formula = NA))
 rmse_heur_U <- get_rmse(mod_heur_U, d_brms$annual_P_uptake)
@@ -228,7 +228,7 @@ mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:8, ],
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_yield", file_refit = "on_change")
 
 loo_mech <- loo(mod_mech_Y, cores = 1)
-ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
+ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2:crop")
 params_mech <- summary(mod_mech_Y)$fixed
 r2_mech <- list(conditional = bayes_R2(mod_mech_Y), marginal = bayes_R2(mod_mech_Y, re_formula = NA))
 rmse_mech <- get_rmse(mod_mech_Y, d_brms$annual_yield_mp_DM)
@@ -247,7 +247,7 @@ mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:4, 6:7)
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_uptake", file_refit = "on_change")
 
 loo_mech_U <- loo(mod_mech_U, cores = 1)
-ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
+ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2:crop")
 params_mech_U <- summary(mod_mech_U)$fixed
 r2_mech_U <- list(conditional = bayes_R2(mod_mech_U), marginal = bayes_R2(mod_mech_U, re_formula = NA))
 rmse_mech_U <- get_rmse(mod_mech_U, d_brms$annual_P_uptake)
