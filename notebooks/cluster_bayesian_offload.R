@@ -144,7 +144,7 @@ bform_Y_null <- bf(
 
 mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_yield", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield", file_refit = "on_change")
 
 loo_null <- loo(mod_null_Y, cores = 1)
 ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
@@ -160,7 +160,7 @@ bform_U_null <- bf(
 )
 mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_uptake", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_uptake", file_refit = "on_change")
 
 loo_null_U <- loo(mod_null_U, cores = 1)
 ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2")
@@ -182,7 +182,7 @@ bform_Y_heur <- bf(
 
 mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 9:10), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_yield", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield", file_refit = "on_change")
 
 loo_heur <- loo(mod_heur_Y, cores = 1)
 ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
@@ -201,7 +201,7 @@ bform_U_heur <- bf(
 )
 mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_uptake", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_uptake", file_refit = "on_change")
 
 loo_heur_U <- loo(mod_heur_U, cores = 1)
 ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2")
@@ -225,7 +225,7 @@ bform_Y_mech <- bf(
 
 mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:8, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_yield", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_yield", file_refit = "on_change")
 
 loo_mech <- loo(mod_mech_Y, cores = 1)
 ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
@@ -244,7 +244,7 @@ bform_U_mech <- bf(
 )
 mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:4, 6:7), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_uptake", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_uptake", file_refit = "on_change")
 
 loo_mech_U <- loo(mod_mech_U, cores = 1)
 ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
