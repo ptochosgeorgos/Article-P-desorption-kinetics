@@ -107,6 +107,10 @@ chains_n <- 4
 threads_n <- 4
 iter_n <- 2000
 
+get_rmse <- function(mod, y) {
+  preds <- fitted(mod)[, "Estimate"]
+  sqrt(mean((y - preds)^2, na.rm = TRUE))
+}
 
 ## ----fit-base-----------------------------------------------------------------
 # Yield
@@ -116,6 +120,7 @@ mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year
     iter = iter_n, file = "../models/base_yield", file_refit = "on_change")
 
 loo_base <- loo(mod_base_Y, cores = 1)
+rmse_base <- get_rmse(mod_base_Y, d_brms$annual_yield_mp_DM)
 rm(mod_base_Y); gc()
 
 # Uptake
@@ -123,6 +128,7 @@ mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake", file_refit = "on_change")
+rmse_base_U <- get_rmse(mod_base_U, d_brms$annual_P_uptake)
 rm(mod_base_U); gc()
 
 
@@ -138,10 +144,11 @@ bform_Y_null <- bf(
 
 mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:3, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_yield", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield", file_refit = "on_change")
 
 loo_null <- loo(mod_null_Y, cores = 1)
 ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2")
+rmse_null <- get_rmse(mod_null_Y, d_brms$annual_yield_mp_DM)
 rm(mod_null_Y); gc()
 
 # Uptake Null: Michaelis-Menten (No pedoclimatic modifiers)
@@ -153,10 +160,11 @@ bform_U_null <- bf(
 )
 mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/null_uptake", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_uptake", file_refit = "on_change")
 
 loo_null_U <- loo(mod_null_U, cores = 1)
 ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2")
+rmse_null_U <- get_rmse(mod_null_U, d_brms$annual_P_uptake)
 rm(mod_null_U); gc()
 
 
@@ -174,11 +182,13 @@ bform_Y_heur <- bf(
 
 mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:3, 9:10), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_yield", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield", file_refit = "on_change")
 
 loo_heur <- loo(mod_heur_Y, cores = 1)
 ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2")
-params_heur <- fixef(mod_heur_Y)
+params_heur <- summary(mod_heur_Y)$fixed
+  r2_heur <- list(conditional = bayes_R2(mod_heur_Y), marginal = bayes_R2(mod_heur_Y, re_formula = NA))
+rmse_heur <- get_rmse(mod_heur_Y, d_brms$annual_yield_mp_DM)
 rm(mod_heur_Y); gc()
 
 # Uptake Heuristic: Michaelis-Menten with pH and Clay on Kbase
@@ -191,11 +201,13 @@ bform_U_heur <- bf(
 )
 mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/heur_uptake", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_uptake", file_refit = "on_change")
 
 loo_heur_U <- loo(mod_heur_U, cores = 1)
 ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2")
-params_heur_U <- fixef(mod_heur_U)
+params_heur_U <- summary(mod_heur_U)$fixed
+  r2_heur_U <- list(conditional = bayes_R2(mod_heur_U), marginal = bayes_R2(mod_heur_U, re_formula = NA))
+rmse_heur_U <- get_rmse(mod_heur_U, d_brms$annual_P_uptake)
 rm(mod_heur_U); gc()
 
 
@@ -213,12 +225,13 @@ bform_Y_mech <- bf(
 
 mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:8, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_yield", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_yield", file_refit = "on_change")
 
 loo_mech <- loo(mod_mech_Y, cores = 1)
 ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2")
-params_mech <- fixef(mod_mech_Y)
-r2_mech <- bayes_R2(mod_mech_Y)
+params_mech <- summary(mod_mech_Y)$fixed
+r2_mech <- list(conditional = bayes_R2(mod_mech_Y), marginal = bayes_R2(mod_mech_Y, re_formula = NA))
+rmse_mech <- get_rmse(mod_mech_Y, d_brms$annual_yield_mp_DM)
 rm(mod_mech_Y); gc()
 
 # Uptake Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
@@ -231,12 +244,13 @@ bform_U_mech <- bf(
 )
 mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:4, 6:7), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95), file = "../models/mech_uptake", file_refit = "on_change")
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_uptake", file_refit = "on_change")
 
 loo_mech_U <- loo(mod_mech_U, cores = 1)
 ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2")
-params_mech_U <- fixef(mod_mech_U)
-r2_mech_U <- bayes_R2(mod_mech_U)
+params_mech_U <- summary(mod_mech_U)$fixed
+r2_mech_U <- list(conditional = bayes_R2(mod_mech_U), marginal = bayes_R2(mod_mech_U, re_formula = NA))
+rmse_mech_U <- get_rmse(mod_mech_U, d_brms$annual_P_uptake)
 rm(mod_mech_U); gc()
 
 
@@ -257,13 +271,17 @@ export_payload <- list(
         comparison = comp_yield,
         plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], mech = ce_mech[[1]]),
         parameters = list(mech = params_mech, heur = params_heur),
-        r2_mech = r2_mech
+        r2_mech = r2_mech,
+        r2_heur = r2_heur,
+        rmse = list(base = rmse_base, null = rmse_null, heur = rmse_heur, mech = rmse_mech)
     ),
     uptake = list(
         comparison = comp_uptake,
         plot_data = list(null = ce_null_U[[1]], heur = ce_heur_U[[1]], mech = ce_mech_U[[1]]),
         parameters = list(mech = params_mech_U, heur = params_heur_U),
-        r2_mech = r2_mech_U
+        r2_mech = r2_mech_U,
+        r2_heur = r2_heur_U,
+        rmse = list(base = rmse_base_U, null = rmse_null_U, heur = rmse_heur_U, mech = rmse_mech_U)
     )
 )
 
