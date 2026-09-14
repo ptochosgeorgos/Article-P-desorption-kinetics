@@ -77,28 +77,28 @@ priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
 
 
 bprior_uptake <- c(
-  prior(normal(30, 15), nlpar = "Vmax", lb = 0),     
+  prior(normal(30, 40), nlpar = "Vmax", lb = 0),     
   prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),     
-  prior(normal(0, 1), nlpar = "betainvb"),
-  prior(normal(0, 1), nlpar = "betak"),
-  prior(normal(0, 1), nlpar = "betaN"),
-  prior(normal(0, 1), nlpar = "betaTemp"),
-  prior(normal(0, 1), nlpar = "betaPrec"),
-  prior(normal(0, 1), nlpar = "betapH"),
-  prior(normal(0, 1), nlpar = "betaClay")
+  prior(normal(0, 0.5), nlpar = "betainvb"),
+  prior(normal(0, 0.5), nlpar = "betak"),
+  prior(normal(0, 0.5), nlpar = "betaN"),
+  prior(normal(0, 0.5), nlpar = "betaTemp"),
+  prior(normal(0, 0.5), nlpar = "betaPrec"),
+  prior(normal(0, 0.5), nlpar = "betapH"),
+  prior(normal(0, 0.5), nlpar = "betaClay")
 )
 
 bprior_yield <- c(
-  prior(normal(50, 50), nlpar = "Y0", lb = 0),     
-  prior(normal(100, 50), nlpar = "A", lb = 0),     
+  prior(normal(100, 400), nlpar = "Y0", lb = 0),     
+  prior(normal(200, 400), nlpar = "A", lb = 0),     
   prior(lognormal(-2, 2), nlpar = "cbase", lb = 0), 
-  prior(normal(0, 1), nlpar = "betainvb"),
-  prior(normal(0, 1), nlpar = "betak"),
-  prior(normal(0, 1), nlpar = "betaN"),
-  prior(normal(0, 1), nlpar = "betaTemp"),
-  prior(normal(0, 1), nlpar = "betaPrec"),
-  prior(normal(0, 1), nlpar = "betapH"),
-  prior(normal(0, 1), nlpar = "betaClay")
+  prior(normal(0, 0.5), nlpar = "betainvb"),
+  prior(normal(0, 0.5), nlpar = "betak"),
+  prior(normal(0, 0.5), nlpar = "betaN"),
+  prior(normal(0, 0.5), nlpar = "betaTemp"),
+  prior(normal(0, 0.5), nlpar = "betaPrec"),
+  prior(normal(0, 0.5), nlpar = "betapH"),
+  prior(normal(0, 0.5), nlpar = "betaClay")
 )
 
 # HMC config
