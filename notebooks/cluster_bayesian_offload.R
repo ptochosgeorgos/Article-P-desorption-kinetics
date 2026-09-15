@@ -106,7 +106,7 @@ bprior_yield <- c(
 cores_n <- 16
 chains_n <- 4
 threads_n <- 4
-iter_n <- 2000
+iter_n <- 4000
 
 get_rmse <- function(mod, y) {
   preds <- fitted(mod)[, "Estimate"]
