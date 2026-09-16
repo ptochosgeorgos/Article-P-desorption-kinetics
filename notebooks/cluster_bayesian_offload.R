@@ -106,11 +106,11 @@ bprior_yield <- c(
   prior(normal(36, 10), nlpar = "Y0", coef = "cropZR"),
   prior(normal(271, 30), nlpar = "A", coef = "cropZR"),
   prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),
-  prior(normal(0, 0.5), nlpar = "betainvb"),
-  prior(normal(0, 0.5), nlpar = "betak"),
-  prior(normal(0, 0.5), nlpar = "betaN"),
-  prior(normal(0, 0.5), nlpar = "betaTemp"),
-  prior(normal(0, 0.5), nlpar = "betaPrec"),
+  prior(normal(0.010, 0.05), nlpar = "betainvb"),
+  prior(normal(0.165, 0.05), nlpar = "betak"),
+  prior(normal(0.776, 0.10), nlpar = "betaN"),
+  prior(normal(-0.130, 0.10), nlpar = "betaTemp"),
+  prior(normal(0.000, 0.05), nlpar = "betaPrec"),
   prior(normal(0, 0.5), nlpar = "betapH"),
   prior(normal(0, 0.5), nlpar = "betaClay")
 )
