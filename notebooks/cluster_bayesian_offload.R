@@ -75,7 +75,6 @@ d_brms <- d_brms |>
 # Standard Priors
 priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
 
-
 bprior_uptake <- c(
   prior(normal(30, 40), nlpar = "Vmax", lb = 0),     
   prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),     
@@ -88,10 +87,24 @@ bprior_uptake <- c(
   prior(normal(0, 0.5), nlpar = "betaClay")
 )
 
+# Tight Data-Driven Yield Priors to completely resolve unidentifiability
 bprior_yield <- c(
-  prior(normal(200, 400), nlpar = "Y0", lb = 0),     
-  prior(normal(200, 400), nlpar = "A", lb = 0),     
-  prior(lognormal(-2, 2), nlpar = "cbase", lb = 0), 
+  prior(normal(107, 20), nlpar = "Y0", coef = "cropFR"),
+  prior(normal(290, 40), nlpar = "A", coef = "cropFR"),
+  prior(normal(13, 10), nlpar = "Y0", coef = "cropKA"),
+  prior(normal(152, 20), nlpar = "A", coef = "cropKA"),
+  prior(normal(20, 10), nlpar = "Y0", coef = "cropKM"),
+  prior(normal(142, 20), nlpar = "A", coef = "cropKM"),
+  prior(normal(3, 5), nlpar = "Y0", coef = "cropRA"),
+  prior(normal(49, 10), nlpar = "A", coef = "cropRA"),
+  prior(normal(10, 5), nlpar = "Y0", coef = "cropSJ"),
+  prior(normal(44, 10), nlpar = "A", coef = "cropSJ"),
+  prior(normal(21, 10), nlpar = "Y0", coef = "cropWG"),
+  prior(normal(92, 15), nlpar = "A", coef = "cropWG"),
+  prior(normal(3, 5), nlpar = "Y0", coef = "cropWheat"),
+  prior(normal(73, 15), nlpar = "A", coef = "cropWheat"),
+  prior(normal(36, 10), nlpar = "Y0", coef = "cropZR"),
+  prior(normal(271, 30), nlpar = "A", coef = "cropZR"),
   prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),
   prior(normal(0, 0.5), nlpar = "betainvb"),
   prior(normal(0, 0.5), nlpar = "betak"),
@@ -135,38 +148,21 @@ rm(mod_base_U); gc()
 
 
 ## ----fit-null-----------------------------------------------------------------
-# Yield Null Mitsch
-bform_Y_null_mitsch <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase) * soil_0_20_P_CO2)),
-  Y0 ~ crop - 1 + (1 | site/year),
-  A ~ crop - 1 + (1 | site/year),
-  cbase ~ crop - 1,
-  nl = TRUE
-)
-mod_null_Y_mitsch <- brm(bform_Y_null_mitsch, data = d_brms, prior = bprior_yield[1:3, ], 
-    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield_mitsch", file_refit = "on_change")
-loo_null_mitsch <- loo(mod_null_Y_mitsch, cores = 1)
-ce_null_mitsch <- conditional_effects(mod_null_Y_mitsch, effects = "soil_0_20_P_CO2:crop")
-rmse_null_mitsch <- get_rmse(mod_null_Y_mitsch, d_brms$annual_yield_mp_DM)
-rm(mod_null_Y_mitsch); gc()
-
-# Yield Null Menten
-bform_Y_null_menten <- bf(
+# Yield Null: Michaelis-Menten
+bform_Y_null <- bf(
   annual_yield_mp_DM ~ Y0 + (A - Y0) * soil_0_20_P_CO2 / (Kbase + soil_0_20_P_CO2),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
   Kbase ~ crop - 1,
   nl = TRUE
 )
-mod_null_Y_menten <- brm(bform_Y_null_menten, data = d_brms, prior = bprior_yield[c(1:2, 4), ], 
+mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:17, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield_menten", file_refit = "on_change")
-loo_null_menten <- loo(mod_null_Y_menten, cores = 1)
-ce_null_menten <- conditional_effects(mod_null_Y_menten, effects = "soil_0_20_P_CO2:crop")
-rmse_null_menten <- get_rmse(mod_null_Y_menten, d_brms$annual_yield_mp_DM)
-rm(mod_null_Y_menten); gc()
-
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield", file_refit = "on_change")
+loo_null <- loo(mod_null_Y, cores = 1)
+ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2:crop")
+rmse_null <- get_rmse(mod_null_Y, d_brms$annual_yield_mp_DM)
+rm(mod_null_Y); gc()
 
 # Uptake Null: Michaelis-Menten
 bform_U_null <- bf(
@@ -178,36 +174,15 @@ bform_U_null <- bf(
 mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_uptake", file_refit = "on_change")
-
 loo_null_U <- loo(mod_null_U, cores = 1)
 ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2:crop")
 rmse_null_U <- get_rmse(mod_null_U, d_brms$annual_P_uptake)
 rm(mod_null_U); gc()
 
 
-
 ## ----fit-heuristic------------------------------------------------------------
-# Yield Heur Mitsch (Linearized)
-bform_Y_heur_mitsch <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase + betapH * z_pH + betaClay * z_ln_FineTexture) * soil_0_20_P_CO2)),
-  Y0 ~ crop - 1 + (1 | site/year),
-  A ~ crop - 1 + (1 | site/year),
-  cbase ~ crop - 1,
-  betapH + betaClay ~ 1,
-  nl = TRUE
-)
-mod_heur_Y_mitsch <- brm(bform_Y_heur_mitsch, data = d_brms, prior = bprior_yield[c(1:3, 10:11), ], 
-    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield_mitsch", file_refit = "on_change")
-loo_heur_mitsch <- loo(mod_heur_Y_mitsch, cores = 1)
-ce_heur_mitsch <- conditional_effects(mod_heur_Y_mitsch, effects = "soil_0_20_P_CO2:crop")
-params_heur_mitsch <- summary(mod_heur_Y_mitsch)$fixed
-r2_heur_mitsch <- list(conditional = bayes_R2(mod_heur_Y_mitsch), marginal = bayes_R2(mod_heur_Y_mitsch, re_formula = NA))
-rmse_heur_mitsch <- get_rmse(mod_heur_Y_mitsch, d_brms$annual_yield_mp_DM)
-rm(mod_heur_Y_mitsch); gc()
-
-# Yield Heur Menten
-bform_Y_heur_menten <- bf(
+# Yield Heuristic: Michaelis-Menten with pH and Clay on Kbase
+bform_Y_heur <- bf(
   annual_yield_mp_DM ~ Y0 + (A - Y0) * soil_0_20_P_CO2 / ((Kbase * exp(betapH * soil_0_20_pH_H2O + betaClay * rollMean_soil_0_20_clay)) + soil_0_20_P_CO2),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
@@ -215,16 +190,15 @@ bform_Y_heur_menten <- bf(
   betapH + betaClay ~ 1,
   nl = TRUE
 )
-mod_heur_Y_menten <- brm(bform_Y_heur_menten, data = d_brms, prior = bprior_yield[c(1:2, 4, 10:11), ], 
+mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:17, 23:24), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield_menten", file_refit = "on_change")
-loo_heur_menten <- loo(mod_heur_Y_menten, cores = 1)
-ce_heur_menten <- conditional_effects(mod_heur_Y_menten, effects = "soil_0_20_P_CO2:crop")
-params_heur_menten <- summary(mod_heur_Y_menten)$fixed
-r2_heur_menten <- list(conditional = bayes_R2(mod_heur_Y_menten), marginal = bayes_R2(mod_heur_Y_menten, re_formula = NA))
-rmse_heur_menten <- get_rmse(mod_heur_Y_menten, d_brms$annual_yield_mp_DM)
-rm(mod_heur_Y_menten); gc()
-
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield", file_refit = "on_change")
+loo_heur <- loo(mod_heur_Y, cores = 1)
+ce_heur <- conditional_effects(mod_heur_Y, effects = "soil_0_20_P_CO2:crop")
+params_heur <- summary(mod_heur_Y)$fixed
+r2_heur <- list(conditional = bayes_R2(mod_heur_Y), marginal = bayes_R2(mod_heur_Y, re_formula = NA))
+rmse_heur <- get_rmse(mod_heur_Y, d_brms$annual_yield_mp_DM)
+rm(mod_heur_Y); gc()
 
 # Uptake Heuristic: Michaelis-Menten with pH and Clay on Kbase
 bform_U_heur <- bf(
@@ -237,7 +211,6 @@ bform_U_heur <- bf(
 mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_uptake", file_refit = "on_change")
-
 loo_heur_U <- loo(mod_heur_U, cores = 1)
 ce_heur_U <- conditional_effects(mod_heur_U, effects = "soil_0_20_P_CO2:crop")
 params_heur_U <- summary(mod_heur_U)$fixed
@@ -246,29 +219,9 @@ rmse_heur_U <- get_rmse(mod_heur_U, d_brms$annual_P_uptake)
 rm(mod_heur_U); gc()
 
 
-
 ## ----fit-mechanistic----------------------------------------------------------
-# Yield Mech Mitsch (Linearized)
-bform_Y_mech_mitsch <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * (1 - exp(-(cbase + betainvb * z_inv_b + betak * z_k_pred + betaN * z_fert_N + betaTemp * juvdev_temp + betaPrec * juvdev_prec) * soil_0_20_P_CO2)),
-  Y0 ~ crop - 1 + (1 | site/year),
-  A ~ crop - 1 + (1 | site/year),
-  cbase ~ crop - 1,
-  betainvb + betak + betaN + betaTemp + betaPrec ~ 1,
-  nl = TRUE
-)
-mod_mech_Y_mitsch <- brm(bform_Y_mech_mitsch, data = d_brms, prior = bprior_yield[c(1:3, 5:9), ], 
-    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_yield_mitsch", file_refit = "on_change")
-loo_mech_mitsch <- loo(mod_mech_Y_mitsch, cores = 1)
-ce_mech_mitsch <- conditional_effects(mod_mech_Y_mitsch, effects = "soil_0_20_P_CO2:crop")
-params_mech_mitsch <- summary(mod_mech_Y_mitsch)$fixed
-r2_mech_mitsch <- list(conditional = bayes_R2(mod_mech_Y_mitsch), marginal = bayes_R2(mod_mech_Y_mitsch, re_formula = NA))
-rmse_mech_mitsch <- get_rmse(mod_mech_Y_mitsch, d_brms$annual_yield_mp_DM)
-rm(mod_mech_Y_mitsch); gc()
-
-# Yield Mech Menten
-bform_Y_mech_menten <- bf(
+# Yield Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
+bform_Y_mech <- bf(
   annual_yield_mp_DM ~ Y0 + (A - Y0) * soil_0_20_P_CO2 / ((Kbase * exp(betainvb * z_inv_b + betak * z_k_pred + betaN * z_fert_N + betaTemp * juvdev_temp + betaPrec * juvdev_prec)) + soil_0_20_P_CO2),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
@@ -276,16 +229,15 @@ bform_Y_mech_menten <- bf(
   betainvb + betak + betaN + betaTemp + betaPrec ~ 1,
   nl = TRUE
 )
-mod_mech_Y_menten <- brm(bform_Y_mech_menten, data = d_brms, prior = bprior_yield[c(1:2, 4, 5:9), ], 
+mod_mech_Y <- brm(bform_Y_mech, data = d_brms, prior = bprior_yield[1:22, ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
-    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_yield_menten", file_refit = "on_change")
-loo_mech_menten <- loo(mod_mech_Y_menten, cores = 1)
-ce_mech_menten <- conditional_effects(mod_mech_Y_menten, effects = "soil_0_20_P_CO2:crop")
-params_mech_menten <- summary(mod_mech_Y_menten)$fixed
-r2_mech_menten <- list(conditional = bayes_R2(mod_mech_Y_menten), marginal = bayes_R2(mod_mech_Y_menten, re_formula = NA))
-rmse_mech_menten <- get_rmse(mod_mech_Y_menten, d_brms$annual_yield_mp_DM)
-rm(mod_mech_Y_menten); gc()
-
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_yield", file_refit = "on_change")
+loo_mech <- loo(mod_mech_Y, cores = 1)
+ce_mech <- conditional_effects(mod_mech_Y, effects = "soil_0_20_P_CO2:crop")
+params_mech <- summary(mod_mech_Y)$fixed
+r2_mech <- list(conditional = bayes_R2(mod_mech_Y), marginal = bayes_R2(mod_mech_Y, re_formula = NA))
+rmse_mech <- get_rmse(mod_mech_Y, d_brms$annual_yield_mp_DM)
+rm(mod_mech_Y); gc()
 
 # Uptake Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
 bform_U_mech <- bf(
@@ -298,7 +250,6 @@ bform_U_mech <- bf(
 mod_mech_U <- brm(bform_U_mech, data = d_brms, prior = bprior_uptake[c(1:4, 6:7), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/mech_uptake", file_refit = "on_change")
-
 loo_mech_U <- loo(mod_mech_U, cores = 1)
 ce_mech_U <- conditional_effects(mod_mech_U, effects = "soil_0_20_P_CO2:crop")
 params_mech_U <- summary(mod_mech_U)$fixed
@@ -307,31 +258,22 @@ rmse_mech_U <- get_rmse(mod_mech_U, d_brms$annual_P_uptake)
 rm(mod_mech_U); gc()
 
 
-
 ## ----extract-metrics----------------------------------------------------------
 cat("Extracting LOO metrics for direct comparison...\n")
 
 # Direct Stacked Predictive Comparison
-comp_yield <- loo_compare(loo_base, loo_null_mitsch, loo_null_menten, loo_heur_mitsch, loo_heur_menten, loo_mech_mitsch, loo_mech_menten)
+comp_yield <- loo_compare(loo_base, loo_null, loo_heur, loo_mech)
 comp_uptake <- loo_compare(loo_base_U, loo_null_U, loo_heur_U, loo_mech_U)
 
 # Export exactly what we need for the paper
 export_payload <- list(
-    yield_mitsch = list(
+    yield = list(
         comparison = comp_yield,
-        plot_data = list(null = ce_null_mitsch[[1]], heur = ce_heur_mitsch[[1]], mech = ce_mech_mitsch[[1]]),
-        parameters = list(mech = params_mech_mitsch, heur = params_heur_mitsch),
-        r2_mech = r2_mech_mitsch,
-        r2_heur = r2_heur_mitsch,
-        rmse = list(base = rmse_base, null = rmse_null_mitsch, heur = rmse_heur_mitsch, mech = rmse_mech_mitsch)
-    ),
-    yield_menten = list(
-        comparison = comp_yield,
-        plot_data = list(null = ce_null_menten[[1]], heur = ce_heur_menten[[1]], mech = ce_mech_menten[[1]]),
-        parameters = list(mech = params_mech_menten, heur = params_heur_menten),
-        r2_mech = r2_mech_menten,
-        r2_heur = r2_heur_menten,
-        rmse = list(base = rmse_base, null = rmse_null_menten, heur = rmse_heur_menten, mech = rmse_mech_menten)
+        plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], mech = ce_mech[[1]]),
+        parameters = list(mech = params_mech, heur = params_heur),
+        r2_mech = r2_mech,
+        r2_heur = r2_heur,
+        rmse = list(base = rmse_base, null = rmse_null, heur = rmse_heur, mech = rmse_mech)
     ),
     uptake = list(
         comparison = comp_uptake,
