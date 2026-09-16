@@ -206,42 +206,31 @@ To test the core hypothesis and rigorously handle the structural heteroskedastic
 
 Due to the extreme non-linearity of the models—which multiply asymptotic kinetics by exponential environmental covariates across hundreds of random intercepts—the computational load was massive. The models were compiled and executed using the highly optimized `cmdstanr` backend [@gabry2023cmdstanr], enabling within-chain multi-threading to parallelize the Hamiltonian trajectories. All models utilized the No-U-Turn Sampler (NUTS) with four Markov Chain Monte Carlo (MCMC) chains, each running for 2000 iterations (1000 warmup), ensuring robust exploration of the posterior distributions. 
 
-To aid clarity across the manuscript, the three core model architectures are explicitly labeled:
+### The Bayesian Fragility of the Mitscherlich Equation
+While the Mitscherlich equation ($Y = A - (A - Y_0)e^{-c P}$) is the historical standard for modeling diminishing agronomic returns, it proved mathematically fragile within a Bayesian Hierarchical framework. When attempting to decompose the rate constant into pedoclimatic covariates ($c_{\text{eff}} = c_{\text{base}} + \beta X$), the parameter space became algebraically unbounded. Random-walk sampling of extreme negative $\beta$ values instantly flipped the exponent from exponential decay to explosive exponential growth, generating mathematical singularities that shattered Hamiltonian Monte Carlo (HMC) convergence. Therefore, the Mitscherlich formulation was explicitly abandoned in favor of the Michaelis-Menten fractional geometry. The rational hyperbolic shape provides the exact same diminishing returns (a monotonically decreasing first derivative) but safely sequesters exponential covariates in the denominator, rigidly bounding the probability space and guaranteeing HMC convergence.
+
+To aid clarity across the manuscript, the core model architectures are explicitly labeled. Alongside the mechanistic formulations, a heavily parameterized **Heuristic Model** was constructed as an empirical baseline. This heuristic model armed the Michaelis-Menten equations with a full suite of standard soil chemical metrics (pH, Clay fraction, Organic Carbon, and Exchangeable Calcium) alongside the pedoclimatic noise variables. This established a rigorous, highly-informed baseline against which the predictive power of the kinetic physics could be independently tested.
 
 **1. The Yield Model ($B_{Yield}$)**
-The agronomic yield response was modeled using the classical Mitscherlich equation. The explicit mathematical formulation replaces the static rate constant with a dynamic effective rate ($c_{\text{eff}}$):
+The agronomic yield response was modeled using the Michaelis-Menten equation, bounding the unidentifiability of the intercept and asymptote by applying strict, crop-specific empirical limits ($Y_0$ and $A$) extracted from the bounds of the actual data. The effective half-saturation constant ($K_{\text{eff}}$) was dynamically modulated by pedoclimatic covariates:
 
 $$
-Y_{\text{rel}} = 1 - \exp\left(- c_{\text{eff}} \cdot (\text{STP} + E_{\text{base}}) \right)
+Yield = Y_0 + (A - Y_0) \frac{STP}{K_{\text{base}} \cdot \exp\left( \sum \beta_i \cdot Z_i \right) + STP}
 $$
 
-Where $c_{\text{eff}}$ is dynamically modulated by a set of fixed pedoclimatic covariates ($Z_i$) and nested spatial random effects ($u$):
-
-$$
-c_{\text{eff}} = (c_{\text{base\_crop}} + u_{site} + u_{plot|site}) \cdot \exp\left( \sum \beta_i \cdot Z_i \right)
-$$
-
-*   **The Diffusion Bottleneck ($\beta_{\text{invb}}$):** The inverse physical buffer power ($1/b$) acts as the primary transport penalty. Soils with high buffer power cannot replenish the root depletion zone fast enough via diffusion, functionally decreasing the agronomic efficiency of the measured STP.
-*   **Speciation and Solubility ($\beta_{pH}$):** Soil pH fundamentally controls the speciation of orthophosphate in solution and drives precipitation dynamics, altering thermodynamic stability.
-*   **Stoichiometric Co-Limitation ($\beta_{N}, \beta_{K}, \beta_{Mg}$):** Following Liebig's Law of the Minimum, the plant's ability to efficiently convert P into biomass is inherently capped if Nitrogen, Potassium, or Magnesium are limiting.
+*   **The Diffusion Bottleneck ($\beta_{\text{invb}}$):** The inverse physical buffer power ($1/b$) acts as the primary transport penalty. Soils with high buffer power cannot replenish the root depletion zone fast enough via diffusion.
+*   **The Kinetics ($\beta_{k}$):** The dynamic desorption rate ($k$) directly decreases the half-saturation threshold by accelerating the physical resupply of P into the root depletion zone.
+*   **Stoichiometric Co-Limitation ($\beta_{N}$):** Nitrogen fertilization fundamentally shifts the metabolic capacity of the crop.
 *   **Pedoclimatic Noise ($\beta_{Temp}, \beta_{Prec}$):** Temperature and precipitation anomalies dictate physical soil moisture (governing diffusion transport) and the basic biological metabolic rate.
 
 **2. The Plant Uptake Model ($B_{Uptake}$)**
-Actual mass-flux of P into the plant was modeled using a fractional Michaelis-Menten biological limit:
+Actual mass-flux of P into the plant was modeled using the same Michaelis-Menten biological limit, anchored at the origin ($U_0 = 0$):
 
 $$
-Uptake_{\text{rel}} = \frac{U_{\text{eff}} \cdot \text{STP}}{K_{m} + \text{STP}}
+Uptake = \frac{V_{max} \cdot \text{STP}}{K_{\text{base}} \cdot \exp\left( \sum \beta_i \cdot Z_i \right) + \text{STP}}
 $$
 
-Where the effective maximum uptake capacity ($U_{\text{eff}}$) expands upon the base physiological limit ($U_{\text{base}}$) via critical covariates:
-
-$$
-U_{\text{eff}} = U_{\text{base}} + \beta_{\text{temp}} \cdot Z_{\text{temp}} + \beta_{N} \cdot Z_{N} + \beta_{v0} \cdot Z_{v0} + u_{site} + u_{year|site}
-$$
-
-*   **The Kinetics ($\beta_{v0}$):** The dynamic desorption velocity ($v_0$) directly increases maximal uptake capacity by continuously resupplying the root depletion zone.
-*   **Crop-Specific Affinity ($K_m$):** The half-saturation constant ($K_m$) is modeled as a fixed effect grouped by *crop species*, reflecting the differing physiological root architectures and transporter affinities of maize, wheat, etc.
-*   **Random Effects ($u_{year|site}$):** Nested `site/year` intercepts absorb the massive macro-climatic shifts (e.g., a regional drought year systemically lowering the overall $U_{\text{base}}$).
+Where the maximum uptake capacity ($V_{max}$) acts as the biological asymptote, and the effective affinity is driven by the same critical covariates ($\beta_{\text{invb}}, \beta_k, \beta_{\text{Temp}}, \beta_{\text{Prec}}$).
 
 **3. The Tissue Concentration Model ($B_{C_P}$)**
 To expose the physiological dynamics of tissue concentrations, the apparent $C_P$ was modeled empirically using a **Mitscherlich** saturation curve. Because true Piper-Steenbjerg carbon dilution penalties (a drop in concentration at initial growth stages) were statistically undetectable across the pedoclimatic noise, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration ($C_{\text{min}}$), followed by an asymptotic **Luxury Accumulation** phase bounded by $\Delta C$:
@@ -256,10 +245,10 @@ $$
 
 **Bayesian Prior Elicitation and Biological Bounds**
 To prevent mathematical singularities and ensure the parameter space remained strictly within physical reality, informative bounds were placed on the fundamental biological constants:
-- **Baseline and Maximum Yield ($Y_0, A$):** Bounded strictly $> 0$ with `normal(50, 50)` and `normal(100, 50)` respectively, preventing the MCMC algorithm from proposing mathematically impossible negative yields.
+- **Baseline and Maximum Yield ($Y_0, A$):** Bounded strictly $> 0$. To resolve parameter unidentifiability in the flat plateaus of the data, highly informative empirical bounds were dynamically extracted from the dataset. For each crop, $Y_0$ was constrained around the absolute minimum observed yield, and $A$ around the absolute maximum, rigidly anchoring the vertical geometry of the curve.
 - **Maximum Uptake Velocity ($V_{\text{max}}$):** Bounded $> 0$ with `normal(30, 15)`, reflecting standard crop physiological limits (typically 15–45 kg P/ha).
 - **Tissue Concentration Minimum ($C_{\text{min}}$):** Bounded $> 0$ with `normal(1.5, 1.0)`, as a baseline tissue concentration of $\approx 1.5 \text{ g/kg DM}$ is universally required for basic cellular function in these crops.
-- **Environmental Covariates ($\beta$):** Strongly regularizing standard normal priors `normal(0, 1)` were applied to all standardized environmental $Z$-scores. This tight regularization was mathematically imperative; initial testing with weakly informative priors (`normal(0, 5)`) resulted in thousands of divergent transitions because the exponential parameterization ($\exp(\beta \cdot Z)$) caused rapid geometric explosions in the Hamiltonian gradients. Constraining the priors to $\pm 3$ standard deviations physically stabilized the MCMC sampler while allowing robust exploration of realistic agronomic effects.
+- **Environmental Covariates ($\beta$):** Even with strict structural bounds, the simultaneous estimation of five exponential environmental covariates on the kinetic rate constant created a flat probability valley, preventing HMC convergence. To resolve this unidentifiability, an **Empirical Bayes** algebraic linearization technique was deployed. The Michaelis-Menten equation was algebraically rearranged into an affine linear model: $Z = \ln((A - Y)/(Y - Y_0)) + \ln(\text{STP})$. By passing this linearized response into a frequentist linear mixed-effects model (`lmer`), exact empirical point estimates for the $\beta$ modifiers were calculated. These empirically derived coordinates were then injected into the Bayesian model as highly informative priors (e.g., `normal(0.776, 0.10)` for $\beta_N$), dropping the Markov chains directly onto the global minimum and guaranteeing robust HMC convergence.
 
 ```{r}
 #| label: tbl-variables-updated

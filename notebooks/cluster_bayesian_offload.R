@@ -69,7 +69,9 @@ d_brms <- d_brms |>
       !is.na(Y_ref),
       !is.na(Supply_class_CO2),
       !is.na(juvdev_temp),
-      !is.na(juvdev_prec)
+      !is.na(juvdev_prec),
+      !is.na(z_ln_Corg),
+      !is.na(z_ln_Ca)
     )
 
 # Standard Priors
@@ -84,7 +86,9 @@ bprior_uptake <- c(
   prior(normal(0, 0.5), nlpar = "betaTemp"),
   prior(normal(0, 0.5), nlpar = "betaPrec"),
   prior(normal(0, 0.5), nlpar = "betapH"),
-  prior(normal(0, 0.5), nlpar = "betaClay")
+  prior(normal(0, 0.5), nlpar = "betaClay"),
+  prior(normal(0, 0.5), nlpar = "betaCorg"),
+  prior(normal(0, 0.5), nlpar = "betaCa")
 )
 
 # Tight Data-Driven Yield Priors to completely resolve unidentifiability
@@ -112,7 +116,9 @@ bprior_yield <- c(
   prior(normal(-0.130, 0.10), nlpar = "betaTemp"),
   prior(normal(0.000, 0.05), nlpar = "betaPrec"),
   prior(normal(0, 0.5), nlpar = "betapH"),
-  prior(normal(0, 0.5), nlpar = "betaClay")
+  prior(normal(0, 0.5), nlpar = "betaClay"),
+  prior(normal(0, 0.5), nlpar = "betaCorg"),
+  prior(normal(0, 0.5), nlpar = "betaCa")
 )
 
 # HMC config
@@ -181,16 +187,16 @@ rm(mod_null_U); gc()
 
 
 ## ----fit-heuristic------------------------------------------------------------
-# Yield Heuristic: Michaelis-Menten with pH and Clay on Kbase
+# Yield Heuristic: Michaelis-Menten with 6 pedoclimatic covariates on Kbase
 bform_Y_heur <- bf(
-  annual_yield_mp_DM ~ Y0 + (A - Y0) * soil_0_20_P_CO2 / ((Kbase * exp(betapH * soil_0_20_pH_H2O + betaClay * rollMean_soil_0_20_clay)) + soil_0_20_P_CO2),
+  annual_yield_mp_DM ~ Y0 + (A - Y0) * soil_0_20_P_CO2 / ((Kbase * exp(betapH * soil_0_20_pH_H2O + betaClay * rollMean_soil_0_20_clay + betaTemp * juvdev_temp + betaPrec * juvdev_prec + betaCorg * z_ln_Corg + betaCa * z_ln_Ca)) + soil_0_20_P_CO2),
   Y0 ~ crop - 1 + (1 | site/year),
   A ~ crop - 1 + (1 | site/year),
   Kbase ~ crop - 1,
-  betapH + betaClay ~ 1,
+  betapH + betaClay + betaTemp + betaPrec + betaCorg + betaCa ~ 1,
   nl = TRUE
 )
-mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:17, 23:24), ], 
+mod_heur_Y <- brm(bform_Y_heur, data = d_brms, prior = bprior_yield[c(1:17, 21:26), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield", file_refit = "on_change")
 loo_heur <- loo(mod_heur_Y, cores = 1)
@@ -200,15 +206,15 @@ r2_heur <- list(conditional = bayes_R2(mod_heur_Y), marginal = bayes_R2(mod_heur
 rmse_heur <- get_rmse(mod_heur_Y, d_brms$annual_yield_mp_DM)
 rm(mod_heur_Y); gc()
 
-# Uptake Heuristic: Michaelis-Menten with pH and Clay on Kbase
+# Uptake Heuristic: Michaelis-Menten with 6 pedoclimatic covariates on Kbase
 bform_U_heur <- bf(
-  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betaClay * rollMean_soil_0_20_clay + betapH * soil_0_20_pH_H2O)) + soil_0_20_P_CO2),
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betaClay * rollMean_soil_0_20_clay + betapH * soil_0_20_pH_H2O + betaTemp * juvdev_temp + betaPrec * juvdev_prec + betaCorg * z_ln_Corg + betaCa * z_ln_Ca)) + soil_0_20_P_CO2),
   Vmax ~ crop - 1 + (1 | site/year),
   Kbase ~ crop - 1,
-  betaClay + betapH ~ 1,
+  betaClay + betapH + betaTemp + betaPrec + betaCorg + betaCa ~ 1,
   nl = TRUE
 )
-mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 8:9), ], 
+mod_heur_U <- brm(bform_U_heur, data = d_brms, prior = bprior_uptake[c(1:2, 6:11), ], 
     backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_uptake", file_refit = "on_change")
 loo_heur_U <- loo(mod_heur_U, cores = 1)
