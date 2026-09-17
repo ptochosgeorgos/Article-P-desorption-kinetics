@@ -183,6 +183,7 @@ mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year
     iter = iter_n, file = "../models/base_yield", file_refit = "on_change")
 
 loo_base <- loo(mod_base_Y, cores = 1)
+r2_base <- list(conditional = bayes_R2(mod_base_Y), marginal = bayes_R2(mod_base_Y, re_formula = NA))
 rmse_base <- get_rmse(mod_base_Y, d_brms$annual_yield_mp_DM)
 rm(mod_base_Y); gc()
 
@@ -192,6 +193,7 @@ mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake", file_refit = "on_change")
 loo_base_U <- loo(mod_base_U, cores = 1)
+r2_base_U <- list(conditional = bayes_R2(mod_base_U), marginal = bayes_R2(mod_base_U, re_formula = NA))
 rmse_base_U <- get_rmse(mod_base_U, d_brms$annual_P_uptake)
 rm(mod_base_U); gc()
 
@@ -203,6 +205,7 @@ mod_base_Y_aae <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_AAE10 + (1 | sit
     iter = iter_n, file = "../models/base_yield_aae", file_refit = "on_change")
 
 loo_base_aae <- loo(mod_base_Y_aae, cores = 1)
+r2_base_aae <- list(conditional = bayes_R2(mod_base_Y_aae), marginal = bayes_R2(mod_base_Y_aae, re_formula = NA))
 rmse_base_aae <- get_rmse(mod_base_Y_aae, d_brms$annual_yield_mp_DM)
 rm(mod_base_Y_aae); gc()
 
@@ -212,6 +215,7 @@ mod_base_U_aae <- brm(annual_P_uptake ~ P_up_ref * Supply_class_AAE10 + (1 | sit
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake_aae", file_refit = "on_change")
 loo_base_U_aae <- loo(mod_base_U_aae, cores = 1)
+r2_base_U_aae <- list(conditional = bayes_R2(mod_base_U_aae), marginal = bayes_R2(mod_base_U_aae, re_formula = NA))
 rmse_base_U_aae <- get_rmse(mod_base_U_aae, d_brms$annual_P_uptake)
 rm(mod_base_U_aae); gc()
 
@@ -230,6 +234,7 @@ mod_null_Y <- brm(bform_Y_null, data = d_brms, prior = bprior_yield[1:17, ],
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_yield", file_refit = "on_change")
 loo_null <- loo(mod_null_Y, cores = 1)
 ce_null <- conditional_effects(mod_null_Y, effects = "soil_0_20_P_CO2:crop")
+r2_null <- list(conditional = bayes_R2(mod_null_Y), marginal = bayes_R2(mod_null_Y, re_formula = NA))
 rmse_null <- get_rmse(mod_null_Y, d_brms$annual_yield_mp_DM)
 rm(mod_null_Y); gc()
 
@@ -245,6 +250,7 @@ mod_null_U <- brm(bform_U_null, data = d_brms, prior = bprior_uptake[1:2, ],
     iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/null_uptake", file_refit = "on_change")
 loo_null_U <- loo(mod_null_U, cores = 1)
 ce_null_U <- conditional_effects(mod_null_U, effects = "soil_0_20_P_CO2:crop")
+r2_null_U <- list(conditional = bayes_R2(mod_null_U), marginal = bayes_R2(mod_null_U, re_formula = NA))
 rmse_null_U <- get_rmse(mod_null_U, d_brms$annual_P_uptake)
 rm(mod_null_U); gc()
 
@@ -378,6 +384,9 @@ export_payload <- list(
         comparison = comp_yield,
         plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], heur_aae = ce_heur_aae[[1]], mech = ce_mech[[1]]),
         parameters = list(mech = params_mech, heur = params_heur, heur_aae = params_heur_aae),
+        r2_base = r2_base,
+        r2_base_aae = r2_base_aae,
+        r2_null = r2_null,
         r2_mech = r2_mech,
         r2_heur = r2_heur,
         r2_heur_aae = r2_heur_aae,
@@ -387,6 +396,9 @@ export_payload <- list(
         comparison = comp_uptake,
         plot_data = list(null = ce_null_U[[1]], heur = ce_heur_U[[1]], heur_aae = ce_heur_U_aae[[1]], mech = ce_mech_U[[1]]),
         parameters = list(mech = params_mech_U, heur = params_heur_U, heur_aae = params_heur_U_aae),
+        r2_base = r2_base_U,
+        r2_base_aae = r2_base_U_aae,
+        r2_null = r2_null_U,
         r2_mech = r2_mech_U,
         r2_heur = r2_heur_U,
         r2_heur_aae = r2_heur_U_aae,
