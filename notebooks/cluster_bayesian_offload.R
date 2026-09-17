@@ -39,6 +39,46 @@ get_grud_co2 <- function(p_val, clay) {
 }
 get_grud_co2_vec <- Vectorize(get_grud_co2)
 
+# Recreate GRUD Supply Class logic natively for AAE10
+grud_aae_matrix <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.4,
+  1.5, 1.5, 1.4, 1.4, 1.2,
+  1.5, 1.4, 1.4, 1.2, 1.2,
+  1.4, 1.4, 1.2, 1.2, 1.2,
+  1.4, 1.2, 1.2, 1.2, 1.0,
+  1.2, 1.2, 1.2, 1.0, 1.0,
+  1.2, 1.2, 1.0, 1.0, 1.0,
+  1.2, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8,
+  1.0, 1.0, 1.0, 0.8, 0.8,
+  1.0, 1.0, 0.8, 0.8, 0.8,
+  1.0, 0.8, 0.8, 0.8, 0.6,
+  0.8, 0.8, 0.8, 0.6, 0.6,
+  0.8, 0.8, 0.6, 0.6, 0.6,
+  0.8, 0.6, 0.6, 0.6, 0.4,
+  0.6, 0.6, 0.6, 0.4, 0.4,
+  0.6, 0.6, 0.4, 0.4, 0.4,
+  0.6, 0.4, 0.4, 0.4, 0.0,
+  0.4, 0.4, 0.4, 0.0, 0.0,
+  0.4, 0.4, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), ncol = 5, byrow = TRUE)
+
+get_grud_aae <- function(p_val, clay) {
+  if (is.na(p_val) || is.na(clay)) return(NA)
+  clay_idx <- min(5, max(1, floor(clay / 10) + 1))
+  thresholds <- seq(4.9, 124.9, by=5)
+  row_idx <- which(p_val <= thresholds)[1]
+  if (is.na(row_idx)) row_idx <- 26
+  return(grud_aae_matrix[row_idx, clay_idx])
+}
+get_grud_aae_vec <- Vectorize(get_grud_aae)
+
 # Inject GRUD Reference Targets
 crop_refs <- data.frame(
   crop = c("Wheat", "KA", "KM", "RA", "SJ", "WG", "ZR", "FR"),
@@ -57,6 +97,7 @@ d_brms <- d_brms |>
       C_P = annual_P_uptake / annual_yield_mp_DM,
       z_k_pred = scale(ln_K_pred_agro)[, 1],
       Supply_class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
+      Supply_class_AAE10 = get_grud_aae_vec(soil_0_20_P_AAE10, rollMean_soil_0_20_clay),
       crop = as.factor(crop),
       site = as.factor(site),
       year = as.factor(year)
@@ -71,7 +112,9 @@ d_brms <- d_brms |>
       !is.na(juvdev_temp),
       !is.na(juvdev_prec),
       !is.na(z_ln_Corg),
-      !is.na(z_ln_Ca)
+      !is.na(z_ln_Ca),
+      !is.na(soil_0_20_P_AAE10),
+      !is.na(Supply_class_AAE10)
     )
 
 # Standard Priors
@@ -152,6 +195,26 @@ loo_base_U <- loo(mod_base_U, cores = 1)
 rmse_base_U <- get_rmse(mod_base_U, d_brms$annual_P_uptake)
 rm(mod_base_U); gc()
 
+## ----fit-base-AAE10-----------------------------------------------------------
+# Yield
+mod_base_Y_aae <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_AAE10 + (1 | site/year),
+    data = d_brms, prior = priors_linear, backend = "cmdstanr",
+    cores = cores_n, chains = chains_n, threads = threading(threads_n), 
+    iter = iter_n, file = "../models/base_yield_aae", file_refit = "on_change")
+
+loo_base_aae <- loo(mod_base_Y_aae, cores = 1)
+rmse_base_aae <- get_rmse(mod_base_Y_aae, d_brms$annual_yield_mp_DM)
+rm(mod_base_Y_aae); gc()
+
+# Uptake
+mod_base_U_aae <- brm(annual_P_uptake ~ P_up_ref * Supply_class_AAE10 + (1 | site/year),
+    data = d_brms, prior = priors_linear, backend = "cmdstanr",
+    cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, file = "../models/base_uptake_aae", file_refit = "on_change")
+loo_base_U_aae <- loo(mod_base_U_aae, cores = 1)
+rmse_base_U_aae <- get_rmse(mod_base_U_aae, d_brms$annual_P_uptake)
+rm(mod_base_U_aae); gc()
+
 
 ## ----fit-null-----------------------------------------------------------------
 # Yield Null: Michaelis-Menten
@@ -224,6 +287,44 @@ r2_heur_U <- list(conditional = bayes_R2(mod_heur_U), marginal = bayes_R2(mod_he
 rmse_heur_U <- get_rmse(mod_heur_U, d_brms$annual_P_uptake)
 rm(mod_heur_U); gc()
 
+## ----fit-heuristic-AAE10------------------------------------------------------
+# Yield Heuristic AAE10: Michaelis-Menten with 6 pedoclimatic covariates on Kbase
+bform_Y_heur_aae <- bf(
+  annual_yield_mp_DM ~ Y0 + (A - Y0) * soil_0_20_P_AAE10 / ((Kbase * exp(betapH * soil_0_20_pH_H2O + betaClay * rollMean_soil_0_20_clay + betaTemp * juvdev_temp + betaPrec * juvdev_prec + betaCorg * z_ln_Corg + betaCa * z_ln_Ca)) + soil_0_20_P_AAE10),
+  Y0 ~ crop - 1 + (1 | site/year),
+  A ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betapH + betaClay + betaTemp + betaPrec + betaCorg + betaCa ~ 1,
+  nl = TRUE
+)
+mod_heur_Y_aae <- brm(bform_Y_heur_aae, data = d_brms, prior = bprior_yield[c(1:17, 21:26), ], 
+    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_yield_aae", file_refit = "on_change")
+loo_heur_aae <- loo(mod_heur_Y_aae, cores = 1)
+ce_heur_aae <- conditional_effects(mod_heur_Y_aae, effects = "soil_0_20_P_AAE10:crop")
+params_heur_aae <- summary(mod_heur_Y_aae)$fixed
+r2_heur_aae <- list(conditional = bayes_R2(mod_heur_Y_aae), marginal = bayes_R2(mod_heur_Y_aae, re_formula = NA))
+rmse_heur_aae <- get_rmse(mod_heur_Y_aae, d_brms$annual_yield_mp_DM)
+rm(mod_heur_Y_aae); gc()
+
+# Uptake Heuristic AAE10
+bform_U_heur_aae <- bf(
+  annual_P_uptake ~ (Vmax * soil_0_20_P_AAE10) / ((Kbase * exp(betaClay * rollMean_soil_0_20_clay + betapH * soil_0_20_pH_H2O + betaTemp * juvdev_temp + betaPrec * juvdev_prec + betaCorg * z_ln_Corg + betaCa * z_ln_Ca)) + soil_0_20_P_AAE10),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betaClay + betapH + betaTemp + betaPrec + betaCorg + betaCa ~ 1,
+  nl = TRUE
+)
+mod_heur_U_aae <- brm(bform_U_heur_aae, data = d_brms, prior = bprior_uptake[c(1:2, 6:11), ], 
+    backend = "cmdstanr", cores = cores_n, chains = chains_n, threads = threading(threads_n),
+    iter = iter_n, control = list(adapt_delta = 0.95, max_treedepth = 12), file = "../models/heur_uptake_aae", file_refit = "on_change")
+loo_heur_U_aae <- loo(mod_heur_U_aae, cores = 1)
+ce_heur_U_aae <- conditional_effects(mod_heur_U_aae, effects = "soil_0_20_P_AAE10:crop")
+params_heur_U_aae <- summary(mod_heur_U_aae)$fixed
+r2_heur_U_aae <- list(conditional = bayes_R2(mod_heur_U_aae), marginal = bayes_R2(mod_heur_U_aae, re_formula = NA))
+rmse_heur_U_aae <- get_rmse(mod_heur_U_aae, d_brms$annual_P_uptake)
+rm(mod_heur_U_aae); gc()
+
 
 ## ----fit-mechanistic----------------------------------------------------------
 # Yield Mechanistic: Michaelis-Menten with 1/b, Temp, Prec on Kbase
@@ -268,26 +369,28 @@ rm(mod_mech_U); gc()
 cat("Extracting LOO metrics for direct comparison...\n")
 
 # Direct Stacked Predictive Comparison
-comp_yield <- loo_compare(loo_base, loo_null, loo_heur, loo_mech)
-comp_uptake <- loo_compare(loo_base_U, loo_null_U, loo_heur_U, loo_mech_U)
+comp_yield <- loo_compare(loo_base, loo_base_aae, loo_null, loo_heur, loo_heur_aae, loo_mech)
+comp_uptake <- loo_compare(loo_base_U, loo_base_U_aae, loo_null_U, loo_heur_U, loo_heur_U_aae, loo_mech_U)
 
 # Export exactly what we need for the paper
 export_payload <- list(
     yield = list(
         comparison = comp_yield,
-        plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], mech = ce_mech[[1]]),
-        parameters = list(mech = params_mech, heur = params_heur),
+        plot_data = list(null = ce_null[[1]], heur = ce_heur[[1]], heur_aae = ce_heur_aae[[1]], mech = ce_mech[[1]]),
+        parameters = list(mech = params_mech, heur = params_heur, heur_aae = params_heur_aae),
         r2_mech = r2_mech,
         r2_heur = r2_heur,
-        rmse = list(base = rmse_base, null = rmse_null, heur = rmse_heur, mech = rmse_mech)
+        r2_heur_aae = r2_heur_aae,
+        rmse = list(base = rmse_base, base_aae = rmse_base_aae, null = rmse_null, heur = rmse_heur, heur_aae = rmse_heur_aae, mech = rmse_mech)
     ),
     uptake = list(
         comparison = comp_uptake,
-        plot_data = list(null = ce_null_U[[1]], heur = ce_heur_U[[1]], mech = ce_mech_U[[1]]),
-        parameters = list(mech = params_mech_U, heur = params_heur_U),
+        plot_data = list(null = ce_null_U[[1]], heur = ce_heur_U[[1]], heur_aae = ce_heur_U_aae[[1]], mech = ce_mech_U[[1]]),
+        parameters = list(mech = params_mech_U, heur = params_heur_U, heur_aae = params_heur_U_aae),
         r2_mech = r2_mech_U,
         r2_heur = r2_heur_U,
-        rmse = list(base = rmse_base_U, null = rmse_null_U, heur = rmse_heur_U, mech = rmse_mech_U)
+        r2_heur_aae = r2_heur_U_aae,
+        rmse = list(base = rmse_base_U, base_aae = rmse_base_U_aae, null = rmse_null_U, heur = rmse_heur_U, heur_aae = rmse_heur_U_aae, mech = rmse_mech_U)
     )
 )
 
