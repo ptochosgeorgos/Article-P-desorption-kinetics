@@ -24,10 +24,8 @@ To answer the research questions, the methodology is structured into three highl
 %| fig-cap: "Modular workflow synchronizing data sources, extraction methods, and mathematical models."
 %| echo: false
 %| fig-align: center
-%| dev: pdf
-%| fig-ext: pdf
 %| engine.opts:
-%|   extra.preamble: ["\\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}"]
+%|   extra.preamble: ["\\usetikzlibrary{shapes, shapes.geometric, shapes.3d, arrows.meta, positioning, fit, backgrounds, calc}"]
 
 \begin{tikzpicture}[
     font=\sffamily\small,
@@ -358,3 +356,18 @@ $$
 q_{\text{up}} = \frac{P_{crit\_up}}{K_{\text{eff}} + P_{crit\_up}} \implies P_{crit\_up} = \left(\frac{q_{\text{up}}}{1 - q_{\text{up}}}\right) K_{\text{eff}}
 $$
 Where $K_{\text{eff}}$ structurally expands upon the base crop affinity ($K_m$) via the same physical kinetic bottlenecks identified in the field data.
+
+### 7. The Management of Covariate Data: Two Distinct Approaches
+
+As established by @hirteYieldResponseSoil2021, incorporating pedoclimatic covariates is strictly necessary for obtaining robust, site- and crop-specific plant response models. However, the mathematical architecture used to integrate these covariates fundamentally impacts model stability and generalizability. 
+
+Across all models, the experimental structure was formalized using hierarchical random intercepts, `(1 | site/year)`, to absorb time-invariant site fertility and broader climatic potential. Consequently, the main effects of our chosen covariates act exclusively as *deviations* modulating the base phosphorus affinity ($K_{\text{base}}$). To benchmark model generalization and test the risk of overparameterization, we evaluated two fundamentally different architectures for incorporating these soil constraints:
+
+**1. The Heuristic Approach**
+We first established a "Null" baseline using a Michaelis-Menten geometry, explicitly abandoning the classical Mitscherlich asymptote which systematically failed Hamiltonian convergence due to the algebraically unbounded nature of its exponential parameterization. The Heuristic approach then expanded this baseline by directly injecting six raw pedoclimatic variables (soil pH, clay content, organic carbon, calcium, and site-normalized temperature and precipitation anomalies) as simultaneous exponential modifiers on $K_{\text{base}}$.
+
+**2. The Mechanistic Approach**
+Rather than directly feeding raw soil chemistry into the agronomic model, the Mechanistic approach first condensed this pedoclimatic complexity through non-linear desorption kinetics (following the fundamental principles of Flossmann & Richter, 1982). This yielded exactly two fundamental thermodynamic parameters—the diffusion bottleneck ($1/b$) and the desorption rate ($k$)—which were then deployed alongside management variables (temperature, precipitation, and nitrogen fertilization) to predict crop response.
+
+**Model Evaluation**
+By condensing raw covariates into physical constraints ($b$ and $k$), we sought to determine if the Mechanistic approach generalizes more robustly to unseen data, or if the direct inclusion of all raw soil variables in the Heuristic model provides superior predictive power. Models were rigorously evaluated and compared based on their Hamiltonian stability ($\hat{R}$), root-mean-square error (RMSE), pseudo-$R^2$ (marginal and conditional), and out-of-sample expected log predictive density utilizing Leave-One-Out Cross-Validation (LOOIC).

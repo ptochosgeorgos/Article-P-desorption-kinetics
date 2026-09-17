@@ -2,313 +2,332 @@
 
 ```{r setup-results}
 #| include: false
+# Meticulous Setup Chunk
+
 suppressPackageStartupMessages({
-  library(multcomp)
-  library(car)
-  library(tidyr)
-  library(lme4)
-  library(ggplot2)
-  library(ggtext)
-  library(ggpmisc)
-  library(nlme)
-  library(kableExtra)
-  library(broom)
   library(dplyr)
-  library(MuMIn)
+  library(ggplot2)
+  library(brms)
+  library(knitr)
+  library(kableExtra)
   library(patchwork)
-  })
+  library(latex2exp)
+})
 
-options(warn = -1)
-#RES <- readRDS("~/Documents/Master Thesis/Master-Thesis-P-kinetics/data/RES.rds")
-#D <- RES$D
-#d <- RES$data
-load("data/results_coefficient_analysis")
+# Load cluster results payload
+res <- readRDS("../data/cluster_results.rds")
+\n
 
-# Load new Thermodynamic and Michaelis-Menten Models
-ptf_agro_thm <- readRDS("models/ptf_agro_thm.rds")
-ptf_geo_thm <- readRDS("models/ptf_geo_thm.rds")
-m_yield_raw_aae <- readRDS("models/m_yield_raw_aae.rds")
-m_yield_raw_co2 <- readRDS("models/m_yield_raw_co2.rds")
-m_yield_thm_co2 <- readRDS("models/m_yield_thm_co2.rds")
+## The Blind Spot of Empirical Soil Tests
+
+Standard empirical soil tests (STP) rely on chemical extraction to quantify a static "stock" of available phosphorus. However, these extractions are inherently blind to the dynamic physical constraints that govern how quickly that phosphorus can actually move through the soil matrix to the root surface. 
+
+As demonstrated in @fig-kinetic-vs-empirical, soils that are classified identically by empirical extractions ($P_{CO_2}$, $P_{AAE10}$) can exhibit drastically different physical properties. A soil with a theoretically "adequate" $P_{CO_2}$ extraction value of 1.0 mg/kg can possess a diffusion restriction proxy ($1/b$) ranging anywhere from 0.05 to 0.45, and a desorption rate ($k$) that varies just as wildly. 
+
+Ultimately, there appears to be no distinct connection between empirical STP measurements and fundamental kinetic variables. For any given STP value, a soil can exhibit a wide range of differing kinetic and diffusive properties, meaning these standard extractions do not inherently reflect the physical supply mechanisms of the soil matrix.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 12
+#| fig-cap: "Distribution of long-term P balance across standard empirical tests ($P_{CO_2}$, $P_{AAE10}$) versus physical desorption kinetics (Buffer capacity $b$, Diffusion proxy $1/b$, and Desorption rate $k$). Red indicates a positive P balance (surplus), while green indicates a negative P balance (deficit). Note the lack of correlation between the empirical 'stock' and the physical 'flow' properties."
+#| label: fig-kinetic-vs-empirical
+
+D_Yield <- readRDS("../models/D_Yield.rds")
+
+d_plot <- D_Yield %>%
+  select(site, plot_nr, year, inv_b_cons, k, soil_0_20_P_CO2, soil_0_20_P_AAE10, annual_P_balance) %>%
+  distinct() %>%
+  mutate(b = 1 / inv_b_cons) %>%
+  filter(!is.na(b), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(annual_P_balance), inv_b_cons > 0, inv_b_cons < 0.5)
+
+base_theme <- theme_bw() + theme(legend.position = "none")
+
+# Row 1: b
+p1 <- ggplot(d_plot, aes(x = soil_0_20_P_CO2, y = b, color = annual_P_balance, alpha = abs(annual_P_balance))) +
+  geom_point(size = 3) +
+  scale_color_gradient2(low = "green3", mid = "grey80", high = "red3", midpoint = 0) +
+  scale_alpha_continuous(range = c(0.2, 1), guide = "none") +
+  labs(x = tex_lab("$P_{CO_2}$ (mg/kg)"), y = tex_lab("Buffer Capacity ($b$)")) + base_theme
+
+p2 <- ggplot(d_plot, aes(x = soil_0_20_P_AAE10, y = b, color = annual_P_balance, alpha = abs(annual_P_balance))) +
+  geom_point(size = 3) +
+  scale_color_gradient2(low = "green3", mid = "grey80", high = "red3", midpoint = 0) +
+  scale_alpha_continuous(range = c(0.2, 1), guide = "none") +
+  labs(x = tex_lab("$P_{AAE10}$ (mg/kg)"), y = tex_lab("Buffer Capacity ($b$)"), color = "P Balance") +
+  theme_bw() # keep legend here for the patchwork
+
+# Row 2: 1/b
+p3 <- ggplot(d_plot, aes(x = soil_0_20_P_CO2, y = inv_b_cons, color = annual_P_balance, alpha = abs(annual_P_balance))) +
+  geom_point(size = 3) +
+  scale_color_gradient2(low = "green3", mid = "grey80", high = "red3", midpoint = 0) +
+  scale_alpha_continuous(range = c(0.2, 1), guide = "none") +
+  labs(x = tex_lab("$P_{CO_2}$ (mg/kg)"), y = tex_lab("Diffusion Proxy ($1/b$)")) + base_theme
+
+p4 <- ggplot(d_plot, aes(x = soil_0_20_P_AAE10, y = inv_b_cons, color = annual_P_balance, alpha = abs(annual_P_balance))) +
+  geom_point(size = 3) +
+  scale_color_gradient2(low = "green3", mid = "grey80", high = "red3", midpoint = 0) +
+  scale_alpha_continuous(range = c(0.2, 1), guide = "none") +
+  labs(x = tex_lab("$P_{AAE10}$ (mg/kg)"), y = tex_lab("Diffusion Proxy ($1/b$)")) + base_theme
+
+# Row 3: k
+p5 <- ggplot(d_plot, aes(x = soil_0_20_P_CO2, y = k, color = annual_P_balance, alpha = abs(annual_P_balance))) +
+  geom_point(size = 3) +
+  scale_color_gradient2(low = "green3", mid = "grey80", high = "red3", midpoint = 0) +
+  scale_alpha_continuous(range = c(0.2, 1), guide = "none") +
+  labs(x = tex_lab("$P_{CO_2}$ (mg/kg)"), y = tex_lab("Desorption Rate ($k$)")) + base_theme
+
+p6 <- ggplot(d_plot, aes(x = soil_0_20_P_AAE10, y = k, color = annual_P_balance, alpha = abs(annual_P_balance))) +
+  geom_point(size = 3) +
+  scale_color_gradient2(low = "green3", mid = "grey80", high = "red3", midpoint = 0) +
+  scale_alpha_continuous(range = c(0.2, 1), guide = "none") +
+  labs(x = tex_lab("$P_{AAE10}$ (mg/kg)"), y = tex_lab("Desorption Rate ($k$)")) + base_theme
+
+# Combine via patchwork
+(p1 + p2) / (p3 + p4) / (p5 + p6) + plot_layout(guides = "collect")
+```
+
+## Plant Response Variables
+
+When evaluating predictive performance, it is important to strictly distinguish between crop yield and actual P uptake. While both serve as agronomic response variables, yield inherently exhibits greater variance and environmental noise. This instability occurs because the internal phosphorus concentration of the crop tissue ($C_P$) can fluctuate significantly—driven by luxury consumption in P-rich environments or physiological dilution during rapid biomass accumulation. Consequently, P uptake provides a more direct, mechanistically linked reflection of soil P availability than raw yield, which acts as a heavily buffered secondary response.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 8
+#| fig-cap: "Total Yield versus Annual P Uptake grouped by crop type. The polynomial trend lines highlight the non-linear decoupling of yield from uptake at higher availability levels, driven by fluctuating internal plant P concentrations ($C_P$)."
+#| label: fig-yield-vs-uptake
+
+d_yield_uptake <- D_Yield %>%
+  select(crop, annual_P_uptake, total_yield) %>%
+  filter(!is.na(annual_P_uptake), !is.na(total_yield), !is.na(crop))
+
+ggplot(d_yield_uptake, aes(x = annual_P_uptake, y = total_yield, color = crop)) +
+  geom_point(alpha = 0.5, size = 2) +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE, linewidth = 1.2) +
+  labs(x = "P Uptake (kg P/ha)", y = "Total Yield (dt/ha)", color = "Crop") +
+  theme_bw() +
+  facet_wrap(~crop, scales = "free") +
+  theme(legend.position = "none")
+```
+
+## Yield model comparison
+
+To evaluate whether thermodynamic kinetic parameters offer an advantage over empirical supply classes, we compared the predictive power of five non-linear mixed-effects models against a null model. All models accounted for site-specific and crop-specific yield ceilings via hierarchical random effects ($1 | \text{site/year}$). They differed in how the base availability ($K_{base}$) of the substrate ($P_{CO_2}$ or $P_{AAE10}$) was modulated. 
+
+| Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
+|:---|:---|:---|---:|---:|---:|---:|---:|
+| **Base Model CO2** | `Supply_class_CO2` | *(None)* | 12.36 | - | [TBD] | 79255 | 130.6 |
+| **Base Model AAE10** | `Supply_class_AAE10` | *(None)* | 12.34 | - | [TBD] | 79218 | [TBD] |
+| **Null Model** | $P_{CO_2}$ | *(None)* | 11.50 | - | [TBD] | 77999 | 231.4 |
+| **Heuristic CO2** | $P_{CO_2}$ | `pH, Clay, Corg, Ca, Temp, Prec` | 10.56 | 0.701 | 0.929 | 77721 | 1104.8 |
+| **Heuristic AAE10** | $P_{AAE10}$ | `pH, Clay, Corg, Ca, Temp, Prec` | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| **Mechanistic** | $P_{CO_2}$ | `1/b, k, N, Temp, Prec` | 10.72 | 0.701 | 0.931 | 76635 | 247.2 |
+
+While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
+
+In contrast, the Mechanistic model, which constrained $K_{base}$ strictly to the physical limits of the desorption rate ($k$) and buffer capacity ($1/b$), generalized better ($\Delta LOOIC = -1086$ vs. Heuristic $CO_2$; $p_{loo} = 247.2$). 
+
+However, neither the empirical STPs nor the kinetic parameters demonstrated strong predictive power for absolute crop yield when compared to the Null model ($\Delta LOOIC = -1364$ vs. Mechanistic). This confirms that short-term agronomic yield is overwhelmingly dominated by local micro-climates and crop biology, rendering the specific physical P-supply mechanism secondary for short-term predictions.
+
+To evaluate true predictive power, we relied on the Expected Log Predictive Density (ELPD) calculated via Bayesian leave-one-out cross-validation (LOO-CV). Unlike in-sample error metrics such as RMSE, which invariably reward overly complex models, ELPD rigorously penalizes models that overfit to local noise. The difference in ELPD ($\Delta$ELPD) serves as a relative measure of out-of-sample performance. This metric fundamentally exposes models that achieve low training error merely by hallucinating relationships with non-causal covariates.
+
+```{r}
+#| label: fig-yield-looic
+#| fig-cap: "Out-of-Sample Predictive Performance (LOO) of yield models relative to the best model. Error bars represent $\\pm 2$ standard errors of the ELPD difference."
+#| warning: false
+#| message: false
+
+library(ggplot2)
+library(dplyr)
+
+res <- readRDS("../data/cluster_results.rds")
+
+# Extract LOO comparison
+comp_df <- as.data.frame(res$yield$comparison)
+comp_df$Model <- rownames(comp_df)
+name_map <- c(
+  "mod_mech_Y" = "Mechanistic",
+  "mod_heur_Y" = "Heuristic CO2",
+  "mod_heur_Y_aae" = "Heuristic AAE10",
+  "mod_base_Y" = "Base CO2",
+  "mod_base_Y_aae" = "Base AAE10",
+  "mod_null_Y" = "Null Model"
+)
+comp_df$Model_Clean <- name_map[comp_df$Model]
+comp_df$Model_Clean <- ifelse(is.na(comp_df$Model_Clean), comp_df$Model, comp_df$Model_Clean)
+
+ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
+  geom_point(size = 4, color = "#0072B2") +
+  geom_errorbar(aes(ymin = elpd_diff - 2*se_diff, ymax = elpd_diff + 2*se_diff), width = 0.2, color = "#0072B2", linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  coord_flip() +
+  theme_bw(base_size = 12) +
+  labs(
+    x = "Model",
+    y = tex_lab("Difference in Expected Log Predictive Density ($\\Delta$ELPD)")
+  )
 ```
 
 ```{r}
-create_coef_table <- function(models_list, 
-                              covariate_order = NULL, 
-                              covariate_labels = NULL, 
-                              model_labels = NULL) {
+#| label: fig-yield-conditional
+#| fig-cap: "Conditional effects of $P_{CO_2}$ substrate on predicted yield across crops. The Mechanistic model (blue) produces constrained asymptotic responses bounded by physical desorption parameters. The Heuristic model (orange) demonstrates massive uncertainty and flat average responses, indicating that its predictive power was inappropriately shifted to pedoclimatic covariates."
+#| warning: false
+#| message: false
 
-  extract_coef_info <- function(model) {
-    if (inherits(model, "brmsfit")) {
-      fixed_eff <- brms::fixef(model)
-      formatted_coef <- sapply(seq_len(nrow(fixed_eff)), function(i) {
-        est <- sprintf("%.2f", fixed_eff[i, "Estimate"])
-        lower <- sprintf("%.2f", fixed_eff[i, "Q2.5"])
-        upper <- sprintf("%.2f", fixed_eff[i, "Q97.5"])
-        paste0(est, " [", lower, ", ", upper, "]")
-      })
-      names(formatted_coef) <- rownames(fixed_eff)
-      return(formatted_coef)
-    } else {
-      # Handle lme4 or nlme frequentist models
-      if (inherits(model, "nlme")) {
-        coef_matrix <- summary(model)$tTable
-      } else {
-        coef_matrix <- summary(model)$coefficients
-      }
-      estimates <- coef_matrix[, 1]
-      p_values <- coef_matrix[, ncol(coef_matrix)]
-      formatted_coef <- sapply(seq_along(estimates), function(i) {
-        est_str <- sprintf("%.3f", estimates[i])
-        stars <- if (p_values[i] < 0.001) "***" else
-                 if (p_values[i] < 0.01) "** " else
-                 if (p_values[i] < 0.05) "* " else  ""
-        paste0(est_str,stars)
-      })
-      names(formatted_coef) <- rownames(coef_matrix)
-      return(formatted_coef)
-    }
+# Extract conditional effects
+d_null <- res$yield$plot_data$null
+d_heur <- res$yield$plot_data$heur
+d_mech <- res$yield$plot_data$mech
+
+if(!is.null(d_null)) d_null$Model <- "Null Model"
+if(!is.null(d_heur)) d_heur$Model <- "Heuristic CO2"
+if(!is.null(d_mech)) d_mech$Model <- "Mechanistic"
+
+d_plot <- bind_rows(d_null, d_heur, d_mech)
+
+ggplot(d_plot, aes(x = effect1__, y = estimate__, color = Model, fill = Model)) +
+  geom_line(linewidth = 1.2) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  facet_wrap(~crop, scales = "free") +
+  theme_bw(base_size = 12) +
+  labs(
+    x = tex_lab("Substrate $P_{CO_2}$ (mg / kg)"),
+    y = "Predicted Yield (dt/ha)"
+  ) +
+  scale_color_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  scale_fill_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  theme(legend.position = "bottom")
+```
+
+## Phosphorus Uptake ($C_P$) model comparison
+
+We repeated the identical model hierarchy to predict total plant phosphorus uptake rather than dry matter yield. 
+
+| Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
+|:---|:---|:---|---:|---:|---:|---:|---:|
+| **Base Model CO2** | `Supply_class_CO2` | *(None)* | 0.69 | [TBD] | [TBD] | 21539 | 118.9 |
+| **Base Model AAE10** | `Supply_class_AAE10` | *(None)* | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| **Null Model** | $P_{CO_2}$ | *(None)* | 0.64 | [TBD] | [TBD] | 20052 | 144.3 |
+| **Heuristic CO2** | $P_{CO_2}$ | `pH, Clay, Corg, Ca, Temp, Prec` | 0.62 | 0.540 | 0.791 | 19374 | 163.2 |
+| **Heuristic AAE10** | $P_{AAE10}$ | `pH, Clay, Corg, Ca, Temp, Prec` | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| **Mechanistic** | $P_{CO_2}$ | `1/b, k, N, Temp, Prec` | 0.63 | 0.534 | 0.782 | 19819 | 160.7 |
+
+In a stark divergence from the yield models, the Heuristic $CO_2$ model demonstrated the highest predictive power both in-sample (RMSE = 0.62) and out-of-sample (LOOIC = 19374). 
+
+Crucially, the Heuristic uptake model did not suffer from the severe overfitting observed in the yield predictions; its effective number of parameters ($p_{loo} = 163.2$) was nearly identical to the strictly constrained Mechanistic model ($p_{loo} = 160.7$). This indicates that the pedoclimatic covariates (pH, Clay, Temperature, Precipitation) were capturing true, generalizable physical signals rather than memorizing local noise.
+
+This phenomenological divergence is biologically consistent. While absolute dry matter yield is a highly confounded metric capped by dozens of non-phosphorus environmental factors, luxury plant P-uptake ($C_P$) is tightly coupled to the physical diffusion of P to the roots and active root metabolism. Therefore, allowing local soil properties and climate variables to flexibly modulate the apparent availability of the empirical substrate ($P_{CO_2}$) legitimately improves the prediction of biological P-acquisition over purely thermodynamic bounds.
+
+```{r}
+#| label: fig-uptake-looic
+#| fig-cap: "Out-of-Sample Predictive Performance (LOO) of P-Uptake models. In stark contrast to dry matter yield, the Heuristic model genuinely outperforms the Mechanistic constraints out-of-sample."
+#| warning: false
+#| message: false
+
+library(ggplot2)
+res <- readRDS("../data/cluster_results.rds")
+
+comp_df <- as.data.frame(res$uptake$comparison)
+comp_df$Model <- rownames(comp_df)
+name_map <- c(
+  "mod_mech_U" = "Mechanistic", "mod_heur_U" = "Heuristic CO2", 
+  "mod_heur_U_aae" = "Heuristic AAE10", "mod_base_U" = "Base CO2", 
+  "mod_base_U_aae" = "Base AAE10", "mod_null_U" = "Null Model"
+)
+comp_df$Model_Clean <- name_map[comp_df$Model]
+comp_df$Model_Clean <- ifelse(is.na(comp_df$Model_Clean), comp_df$Model, comp_df$Model_Clean)
+
+ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
+  geom_point(size = 4, color = "#D55E00") +
+  geom_errorbar(aes(ymin = elpd_diff - 2*se_diff, ymax = elpd_diff + 2*se_diff), width = 0.2, color = "#D55E00", linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  coord_flip() + theme_bw(base_size = 12) +
+  labs(x = "Model", y = tex_lab("Difference in Expected Log Predictive Density ($\\Delta$ELPD)"))
+```
+
+```{r}
+#| label: fig-uptake-conditional
+#| fig-cap: "Conditional effects of substrate on P-Uptake. Because the pedoclimatic covariates capture true signal for P-acquisition, the Heuristic model produces stable, physically meaningful response curves without hallucinating."
+#| warning: false
+#| message: false
+
+d_null <- res$uptake$plot_data$null
+d_heur <- res$uptake$plot_data$heur
+d_mech <- res$uptake$plot_data$mech
+
+if(!is.null(d_null)) d_null$Model <- "Null Model"
+if(!is.null(d_heur)) d_heur$Model <- "Heuristic CO2"
+if(!is.null(d_mech)) d_mech$Model <- "Mechanistic"
+
+d_plot <- dplyr::bind_rows(d_null, d_heur, d_mech)
+
+ggplot(d_plot, aes(x = effect1__, y = estimate__, color = Model, fill = Model)) +
+  geom_line(linewidth = 1.2) +
+  geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
+  facet_wrap(~crop, scales = "free") +
+  theme_bw(base_size = 12) +
+  labs(x = tex_lab("Substrate $P_{CO_2}$ (mg / kg)"), y = "Predicted P-Uptake (kg P/ha)") +
+  scale_color_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  scale_fill_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  theme(legend.position = "bottom")
+```
+
+To fully understand *why* the pedoclimatic covariates induce severe overfitting in the yield models but provide genuine predictive power for P-uptake, we can examine the estimated effect sizes (and their uncertainties) across both agronomic responses (@fig-covariate-effects). 
+
+```{r}
+#| label: fig-covariate-effects
+#| fig-cap: "Forest plot of estimated covariate modifiers on base P availability ($K_{base}$) for both Yield and P-Uptake. The Heuristic model's reliance on soil pH, clay, and organic carbon to predict yield exhibits massive uncertainty (wide 95% CIs) and instability, characteristic of overfitting. In contrast, the effects on P-Uptake are tightly constrained and biologically meaningful."
+#| warning: false
+#| message: false
+#| fig-width: 8
+#| fig-height: 5
+
+library(ggplot2)
+library(dplyr)
+res <- readRDS("../data/cluster_results.rds")
+
+extract_covariates <- function(df, model_name, response_name) {
+  rn <- rownames(df)
+  cov_idx <- grep("^b_k_(pH|clay|Corg|Ca|temp_anom|prec_anom|b|k|N_total)", rn)
+  if(length(cov_idx) > 0) {
+    sub_df <- df[cov_idx, ]
+    sub_df$Parameter <- rn[cov_idx]
+    sub_df$Parameter <- gsub("^b_k_", "", sub_df$Parameter)
+    sub_df$Model <- model_name
+    sub_df$Response <- response_name
+    return(sub_df)
   }
-
-  all_coefs <- lapply(models_list, extract_coef_info)
-  all_covariate_names <- unique(unlist(lapply(all_coefs, names)))
-
-  if (is.null(covariate_order)) {
-    covariate_order <- sort(all_covariate_names)
-  }
-  final_order <- covariate_order[covariate_order %in% all_covariate_names]
-
-  results_matrix <- matrix("",
-                           nrow = length(final_order),
-                           ncol = length(models_list),
-                           dimnames = list(final_order, names(models_list)))
-
-  for (model_name in names(models_list)) {
-    model_coefs <- all_coefs[[model_name]]
-    for (covar in names(model_coefs)) {
-      if (covar %in% final_order) {
-        results_matrix[covar, model_name] <- model_coefs[covar]
-      }
-    }
-  }
-
-  if (!is.null(covariate_labels)) {
-    row_matches <- match(rownames(results_matrix), names(covariate_labels))
-    new_rownames <- rownames(results_matrix)
-    new_rownames[!is.na(row_matches)] <- covariate_labels[row_matches[!is.na(row_matches)]]
-    rownames(results_matrix) <- new_rownames
-  }
-  
-  if (!is.null(model_labels)) {
-    col_matches <- match(colnames(results_matrix), names(model_labels))
-    new_colnames <- colnames(results_matrix)
-    new_colnames[!is.na(col_matches)] <- model_labels[col_matches[!is.na(col_matches)]]
-    colnames(results_matrix) <- new_colnames
-  }
-
-  results_df <- data.frame("Parameter" = rownames(results_matrix),
-                           results_matrix,
-                           check.names = FALSE, 
-                           stringsAsFactors = FALSE)
-  
-  results_df
+  return(NULL)
 }
+
+df_yu_m <- extract_covariates(res$yield$parameters$mech, "Mechanistic", "Yield")
+df_yu_h <- extract_covariates(res$yield$parameters$heur, "Heuristic CO2", "Yield")
+df_up_m <- extract_covariates(res$uptake$parameters$mech, "Mechanistic", "Uptake")
+df_up_h <- extract_covariates(res$uptake$parameters$heur, "Heuristic CO2", "Uptake")
+
+d_plot <- bind_rows(df_yu_m, df_yu_h, df_up_m, df_up_h)
+
+# Clean parameter names
+d_plot$Parameter[d_plot$Parameter == "temp_anom"] <- "Temperature"
+d_plot$Parameter[d_plot$Parameter == "prec_anom"] <- "Precipitation"
+d_plot$Parameter[d_plot$Parameter == "Corg"] <- "C_org"
+d_plot$Parameter[d_plot$Parameter == "N_total"] <- "Nitrogen"
+d_plot$Parameter[d_plot$Parameter == "b"] <- "1/b (Buffer)"
+d_plot$Parameter[d_plot$Parameter == "k"] <- "k (Desorption)"
+
+ggplot(d_plot, aes(x = Estimate, y = Parameter, color = Model)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_point(position = position_dodge(width = 0.6), size = 3) +
+  geom_errorbar(aes(xmin = `l-95% CI`, xmax = `u-95% CI`), 
+                position = position_dodge(width = 0.6), width = 0.2, linewidth = 1) +
+  facet_wrap(~Response, scales = "free_x") +
+  theme_bw(base_size = 12) +
+  scale_color_manual(values = c("Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  labs(x = "Effect Size on Base Availability (95% CI)", y = "Covariate Modifier") +
+  theme(legend.position = "bottom")
 ```
-
-## Desorption Kinetics against Soil Test Phosphorus
-
-The profound failure of empirical extraction methods (like $P_{AAE10}$ and $P_{CO2}$) to predict crop response is not merely a statistical artifact; it is fundamentally rooted in their physical assumptions. Static extractions operate on the premise that the extracted pool is a perfect proxy for the non-equilibrium kinetic supply rate ($v_0$) or the diffusion constant ($k$). However, these parameters are fundamentally decoupled.
-
-As shown in @fig-kinetic-vs-empirical, assigning soils to rigid administrative "Supply Classes" (e.g., GRUD Classes A-E) based on static pools mathematically obscures the underlying physics. 
-
-```{r generate-fig-kinetic-vs-empirical}
-#| include: false
-
-D_Yield <- readRDS("models/D_Yield.rds")
-inv_b_df <- D_Yield %>% select(site, inv_b_cons) %>% distinct()
-
-d_plot <- D %>% 
-  left_join(inv_b_df, by = "site") %>%
-  filter(!is.na(k), !is.na(soil_0_20_P_CO2), !is.na(soil_0_20_P_AAE10), !is.na(soil_0_20_pH_H2O), !is.na(inv_b_cons)) %>%
-  rowwise() %>%
-  mutate(
-    inv_b = inv_b_cons,
-    v0 = k * soil_0_20_P_CO2
-  ) %>%
-  ungroup()
-
-class_colors <- c("A" = "#d7191c", "B" = "#fdae61", "C" = "#ffffbf", "D" = "#abdda4", "E" = "#2b83ba")
-
-p1 <- ggplot(d_plot, aes(x = soil_0_20_P_CO2, y = v0, color = Class_CO2)) +
-  geom_point(alpha = 0.7, size = 2) +
-  scale_color_manual(values = class_colors, drop = FALSE) +
-  labs(x = "$P_{CO_2}$ (mg/kg)", y = "$v_0$ (Desorption Velocity)", color = "Supply Class CO2") +
-  theme_bw() + theme(legend.position = "bottom")
-
-p2 <- ggplot(d_plot, aes(x = soil_0_20_P_AAE10, y = v0, color = Class_AAE)) +
-  geom_point(alpha = 0.7, size = 2) +
-  scale_color_manual(values = class_colors, drop = FALSE) +
-  labs(x = "$P_{AAE10}$ (mg/kg)", y = "$v_0$ (Desorption Velocity)", color = "Supply Class AAE10") +
-  theme_bw() + theme(legend.position = "bottom")
-
-p3 <- ggplot(d_plot, aes(x = inv_b, y = v0)) +
-  geom_point(alpha = 0.7, size = 2, color = "black") +
-  labs(x = "Inverse Buffer Capacity ($1/b$)", y = "$v_0$ (Desorption Velocity)") +
-  theme_bw()
-
-combined_plot <- (p1 | p2) / p3
-ggsave("fig_kinetic_vs_empirical.png", combined_plot, width = 10, height = 10, dpi = 300)
-```
-
-![Comparison of the kinetic supply rate ($v_0$) against static empirical pools ($P_{CO_2}$, $P_{AAE10}$) colored by their respective GRUD Supply Classes, and against the inverse buffer capacity ($1/b$), demonstrating their physical decoupling.](fig_kinetic_vs_empirical.png){#fig-kinetic-vs-empirical width=\textwidth}
-
-The overlays vividly demonstrate that the $P_{AAE10}$ classes are smeared chaotically across the buffer capacity gradient ($b$), particularly once partitioned across the pH boundary. A soil universally classified as "Adequate" (Class C) by the empirical test can dynamically starve a plant (low $v_0$) or flush it with optimal phosphorus (high $v_0$). The step-functions of the administrative framework impose arbitrary risk buffers but inherently fail to respect the soil's buffering physics. The decoupling of the equilibrium diffusivity ($v_0$) from the non-equilibrium diffusion constant ($k$) demands a shift towards mechanistic modeling. By explicitly modeling the fundamental thermodynamic driving forces ($a_{CO2}$, $b$), the following models naturally resolve the kinetic scatter that plagues these empirical methods.
-
-## Predictive Modeling of Agronomic Outcomes {#sec-agronomic-modeling}
-
-In initial statistical explorations, site-normalized ($Y_{norm}$) and national-normalized ($Y_{rel}$) yields were evaluated. However, those analyses revealed a fundamental methodological limitation: crop yield is a downstream biological integration capped by highly variable, site-specific pedoclimatic constraints (e.g., precipitation anomalies, temperature stress, and genetic limits). These environmental ceilings mathematically obscured the thermodynamic signal of soil phosphorus availability, resulting in high conditional $R^2$ values (driven by site-level random intercepts) but extremely poor marginal $R^2$ values for the actual phosphorus drivers.
-
-Consequently, this study abandons normalized yield metrics in favor of absolute P-Uptake ($P_{up}$) and the Tissue Concentration ($C_P$). These metrics provide a much cleaner, unbuffered signal of the soil's true physical P-supply capacity, evaluated within a rigorous Bayesian Non-Linear Mixed-Effects framework.
-
-### Predicting P-Uptake ($P_{\text{up}}$): The Diffusion Bottleneck
-
-The mechanistic hypothesis posits that the rate-limiting step for P acquisition is diffusion through the soil matrix to the root surface. The effective diffusion coefficient is directly proportional to the inverse buffer power ($1/b$). Thus, $1/b$ acts as a **Diffusion Bottleneck**. Soils with high buffer capacity (low $1/b$) replenish the root depletion zone slowly. Therefore, even if two soils possess the exact same bulk $P_{CO2}$ concentration, the crop in the high-buffer soil will uptake less P because the dynamic supply to the root surface is restricted.
-
-To formally test this, Bayesian Michaelis-Menten models were fitted, comparing a standard empirical model (which ignores the buffer) against a mechanistic model where the affinity constant ($K_{base}$) is strictly penalized by $1/b$.
-
-```{r}
-#| label: tbl-puptake-models
-#| tbl-cap: "Bayesian Posteriors (Median and 95% Credible Intervals) for the non-linear Michaelis-Menten P-Uptake models. The Mechanistic model incorporates the Diffusion Bottleneck ($1/b$) on the $K_{base}$ parameter."
-#| echo: false
-#| warning: false
-#| message: false
-
-# Loading the initial cluster models
-mod_mech_U <- readRDS("models/brms_uptake_thm_co2.rds")
-
-brms_models_uptake <- list(
-  "Mechanistic (Diffusion Bottleneck)" = mod_mech_U
-)
-
-covariate_labels_uptake <- c(
-  "betainvb_Intercept" = "Diffusion Bottleneck (1/b)",
-  "betaTemp_Intercept" = "Temp Deviation",
-  "betaPrec_Intercept" = "Prec Deviation",
-  "betaN_Intercept" = "N Fertilization"
-)
-
-results_table_uptake <- create_coef_table(brms_models_uptake, covariate_labels = covariate_labels_uptake)
-knitr::kable(results_table_uptake, escape = FALSE, row.names = FALSE, booktabs = TRUE)
-```
-
-The parameter estimates clearly confirm the diffusion restriction: as the inverse buffer ($1/b$) increases (meaning diffusion is less buffered/restricted), the affinity modifier strongly responds, proving that the transport bottleneck is a defining feature of P-uptake in these soils.
-
-```{r}
-#| label: fig-puptake-mech
-#| fig-cap: "Marginal effect of P-CO2 on crop P-uptake, as modeled by the mechanistic Bayesian Michaelis-Menten framework."
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "\\textwidth"
-#| fig-height: 5
-
-library(brms)
-ce_U <- conditional_effects(mod_mech_U, effects = "a_CO2_total_mg_L")
-plot(ce_U, plot = FALSE)[[1]] +
-  labs(x = "$P_{CO_2}$ (mg/kg)", y = "Annual P-Uptake (kg/ha)") +
-  theme_bw()
-```
-
-### The Tissue Concentration ($C_P$) Model: Luxury Accumulation
-
-While historically represented by a Piper-Steenbjerg exponential dilution curve, rigorous phenomenological testing over the 40-year dataset revealed that the initial exponential dilution penalty ($k_{dil}$) was statistically undetectable across the pedoclimatic noise. Instead, the phenomena clearly dictate a simpler biological reality: A crop-specific baseline tissue concentration ($C_{base}$), followed by a linear **Luxury Accumulation** phase ($S_{acc}$).
-
-The magnitude of this luxury accumulation is driven significantly by the soil's desorption velocity ($v_0$) and buffer power ($1/b$), which determine how rapidly the soil can push excess phosphorus into the plant once primary metabolic needs are met.
-
-```{r}
-#| label: tbl-cp-models
-#| tbl-cap: "Bayesian Posteriors for the Linear Luxury Accumulation model of Tissue Concentration ($C_P$)."
-#| echo: false
-#| warning: false
-#| message: false
-
-mod_cp_mechanistic <- readRDS("models/brms_cp_thm_co2.rds")
-
-brms_models_cp <- list(
-  "Mechanistic (Luxury Accumulation)" = mod_cp_mechanistic
-)
-
-covariate_labels_cp <- c(
-  "betainvb_Intercept" = "Diffusion Bottleneck (1/b)",
-  "betaTemp_Intercept" = "Temp Deviation",
-  "betaPrec_Intercept" = "Prec Deviation"
-)
-
-results_table_cp <- create_coef_table(brms_models_cp, covariate_labels = covariate_labels_cp)
-knitr::kable(results_table_cp, escape = FALSE, row.names = FALSE, booktabs = TRUE)
-```
-
-```{r}
-#| label: fig-cp-mech
-#| fig-cap: "Marginal effect of P-CO2 on Tissue Concentration ($C_P$), exhibiting the linear luxury accumulation phase."
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "\\textwidth"
-#| fig-height: 5
-
-ce_cp <- conditional_effects(mod_cp_mechanistic, effects = "a_CO2_total_mg_L")
-plot(ce_cp, plot = FALSE)[[1]] +
-  labs(x = "$P_{CO_2}$ (mg/kg)", y = "$C_P$ (mg/kg)") +
-  theme_bw()
-```
-
-### Predicting P-Balance ($P_{\text{bal}}$)
-
-The prediction of the P-Balance ($P_{\text{bal}}$) reveals a stark and decisive contrast between the kinetic and standard STP approaches, providing the strongest evidence in favor of the kinetic methodology.
-
-```{r}
-#| label: tbl-pbalance-models
-#| tbl-cap: "Modelled coefficients of linear mixed-effects models predicting P-Balance ($P_{\text{bal}}$)."
-#| echo: false
-#| warning: false
-#| message: false
-
-lmer_models_balance <- list(
-  "CO2_Pbalance"   = fit.CO2.Pbalance,
-  "AAE10_Pbalance" = fit.AAE10.Pbalance,
-  "Grud_Pbalance"  = fit.grud.Pbalance,
-  "Kin_Pbalance"   = fit.kin.Pbalance
-)
-model_labels_balance <- c(
-  "CO2_Pbalance"   = "$P_{	ext{CO}_2}$",
-  "AAE10_Pbalance" = "$P_{AAE10}$",
-  "Grud_Pbalance"  = "STP-interaction",
-  "Kin_Pbalance"   = "kinetic"
-)
-results_table_balance <- create_coef_table(
-  lmer_models_balance,
-  covariate_labels = covariate_labels,
-  model_labels = model_labels_balance
-)
-knitr::kable(results_table_balance, escape = FALSE, row.names = FALSE, booktabs = TRUE)
-
-# Gemini here are the results
-# |Predictor/Model             |$P_{	ext{CO}_2}$ |$P_{AAE10}$ |$P_{CO_2}*P_{AAE10}$ |$k * P_{desorb}$ |
-# |:---------------------------|:----------|:-----------|:--------------------|:----------------|
-# |Intercept                   |4.441      |7.691       |3.649                |43.833***        |
-# |$k$                         |           |            |                     |84.993           |
-# |$J_0$                       |           |            |                     |33.029           |
-# |$P_{	ext{desorb}}$                |           |            |                     |16.947***        |
-# |$P_{AAE10}$                 |           |-0.794      |0.187                |                 |
-# |$P_{	ext{CO}_2}$                  |-0.928     |            |-2.442               |                 |
-# |$P_{CO_2} \times P_{AAE10}$ |           |            |0.462                |                 |
-# |$R^2_m$                     |0.001      |0.001       |0.001                |0.572            |
-# |$R^2_c$                     |0.810      |0.807       |0.811                |0.744            |
-```
-
-The kinetic model emerged as a strong predictor of the P-Balance, explaining 57.2% of the variance, with the desorbable P pool ($P_{\text{desorb}}$) being a highly significant predictor. In contrast, all models based on the standard STP methods had marginal R² values of 0.1% and no significant predictors. The conditional R² for the STP models was high (around 0.81), while the kinetic model had both a high marginal R² (0.572) and a high conditional R² (0.744).
-
-
-
-

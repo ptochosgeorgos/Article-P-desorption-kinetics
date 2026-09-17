@@ -29,7 +29,7 @@ format:
     include-in-header:
       text: |
         \usepackage{tikz}
-        \usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+        \usetikzlibrary{shapes, shapes.geometric, shapes.3d, arrows.meta, positioning, fit, backgrounds, calc}
     geometry:
       - top=25mm
       - left=25mm
@@ -45,6 +45,15 @@ always_allow_html: true
 ```{r setup, include=FALSE}
 # Use TikZ device globally for R graphics, but we will protect the native {tikz} blocks
 knitr::opts_chunk$set(dev = "tikz")
+
+# Helper function for dual-target plotmath rendering
+tex_lab <- function(str) {
+  if (knitr::is_latex_output()) {
+    return(str) # TikZ parses raw TeX natively
+  } else {
+    return(latex2exp::TeX(str)) # svglite needs plotmath expressions
+  }
+}
 ```
 
 {{< include writing/_15-intro.qmd >}}
