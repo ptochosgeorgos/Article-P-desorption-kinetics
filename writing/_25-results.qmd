@@ -121,11 +121,9 @@ To evaluate whether thermodynamic kinetic parameters offer an advantage over emp
 
 | Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
 |:---|:---|:---|---:|---:|---:|---:|---:|
-| **Base Model CO2** | Supply_class_CO2 | *(None)* | 12.36 | - | [TBD] | 79255 | 130.6 |
-| **Base Model AAE10** | Supply_class_AAE10 | *(None)* | 12.34 | - | [TBD] | 79218 | [TBD] |
-| **Null Model** | $P_{CO_2}$ | *(None)* | 11.50 | - | [TBD] | 77999 | 231.4 |
+| **Base Model CO2** | Supply_class_CO2 | *(None)* | 12.36 | - | - | 79255 | 130.6 |
+| **Null Model** | $P_{CO_2}$ | *(None)* | 11.50 | - | - | 77999 | 231.4 |
 | **Heuristic CO2** | $P_{CO_2}$ | pH, Clay, Corg, Ca, Temp, Prec | 10.56 | 0.701 | 0.929 | 77721 | 1104.8 |
-| **Heuristic AAE10** | $P_{AAE10}$ | pH, Clay, Corg, Ca, Temp, Prec | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
 | **Mechanistic** | $P_{CO_2}$ | 1/b, k, N, Temp, Prec | 10.72 | 0.701 | 0.931 | 76635 | 247.2 |
 
 While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
@@ -214,11 +212,9 @@ We repeated the identical model hierarchy to predict total plant phosphorus upta
 
 | Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
 |:---|:---|:---|---:|---:|---:|---:|---:|
-| **Base Model CO2** | Supply_class_CO2 | *(None)* | 0.69 | [TBD] | [TBD] | 21539 | 118.9 |
-| **Base Model AAE10** | Supply_class_AAE10 | *(None)* | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
-| **Null Model** | $P_{CO_2}$ | *(None)* | 0.64 | [TBD] | [TBD] | 20052 | 144.3 |
+| **Base Model CO2** | Supply_class_CO2 | *(None)* | 0.69 | - | - | 21539 | 118.9 |
+| **Null Model** | $P_{CO_2}$ | *(None)* | 0.64 | - | - | 20052 | 144.3 |
 | **Heuristic CO2** | $P_{CO_2}$ | pH, Clay, Corg, Ca, Temp, Prec | 0.62 | 0.540 | 0.791 | 19374 | 163.2 |
-| **Heuristic AAE10** | $P_{AAE10}$ | pH, Clay, Corg, Ca, Temp, Prec | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
 | **Mechanistic** | $P_{CO_2}$ | 1/b, k, N, Temp, Prec | 0.63 | 0.534 | 0.782 | 19819 | 160.7 |
 
 In a stark divergence from the yield models, the Heuristic $CO_2$ model demonstrated the highest predictive power both in-sample (RMSE = 0.62) and out-of-sample (LOOIC = 19374). 
