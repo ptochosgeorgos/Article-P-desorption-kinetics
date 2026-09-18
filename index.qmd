@@ -42,13 +42,9 @@ always_allow_html: true
 ```{r setup, include=FALSE}
 
 
-# Helper function for dual-target plotmath rendering
+# Helper function for plotmath rendering
 tex_lab <- function(str) {
-  if (knitr::is_latex_output()) {
-    return(str) # TikZ parses raw TeX natively
-  } else {
-    return(latex2exp::TeX(str)) # svglite needs plotmath expressions
-  }
+  return(latex2exp::TeX(str))
 }
 ```
 
