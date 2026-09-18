@@ -119,14 +119,51 @@ ggplot(d_yield_uptake, aes(x = annual_P_uptake, y = total_yield, color = crop)) 
 
 To evaluate whether thermodynamic kinetic parameters offer an advantage over empirical supply classes, we compared the predictive power of five non-linear mixed-effects models against a null model. All models accounted for site-specific and crop-specific yield ceilings via hierarchical random effects ($1 | \text{site/year}$). They differed in how the base availability ($K_{base}$) of the substrate ($P_{CO_2}$ or $P_{AAE10}$) was modulated. 
 
-| Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
-|:---|:---|:---|---:|---:|---:|---:|---:|
-| **Base Model CO2** | Supply_class_CO2 | *(None)* | 12.36 | - | [TBD] | 79255 | 130.6 |
-| **Base Model AAE10** | Supply_class_AAE10 | *(None)* | 12.34 | - | [TBD] | 79218 | [TBD] |
-| **Null Model** | $P_{CO_2}$ | *(None)* | 11.50 | - | [TBD] | 77999 | 231.4 |
-| **Heuristic CO2** | $P_{CO_2}$ | pH, Clay, Corg, Ca, Temp, Prec | 10.56 | 0.701 | 0.929 | 77721 | 1104.8 |
-| **Heuristic AAE10** | $P_{AAE10}$ | pH, Clay, Corg, Ca, Temp, Prec | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
-| **Mechanistic** | $P_{CO_2}$ | 1/b, k, N, Temp, Prec | 10.72 | 0.701 | 0.931 | 76635 | 247.2 |
+```{r}
+#| label: tbl-yield-comparison
+#| echo: false
+#| warning: false
+#| message: false
+library(knitr)
+
+# Safely extract metrics
+get_metric <- function(val, rnd = 2) {
+  if (is.null(val)) return("-")
+  sprintf(paste0("%.", rnd, "f"), val)
+}
+
+comp <- res$yield$comparison
+looic_val <- function(m_name) {
+  if (is.null(comp) || !(m_name %in% comp$model)) return("-")
+  sprintf("%.0f", comp$looic[comp$model == m_name])
+}
+ploo_val <- function(m_name) {
+  if (is.null(comp) || !(m_name %in% comp$model)) return("-")
+  sprintf("%.1f", comp$p_loo[comp$model == m_name])
+}
+r2_cond <- function(r2_obj) {
+  if (is.null(r2_obj)) return("-")
+  sprintf("%.3f", r2_obj$conditional["R2", "Estimate"])
+}
+r2_marg <- function(r2_obj) {
+  if (is.null(r2_obj)) return("-")
+  sprintf("%.3f", r2_obj$marginal["R2", "Estimate"])
+}
+
+df_yield <- data.frame(
+  Model = c("**Base Model CO2**", "**Base Model AAE10**", "**Null Model**", "**Heuristic CO2**", "**Heuristic AAE10**", "**Mechanistic**"),
+  Substrate = c("Supply_class_CO2", "Supply_class_AAE10", "$P_{CO_2}$", "$P_{CO_2}$", "$P_{AAE10}$", "$P_{CO_2}$"),
+  `K_base Modulators` = c("*(None)*", "*(None)*", "*(None)*", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
+  RMSE = c(get_metric(res$yield$rmse$base), get_metric(res$yield$rmse$base_aae), get_metric(res$yield$rmse$null), get_metric(res$yield$rmse$heur), get_metric(res$yield$rmse$heur_aae), get_metric(res$yield$rmse$mech)),
+  `R2_Marg` = c("-", "-", "-", r2_marg(res$yield$r2_heur), r2_marg(res$yield$r2_heur_aae), r2_marg(res$yield$r2_mech)),
+  `R2_Cond` = c("-", "-", "-", r2_cond(res$yield$r2_heur), r2_cond(res$yield$r2_heur_aae), r2_cond(res$yield$r2_mech)),
+  LOOIC = c(looic_val("mod_base_Y"), looic_val("mod_base_Y_aae"), looic_val("mod_null_Y"), looic_val("mod_heur_Y"), looic_val("mod_heur_Y_aae"), looic_val("mod_mech_Y")),
+  p_loo = c(ploo_val("mod_base_Y"), ploo_val("mod_base_Y_aae"), ploo_val("mod_null_Y"), ploo_val("mod_heur_Y"), ploo_val("mod_heur_Y_aae"), ploo_val("mod_mech_Y")),
+  check.names = FALSE
+)
+
+kable(df_yield, format = "markdown", col.names = c("Model", "Substrate", "$K_{base}$ Modulators", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$"))
+```
 
 While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
 
@@ -212,14 +249,36 @@ ggplot(d_plot, aes(x = effect1__, y = estimate__, color = Model, fill = Model)) 
 
 We repeated the identical model hierarchy to predict total plant phosphorus uptake rather than dry matter yield. 
 
-| Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
-|:---|:---|:---|---:|---:|---:|---:|---:|
-| **Base Model CO2** | Supply_class_CO2 | *(None)* | 0.69 | [TBD] | [TBD] | 21539 | 118.9 |
-| **Base Model AAE10** | Supply_class_AAE10 | *(None)* | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
-| **Null Model** | $P_{CO_2}$ | *(None)* | 0.64 | [TBD] | [TBD] | 20052 | 144.3 |
-| **Heuristic CO2** | $P_{CO_2}$ | pH, Clay, Corg, Ca, Temp, Prec | 0.62 | 0.540 | 0.791 | 19374 | 163.2 |
-| **Heuristic AAE10** | $P_{AAE10}$ | pH, Clay, Corg, Ca, Temp, Prec | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
-| **Mechanistic** | $P_{CO_2}$ | 1/b, k, N, Temp, Prec | 0.63 | 0.534 | 0.782 | 19819 | 160.7 |
+```{r}
+#| label: tbl-uptake-comparison
+#| echo: false
+#| warning: false
+#| message: false
+
+comp_u <- res$uptake$comparison
+looic_val_u <- function(m_name) {
+  if (is.null(comp_u) || !(m_name %in% comp_u$model)) return("-")
+  sprintf("%.0f", comp_u$looic[comp_u$model == m_name])
+}
+ploo_val_u <- function(m_name) {
+  if (is.null(comp_u) || !(m_name %in% comp_u$model)) return("-")
+  sprintf("%.1f", comp_u$p_loo[comp_u$model == m_name])
+}
+
+df_uptake <- data.frame(
+  Model = c("**Base Model CO2**", "**Base Model AAE10**", "**Null Model**", "**Heuristic CO2**", "**Heuristic AAE10**", "**Mechanistic**"),
+  Substrate = c("Supply_class_CO2", "Supply_class_AAE10", "$P_{CO_2}$", "$P_{CO_2}$", "$P_{AAE10}$", "$P_{CO_2}$"),
+  `K_base Modulators` = c("*(None)*", "*(None)*", "*(None)*", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
+  RMSE = c(get_metric(res$uptake$rmse$base), get_metric(res$uptake$rmse$base_aae), get_metric(res$uptake$rmse$null), get_metric(res$uptake$rmse$heur), get_metric(res$uptake$rmse$heur_aae), get_metric(res$uptake$rmse$mech)),
+  `R2_Marg` = c("-", "-", "-", r2_marg(res$uptake$r2_heur), r2_marg(res$uptake$r2_heur_aae), r2_marg(res$uptake$r2_mech)),
+  `R2_Cond` = c("-", "-", "-", r2_cond(res$uptake$r2_heur), r2_cond(res$uptake$r2_heur_aae), r2_cond(res$uptake$r2_mech)),
+  LOOIC = c(looic_val_u("mod_base_U"), looic_val_u("mod_base_U_aae"), looic_val_u("mod_null_U"), looic_val_u("mod_heur_U"), looic_val_u("mod_heur_U_aae"), looic_val_u("mod_mech_U")),
+  p_loo = c(ploo_val_u("mod_base_U"), ploo_val_u("mod_base_U_aae"), ploo_val_u("mod_null_U"), ploo_val_u("mod_heur_U"), ploo_val_u("mod_heur_U_aae"), ploo_val_u("mod_mech_U")),
+  check.names = FALSE
+)
+
+kable(df_uptake, format = "markdown", col.names = c("Model", "Substrate", "$K_{base}$ Modulators", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$"))
+```
 
 In a stark divergence from the yield models, the Heuristic $CO_2$ model demonstrated the highest predictive power both in-sample (RMSE = 0.62) and out-of-sample (LOOIC = 19374). 
 
