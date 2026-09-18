@@ -1,0 +1,355 @@
+---
+title: "The GRUD Step Functions"
+subtitle: "Empirical Classification vs. Mechanistic Reality"
+author: "Marc Jerónimo Pérez y Ropero"
+date: "2026-08-25"
+format:
+  revealjs:
+    theme: default
+    transition: slide
+    slide-number: true
+    width: 1280
+    height: 720
+---
+
+## $P_{CO2}$ Model { .scrollable .smaller }
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(plotly)
+library(htmltools)
+
+x_clay <- c("<10", "10-20", "20-30", "30-40", ">40")
+y_co2 <- c("0.15", "0.46", "0.77", "1.08", "1.39", "1.70", "2.01", "2.32", "2.63", "2.94", "3.25", "3.56", "3.88", "4.19", "4.50", "≥4.65")
+z_co2 <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.2,
+  1.4, 1.4, 1.3, 1.2, 1.1,
+  1.2, 1.2, 1.1, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 0.8,
+  1.0, 1.0, 1.0, 0.8, 0.6,
+  1.0, 1.0, 0.8, 0.6, 0.0,
+  1.0, 0.8, 0.6, 0.0, 0.0,
+  0.8, 0.8, 0.4, 0.0, 0.0,
+  0.8, 0.6, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0,
+  0.6, 0.4, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), nrow=16, ncol=5, byrow=TRUE)
+
+# Calculate linear model to prove affinity
+df_co2 <- expand.grid(x = 1:5, y = 1:16)
+df_co2$z <- as.vector(t(z_co2))
+lm_co2 <- lm(z ~ x + y, data = df_co2)
+r2_co2 <- round(summary(lm_co2)$r.squared, 2)
+```
+
+The GRUD attempted to directly model and correct P-deficits empirically, without explicitly considering the underlying mechanics. It assumes that correcting a P-deficit requires a simple linear multiplier $v$, mapping continuous soil variables into rigid, discrete steps:
+$$ v: \mathbb{R}^2 \to \mathbb{Q} $$
+
+**Affinity Test:** We quantified how "affine" this matrix is by fitting a generic linear map $L$:
+$$ L(P_{CO2}, \text{clay}) = \alpha \cdot P_{CO2} + \beta \cdot \text{clay} + \gamma $$
+
+The discrete table is essentially a perfect affine plane ($R^2 = `r r2_co2`$).
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 8
+
+# Reverse y so 0 is at bottom
+z_co2_rev <- z_co2[16:1, ]
+y_co2_rev <- rev(y_co2)
+
+# Custom color scale based on GRUD classes
+colorscale <- list(
+  c(0, "#1f77b4"),   # E (0.0)
+  c(0.2, "#1f77b4"),
+  c(0.2, "#17becf"), # D (0.4-0.8)
+  c(0.6, "#17becf"),
+  c(0.6, "#2ca02c"), # C (1.0-1.1)
+  c(0.75, "#2ca02c"),
+  c(0.75, "#ff7f0e"),# B (1.2-1.4)
+  c(0.9, "#ff7f0e"),
+  c(0.9, "#d62728"), # A (1.5)
+  c(1, "#d62728")
+)
+
+annotations_list <- list()
+for(i in 1:16) {
+  for(j in 1:5) {
+    annotations_list[[length(annotations_list) + 1]] <- list(
+      x = x_clay[j], y = y_co2_rev[i],
+      text = as.character(z_co2_rev[i,j]),
+      showarrow = FALSE,
+      font = list(color = ifelse(z_co2_rev[i,j] < 0.5, "white", "black"))
+    )
+  }
+}
+
+p1 <- plot_ly(x = x_clay, y = y_co2_rev, z = z_co2_rev, type = "heatmap", colorscale = colorscale, zmin=0, zmax=1.5, showscale=FALSE, height=500) %>%
+  layout(title = "P_CO2 Flat Heatmap", xaxis = list(title = "Clay %"), yaxis = list(title = "P_CO2 (mg/kg)"), annotations = annotations_list)
+
+# For 3D surface we need numeric axes for smooth rotating
+p2 <- plot_ly(x = 1:5, y = 1:16, z = z_co2, type = "surface", colorscale = colorscale, cmin=0, cmax=1.5, showscale=FALSE, height=500) %>%
+  layout(title = "P_CO2 3D Staircase", scene = list(
+    xaxis = list(title = "Clay %", tickvals=1:5, ticktext=x_clay),
+    yaxis = list(title = "P_CO2 (mg/kg)", tickvals=1:16, ticktext=y_co2),
+    zaxis = list(title = "Correction Factor C")
+  ))
+
+browsable(tagList(
+  div(style="display:flex; justify-content:space-between;",
+      div(style="width:48%;", p1),
+      div(style="width:48%;", p2)
+  )
+))
+```
+
+---
+
+## $P_{AAE10}$ Model { .scrollable .smaller }
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+y_aae10 <- c("0-4.9", "5.0-9.9", "10.0-14.9", "15.0-19.9", "20.0-24.9", "25.0-29.9", "30.0-34.9", "35.0-39.9", "40.0-44.9", "45.0-49.9", "50.0-54.9", "55.0-59.9", "60.0-64.9", "65.0-69.9", "70.0-74.9", "75.0-79.9", "80.0-84.9", "85.0-89.9", "90.0-94.9", "95.0-99.9", "100.0-104.9", "105.0-109.9", "110.0-114.9", "115.0-119.9", "120.0-124.9", "≥ 125.0")
+z_aae10 <- matrix(c(
+  1.5, 1.5, 1.5, 1.4, 1.4,
+  1.5, 1.5, 1.4, 1.4, 1.2,
+  1.5, 1.4, 1.4, 1.2, 1.2,
+  1.4, 1.4, 1.2, 1.2, 1.0,
+  1.4, 1.2, 1.2, 1.0, 1.0,
+  1.2, 1.2, 1.2, 1.0, 1.0,
+  1.2, 1.0, 1.0, 1.0, 1.0,
+  1.2, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 0.8, 0.8,
+  1.0, 1.0, 0.8, 0.8, 0.6,
+  1.0, 1.0, 0.8, 0.8, 0.6,
+  1.0, 0.8, 0.8, 0.6, 0.6,
+  0.8, 0.8, 0.8, 0.6, 0.6,
+  0.8, 0.8, 0.6, 0.6, 0.4,
+  0.8, 0.6, 0.6, 0.4, 0.4,
+  0.6, 0.6, 0.6, 0.4, 0.4,
+  0.6, 0.6, 0.4, 0.4, 0.0,
+  0.6, 0.4, 0.4, 0.0, 0.0,
+  0.4, 0.4, 0.4, 0.0, 0.0,
+  0.4, 0.4, 0.0, 0.0, 0.0,
+  0.4, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0
+), nrow=26, ncol=5, byrow=TRUE)
+
+# Calculate linear model to prove affinity
+df_aae <- expand.grid(x = 1:5, y = 1:26)
+df_aae$z <- as.vector(t(z_aae10))
+lm_aae <- lm(z ~ x + y, data = df_aae)
+r2_aae <- round(summary(lm_aae)$r.squared, 2)
+```
+
+When looking at the legacy $P_{AAE10}$ extraction method, the GRUD provides a nearly identical mapping structure.
+
+**Affinity Test:** A linear fit for this matrix confirms it is an almost perfectly smooth ramp ($R^2 = `r r2_aae`$).
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 12
+#| fig-height: 8
+
+z_aae_rev <- z_aae10[26:1, ]
+y_aae_rev <- rev(y_aae10)
+
+annotations_aae <- list()
+for(i in 1:26) {
+  for(j in 1:5) {
+    annotations_aae[[length(annotations_aae) + 1]] <- list(
+      x = x_clay[j], y = y_aae_rev[i],
+      text = as.character(z_aae_rev[i,j]),
+      showarrow = FALSE,
+      font = list(color = ifelse(z_aae_rev[i,j] < 0.5, "white", "black"))
+    )
+  }
+}
+
+p3 <- plot_ly(x = x_clay, y = y_aae_rev, z = z_aae_rev, type = "heatmap", colorscale = colorscale, zmin=0, zmax=1.5, showscale=FALSE, height=500) %>%
+  layout(title = "P_AAE10 Flat Heatmap", xaxis = list(title = "Clay %"), yaxis = list(title = "P_AAE10 (mg/kg)"), annotations = annotations_aae)
+
+p4 <- plot_ly(x = 1:5, y = 1:26, z = z_aae10, type = "surface", colorscale = colorscale, cmin=0, cmax=1.5, showscale=FALSE, height=500) %>%
+  layout(title = "P_AAE10 3D Staircase", scene = list(
+    xaxis = list(title = "Clay %", tickvals=1:5, ticktext=x_clay),
+    yaxis = list(title = "P_AAE10 (mg/kg)", tickvals=1:26, ticktext=y_aae10),
+    zaxis = list(title = "Correction Factor C")
+  ))
+
+browsable(tagList(
+  div(style="display:flex; justify-content:space-between;",
+      div(style="width:48%;", p3),
+      div(style="width:48%;", p4)
+  )
+))
+```
+
+
+---
+
+## Interactive Bias Surface (Clay & pH) { .scrollable .smaller }
+
+Here is a 3D visualization of the systematic bias ($\Delta v = v_{CO2} - v_{AAE10}$) modeled as a smooth surface (GAM) across the entire dataset. You can interact with the surface to see exactly how much the fertilizer recommendations diverge depending on **Clay** and **pH**!
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig-height: 8
+library(plotly)
+library(mgcv)
+library(tidyverse)
+
+# Load data and define D_eval
+final_artifacts <- readRDS("data/Final_Models_Data.rds")
+D_Long_Agro <- final_artifacts$data$D_Long_Agro
+
+get_clay_bin <- function(clay) {
+  if (is.na(clay)) return(NA)
+  if (clay < 10) return(1)
+  if (clay < 20) return(2)
+  if (clay < 30) return(3)
+  if (clay < 40) return(4)
+  return(5)
+}
+get_co2_bin <- function(p) {
+  if (is.na(p)) return(NA)
+  breaks <- seq(0.310, 4.650, by=0.310)
+  idx <- findInterval(p, breaks) + 1
+  return(min(idx, 16))
+}
+get_aae_bin <- function(p) {
+  if (is.na(p)) return(NA)
+  breaks <- seq(5.0, 125.0, by=5.0)
+  idx <- findInterval(p, breaks) + 1
+  return(min(idx, 16))
+}
+
+D_eval <- D_Long_Agro |> filter(!is.na(soil_0_20_P_CO2) & !is.na(soil_0_20_P_AAE10) & !is.na(rollMean_soil_0_20_clay) & !is.na(rollMean_soil_0_20_pH_H2O))
+D_eval <- D_eval |> rowwise() |> mutate(
+  clay_bin = get_clay_bin(rollMean_soil_0_20_clay),
+  co2_bin = get_co2_bin(soil_0_20_P_CO2),
+  aae_bin = get_aae_bin(soil_0_20_P_AAE10),
+  v_co2 = z_co2[co2_bin, clay_bin],
+  v_aae10 = z_aae10[aae_bin, clay_bin],
+  bias = v_co2 - v_aae10
+) |> ungroup()
+
+# Fit a GAM to smooth the bias surface dynamically (now using pH instead of Corg)
+fit <- gam(bias ~ s(rollMean_soil_0_20_clay, bs="cs") + s(rollMean_soil_0_20_pH_H2O, bs="cs"), data=D_eval)
+
+clay_seq <- seq(min(D_eval$rollMean_soil_0_20_clay), max(D_eval$rollMean_soil_0_20_clay), length.out=50)
+ph_seq <- seq(min(D_eval$rollMean_soil_0_20_pH_H2O), max(D_eval$rollMean_soil_0_20_pH_H2O), length.out=50)
+grid <- expand.grid(rollMean_soil_0_20_clay = clay_seq, rollMean_soil_0_20_pH_H2O = ph_seq)
+grid$pred_bias <- predict(fit, grid)
+
+bias_matrix <- matrix(grid$pred_bias, nrow=50, ncol=50)
+
+# Render Plotly Surface directly
+plot_ly(x = clay_seq, y = ph_seq, z = bias_matrix, type = "surface", 
+        colorscale = "RdBu", cmin = -1.5, cmax = 1.5) %>%
+  layout(title = "Systematic Bias: v_CO2 - v_AAE10",
+         scene = list(
+           xaxis = list(title = "Clay %"),
+           yaxis = list(title = "pH (H2O)"),
+           zaxis = list(title = "Bias (CO2 - AAE10)")
+         ))
+```
+
+
+---
+
+## The Affine Morphism vs. Chemical Reality { .smaller }
+
+**The Mathematical Implication of the GRUD Matrices**
+Since we proved that both lookup tables are fundamentally affine maps targeting the identical output space ($v \in \mathbb{Q}$), equating them ($v_{CO2} = v_{AAE10}$) mathematically forces an affine morphism between the two extractions:
+
+$$ \alpha_1 P_{CO2} + \beta_1 \text{clay} + \gamma_1 = \alpha_2 P_{AAE10} + \beta_2 \text{clay} + \gamma_2 $$
+
+Solving for $P_{AAE10}$ yields a strict linear mapping:
+$$ P_{AAE10} = c_1 \cdot P_{CO2} + c_2 \cdot \text{clay} + c_3 $$
+
+**The Phenomenological Flaw**
+This affine morphism mathematically dictates that the two extractions are linearly interchangeable. But chemically, they measure entirely different phenomena:
+- **$P_{CO2}$** measures the immediately available concentration (**Intensity, $I$**).
+- **$P_{AAE10}$** measures a much larger, strongly bound pool (**Quantity, $Q$**).
+
+The true thermodynamic relationship between Quantity and Intensity is inherently non-linear (the Freundlich isotherm: $Q = K \cdot I^n$) and is heavily governed by **pH**. By forcing an affine bijection, the GRUD model entirely ignores the fact that at $pH > 7.3$, the EDTA chelator in AAE10 physically saturates from excess Calcium, causing the mathematical bijection to completely collapse.
+
+
+---
+
+## The Breakdown of Covariance: Calcareous Soils { .scrollable .smaller }
+
+**The Observable Phenomenon**
+We do not measure "True P". We measure the covariance between Intensity ($P_{CO2}$) and Quantity ($P_{AAE10}$). In non-calcareous soils (pH $\le$ 7.3), these two extractions co-vary predictably. However, when pH exceeds 7.3, this relationship violently breaks down: $P_{CO2}$ continues to extract a wide variance of phosphorus, while $P_{AAE10}$ collapses to near-zero.
+
+**The Chemical Mechanism**
+This collapse is not a deviation from some unmeasurable truth; it is a physical failure of the AAE10 method itself. AAE10 uses an ammonium acetate-EDTA buffer calibrated to pH 4.65. In highly calcareous soils, the massive presence of free $CaCO_3$ instantly neutralizes the acid buffer, and the flood of $Ca^{2+}$ ions physically saturates the EDTA chelator. The affine mathematical model forced by the GRUD completely ignores this chemical boundary.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-align: center
+#| fig-width: 14
+#| fig-height: 6
+
+D_plot <- D_Long_Agro |> 
+  filter(!is.na(soil_0_20_P_CO2) & !is.na(soil_0_20_P_AAE10) & !is.na(rollMean_soil_0_20_pH_H2O)) |>
+  mutate(is_high_ph = ifelse(rollMean_soil_0_20_pH_H2O > 7.3, "pH > 7.3 (Calcareous)", "pH <= 7.3"))
+
+ggplot(D_plot, aes(x = soil_0_20_P_CO2, y = soil_0_20_P_AAE10, color = rollMean_soil_0_20_pH_H2O)) +
+  geom_point(alpha = 0.6, size=2) +
+  scale_color_viridis_c(option = "magma", name = "Soil pH") +
+  geom_smooth(method="gam", color="blue", fill="blue", alpha=0.2) +
+  facet_wrap(~is_high_ph, scales="free_y") +
+  labs(
+    title = "The Breakdown of Covariance in Calcareous Soils",
+    subtitle = "Notice how the relationship collapses violently above pH 7.3",
+    x = "Phosphorus Intensity (CO2 Extraction, mg/L)",
+    y = "Phosphorus Quantity (AAE10 Extraction, mg/kg)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    legend.position = "bottom"
+  )
+```
+
+---
+
+## The Illusion of Precision: Analytical Noise { .smaller }
+
+The GRUD projects a false sense of administrative precision by forcing rigid class boundaries that the laboratory hardware itself cannot reliably support.
+
+**$P_{AAE10}$ Method Accuracy vs. Policy Boundaries**
+- **GRUD Bin Width:** 5.0 mg P/kg
+- **Lab Standard Deviation:** 1.0 mg P/kg (95% CI = $\pm$ 2.0 mg P/kg)
+- **The Reality:** The 95% confidence interval spans **4.0 mg P/kg**, consuming **80% of the entire classification bin**. A sample with a true value of 9.0 mg P/kg (Class C) could easily measure as 7.0 (Class C) or 11.0 (Class B) strictly due to photometer noise.
+
+**$P_{CO2}$ Method Accuracy vs. Policy Boundaries**
+- **GRUD Bin Width:** 0.31 mg P/kg (exactly 2.0 P-Testzahlen)
+- **Lab Standard Deviation:** up to ~0.36 Testzahlen (95% CI = $\pm$ 0.72 Testzahlen)
+- **The Reality:** The 95% confidence interval spans **~1.4 Testzahlen**, consuming **70% of the bin width**. 
+
+By imposing strict step-functions, the GRUD forces farmers over arbitrary fertilizer cliffs based on variance that is entirely within the margin of error of the photometer. A continuous mechanistic curve naturally absorbs this noise.
+

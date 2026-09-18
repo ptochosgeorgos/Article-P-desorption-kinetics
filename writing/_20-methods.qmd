@@ -25,7 +25,7 @@ To answer the research questions, the methodology is structured into three highl
 %| echo: false
 %| fig-align: center
 %| engine.opts:
-%|   extra.preamble: ["\\usetikzlibrary{shapes, shapes.geometric, shapes.3d, arrows.meta, positioning, fit, backgrounds, calc}"]
+%|   extra.preamble: ["\\usetikzlibrary{shapes, shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}"]
 
 \begin{tikzpicture}[
     font=\sffamily\small,

@@ -29,7 +29,7 @@ format:
     include-in-header:
       text: |
         \usepackage{tikz}
-        \usetikzlibrary{shapes, shapes.geometric, shapes.3d, arrows.meta, positioning, fit, backgrounds, calc}
+        \usetikzlibrary{shapes, shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
     geometry:
       - top=25mm
       - left=25mm
@@ -43,8 +43,7 @@ always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
-# Use TikZ device globally for R graphics, but we will protect the native {tikz} blocks
-knitr::opts_chunk$set(dev = "tikz")
+
 
 # Helper function for dual-target plotmath rendering
 tex_lab <- function(str) {

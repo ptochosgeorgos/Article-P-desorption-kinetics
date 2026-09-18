@@ -429,10 +429,15 @@ D_env$annual_P_bal_pred_CO2 <- D_env$P_up_norm * (D_env$M_class_CO2 - 1)
 D_env$annual_P_bal_pred_AAE10 <- D_env$P_up_norm * (D_env$M_class_AAE10 - 1)
 
 # For Heuristic and Mechanistic, predict the uptake from the fitted models
+mod_heur_U <- readRDS("../models/heur_uptake.rds")
+mod_mech_U <- readRDS("../models/mech_uptake.rds")
+
 pred_heur <- predict(mod_heur_U, newdata = D_env)
 pred_mech <- predict(mod_mech_U, newdata = D_env)
 D_env$annual_P_bal_pred_heur <- D_env$fert_P_tot - pred_heur[, 'Estimate']
 D_env$annual_P_bal_pred_mech <- D_env$fert_P_tot - pred_mech[, 'Estimate']
+
+rm(mod_heur_U, mod_mech_U); gc()
 
 # Aggregate cumulatively to 30-year balances per plot
 library(dplyr)

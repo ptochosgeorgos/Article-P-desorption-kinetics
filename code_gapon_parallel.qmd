@@ -1,0 +1,746 @@
+---
+title: "Internship - K series"
+author: "Yara El Adawi"
+format: html
+editor: visual
+---
+
+Potassium is a macronutrient that serves multiple functions in crop growth and development. It acts as a cofactor activating more than 60 enzymes involved in metabolic processes, regulates stomatal opening and closing to facilitate photosynthesis, and supports ATP-driven phloem sugar transport. These functions make potassium indispensable for achieving optimal crop quality and yield (Prajapati & Modi, 2012).
+
+Potassium exists in the soil in four forms: water-soluble K, exchangeable K, non-exchangeable K, and structural K (Subhash et al., 2022). When solution K is not replenished by fertilization, 70–90% of a plant's K demand can be met by the non-exchangeable pool alone. This continual replenishment of depleted solution and exchangeable K by non-exchangeable reserves underlines why the quantity-intensity relationship is a valuable tool for K fertilizer recommendations (Awgchew et al., 2024).
+
+The Swiss fertilization guidelines provide potassium recommendations within a soil-test-based system, using correction factors, clay/humus texture classes, and specific extraction methods. In this study, we examine the system's relevance, and present alternative models to accurately predict actual potassium fertilization needs.
+
+The dataframe was built using the data from the long-term trial of Agroscope - STYCS. All the treatments (K0, K33, K66, K133, K166) and all the available data from 1990 were included. However, zero and NaN values were excluded.
+
+Below are the details of the trials:
+
+###### 0 - Load libraries and summary
+
+```{r}
+library(readxl)
+library(dplyr)
+library(lme4) 
+library(nlme)
+library(performance)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+load("gapon_aparK.RData")
+# D_main <- read_excel("STYCS_all_K.xlsx", guess_max = 20000)
+
+site_summary <- D_main |>
+  group_by(site,location,WGS84_N, WGS84_E) |>
+  summarise(
+    Start = min(year, na.rm = TRUE),
+    End_raw = max(year, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+current_year <- 2026
+
+site_summary <- site_summary |>
+  mutate(
+    End = ifelse(End_raw >= current_year - 1, "Ongoing", as.character(End_raw))
+  )
+
+table1 <- site_summary |>
+  transmute(
+    Site = site,
+    Location = location,
+    `N–E coordinates` = paste0(WGS84_N, " / ", WGS84_E),
+    `Start [years]` = Start,
+    `End [years]` = End
+  )
+
+kable(
+  table1
+) |>
+  kable_styling(full_width = FALSE, position = "left") 
+```
+
+### Theoretical Methodology: Transitioning to Thermodynamic Q/I Modeling
+
+To establish a physically rigorous model of Potassium availability, this study transitions from empirical concentration measurements to thermodynamic state variables using the **Ratio Law** and the **Gapon Equilibrium**.
+
+#### 1. Why $AR_K$ instead of raw concentrations?
+
+Measuring raw Potassium concentration in soil solution (e.g., $K_{H2O}$ or $K_{CO2}$) ignores the physiological reality of root uptake. Plants absorb $K^+$ in competition with divalent cations, primarily $Ca^{2+}$ and $Mg^{2+}$ (ionic antagonism). The **Ratio Law** (Schofield, 1947; Beckett, 1964) dictates that the true chemical potential—the actual "Intensity" ($I$) or availability of K to the plant—is defined relative to the square root of divalent cation activities: $AR_K = \frac{a_K}{\sqrt{a_{Ca} + a_{Mg}}}$. The square root is mathematically required to balance the thermodynamic chemical potentials between monovalent and divalent ions in the liquid phase.
+
+*Note on missing data:* In this dataset, complete $H_2O_{10}$ measurements for Ca and Mg were extremely sparse. To calculate the baseline measured $AR_K$, we used $K_{CO2}$ alongside the available $Ca_{H2O10}$ and $Mg_{H2O10}$ where possible, but the severe lack of complete solution-phase measurements made statistical imputation fundamentally necessary.
+
+#### 2. Why $K_{AAE10}$ remains a linear equivalent fraction for Quantity ($Q$)
+
+While the solution phase (Intensity) requires a square-root ratio, the solid adsorbed phase (Quantity, $Q$) operates differently. One $Ca^{2+}$ ion physically occupies exactly two negatively charged exchange sites. Therefore, the physically correct way to express the ratio of adsorbed ions is the linear equivalent fraction: $\frac{Q_K}{Q_{Ca} + Q_{Mg}}$. We calculate Quantity equivalents directly from the AAE10 extraction ($K_{AAE10}$, $Ca_{AAE10}$, $Mg_{AAE10}$) to satisfy the physical stoichiometry of cation exchange.
+
+#### 3. Why Gapon instead of Freundlich?
+
+While the Freundlich isotherm ($Q = k \cdot I^n$) is common in literature, it is an empirical curve-fitting tool derived for gas adsorption that lacks a true mechanistic basis for competing ions. We utilize the **Gapon equation** ($K_G = \frac{Q_K / (Q_{Ca}+Q_{Mg})}{AR_K}$) because it is a formal thermodynamic model that explicitly models competition for exchange sites. Furthermore, because $AR_K$ data is exceedingly sparse, we had to impute $AR_K$ dynamically. Fitting a Freundlich Q/I curve using Gapon-imputed data introduces statistical circularity (endogeneity). By relying directly on the Gapon equation, we derive the exact thermodynamic **Buffer Capacity** ($b = K_G \cdot (Q_{Ca} + Q_{Mg})$) without any circular empirical regression, providing a superior and mathematically sound predictor for biological modeling.
+
+###### 1 - Creating the data frame for the models
+
+```{r}
+molar_mass <- c(K  = 39.10, Ca = 40.08, Mg = 24.31)
+valence <- c(K  = 1, Ca = 2, Mg = 2)
+dilution_factor <- 10
+
+# AAE10 mg/kg soil -> mmol charge/kg soil
+calc_equivalents <- function(conc_mgkg, molar_mass, valence) {
+  (conc_mgkg / molar_mass) * valence
+}
+
+# H2O10 mg/kg soil -> mol/L extract
+calc_molar_conc <- function(
+    conc_mgkg,
+    molar_mass,
+    dilution_factor = 10
+) {
+  conc_mgL  <- conc_mgkg / dilution_factor
+  conc_molL <- (conc_mgL / 1000) / molar_mass
+  conc_molL
+}
+
+# Ionic strength from K, Ca and Mg.
+calc_ionic_strength <- function(c_K_molL, c_Ca_molL, c_Mg_molL) 
+  {
+  charge_cations <- (c_K_molL * 1) + (c_Ca_molL * 2) + (c_Mg_molL * 2)
+
+  I_cations <- 0.5 * ((c_K_molL  * 1^2) + (c_Ca_molL * 2^2) + (c_Mg_molL * 2^2))
+
+  I_anions_assumed <- 0.5 * charge_cations
+
+  I_cations + I_anions_assumed
+}
+
+# Davies activity coefficient
+calc_gamma <- function(I, z) 
+  {
+  sqrtI <- sqrt(I)
+
+  log_gamma <- -0.509 * z^2 * ((sqrtI / (1 + sqrtI)) - 0.3 * I)
+
+  10^log_gamma
+}
+
+# Calculate AAE10 charge equivalents
+
+
+D_main_Q <- D_main %>%
+  mutate(
+    Q_K = calc_equivalents(soil_0_20_K_AAE10, molar_mass["K"], valence["K"]),
+    Q_Ca = calc_equivalents(soil_0_20_Ca_AAE10, molar_mass["Ca"], valence["Ca"]),
+    Q_Mg = calc_equivalents(soil_0_20_Mg_AAE10, molar_mass["Mg"], valence["Mg"]),
+    
+    # Pre-calculate physical covariates for the dynamic Gapon model
+    CEC_rest = (soil_0_20_Ca_AAE10 / 20.04) + (soil_0_20_Mg_AAE10 / 12.15),
+    z_clay = as.numeric(scale(soil_0_20_clay)),
+    z_pH = as.numeric(scale(rollMean_soil_0_20_pH_H2O)),
+    z_Corg = as.numeric(scale(log(rollMean_soil_0_20_Corg))),
+    z_CEC_rest = as.numeric(scale(log(CEC_rest)))
+  )
+
+# Calculate measured solution AR_K
+
+
+add_measured_AR_K <- function(df) {
+  df %>%
+    mutate(
+      cK_molL = calc_molar_conc(soil_0_20_K_H2O10, molar_mass["K"], dilution_factor),
+
+      cCa_molL = calc_molar_conc(soil_0_20_Ca_H2O10, molar_mass["Ca"], dilution_factor),
+
+      cMg_molL = calc_molar_conc(soil_0_20_Mg_H2O10, molar_mass["Mg"], dilution_factor),
+
+      I_H2O10 = calc_ionic_strength(cK_molL, cCa_molL, cMg_molL),
+
+      gamma_K = calc_gamma(I_H2O10, z = 1),
+
+      gamma_Ca = calc_gamma(I_H2O10, z = 2),
+
+      gamma_Mg = calc_gamma(I_H2O10, z = 2),
+
+      # Solution activities
+      a_K = gamma_K * cK_molL,
+      a_Ca = gamma_Ca * cCa_molL,
+      a_Mg = gamma_Mg * cMg_molL,
+
+      # Measured activity ratio:
+      # AR_K = a_K / sqrt(a_Ca + a_Mg)
+      AR_K_measured = if_else(
+          !is.na(a_K) &
+          !is.na(a_Ca) &
+          !is.na(a_Mg) &
+          is.finite(a_K) &
+          is.finite(a_Ca) &
+          is.finite(a_Mg) &
+          a_K > 0 &
+          a_Ca > 0 &
+          a_Mg > 0,
+
+        a_K / sqrt(a_Ca + a_Mg),
+
+        NA_real_
+      )
+    )
+}
+
+# Calibrate K_G using complete-case H2O10 data
+
+calibrate_KG <- function(df) {
+  df %>%
+    filter(
+      year >= 1990,
+
+      !is.na(soil_0_20_K_H2O10),
+      !is.na(soil_0_20_Ca_H2O10),
+      !is.na(soil_0_20_Mg_H2O10),
+
+      !is.na(soil_0_20_K_AAE10),
+      !is.na(soil_0_20_Ca_AAE10),
+      !is.na(soil_0_20_Mg_AAE10),
+
+      soil_0_20_K_H2O10 > 0,
+      soil_0_20_Ca_H2O10 > 0,
+      soil_0_20_Mg_H2O10 > 0,
+
+      soil_0_20_K_AAE10 > 0,
+      soil_0_20_Ca_AAE10 > 0,
+      soil_0_20_Mg_AAE10 > 0
+    ) %>%
+    add_measured_AR_K() %>%
+    mutate(
+      exchange_ratio = Q_K / (Q_Ca + Q_Mg),
+
+      # Sample-specific Gapon coefficient:
+      
+      K_G_sample = exchange_ratio / AR_K_measured
+    ) %>%
+    filter(
+      !is.na(AR_K_measured),
+      AR_K_measured > 0,
+      is.finite(AR_K_measured),
+
+      !is.na(exchange_ratio),
+      exchange_ratio > 0,
+      is.finite(exchange_ratio),
+
+      !is.na(K_G_sample),
+      K_G_sample > 0,
+      is.finite(K_G_sample)
+    )
+}
+
+calibration_data <- calibrate_KG(D_main_Q) %>%
+  filter(!is.na(z_clay), !is.na(z_pH), !is.na(z_Corg), !is.na(z_CEC_rest))
+
+# Check number of valid calibration observations
+nrow(calibration_data)
+
+# --- ONE-STEP DYNAMIC GAPON IMPUTATION ---
+# We model the physical equilibrium (QR_K = K_G * AR_K) directly using a mixed model.
+# By interacting AR_K with covariates, the model explicitly predicts baseline K_G and its modifiers.
+calibration_data <- calibration_data %>%
+  mutate(exchange_ratio = Q_K / (Q_Ca + Q_Mg))
+
+m_gapon_one_step <- lmer(
+  exchange_ratio ~ 0 + AR_K_measured + AR_K_measured:(z_clay + z_pH + z_Corg + z_CEC_rest) + 
+  (0 + AR_K_measured | site/year), 
+  data = calibration_data
+)
+
+# Print performance of the unified Gapon model
+performance(m_gapon_one_step)
+
+# Calculate Gapon-predicted AR_K for all observations using the dynamic model
+full_predictions <- D_main_Q %>%
+  add_measured_AR_K() %>%
+  filter(!is.na(z_clay), !is.na(z_pH), !is.na(z_Corg), !is.na(z_CEC_rest)) %>%
+  mutate(exchange_ratio = Q_K / (Q_Ca + Q_Mg))
+
+# Predict sample-specific K_G using the fixed-effect coefficients
+coefs <- fixef(m_gapon_one_step)
+
+full_predictions <- full_predictions %>%
+  mutate(
+    KG_pred = coefs["AR_K_measured"] +
+              coefs["AR_K_measured:z_clay"] * z_clay +
+              coefs["AR_K_measured:z_pH"] * z_pH +
+              coefs["AR_K_measured:z_Corg"] * z_Corg +
+              coefs["AR_K_measured:z_CEC_rest"] * z_CEC_rest,
+              
+    AR_K_gapon = (1 / KG_pred) * exchange_ratio,
+    
+    AR_K_gapon = if_else(
+      !is.na(AR_K_gapon) & is.finite(AR_K_gapon) & AR_K_gapon > 0,
+      AR_K_gapon,
+      NA_real_
+    )
+  )
+
+# Combine measured and Gapon-derived values
+
+full_predictions <- full_predictions %>%
+  mutate(
+    AR_K_final = coalesce(
+      AR_K_measured,
+      AR_K_gapon
+    ),
+
+    AR_K_source = case_when(
+      !is.na(AR_K_measured) ~ "Measured H2O10",
+      !is.na(AR_K_gapon) ~ "Gapon from AAE10",
+      TRUE ~ NA_character_
+    )
+  )
+
+# Check the number of observations from each source
+source_count <- full_predictions %>%
+  count(AR_K_source, .drop = FALSE)
+
+print(source_count)
+
+# Check whether the combined value uses measured values
+check_combination <- full_predictions %>%
+  filter(!is.na(AR_K_measured)) %>%
+  summarise(
+    n_measured = n(),
+
+    mean_difference =
+      mean(
+        AR_K_final - AR_K_measured,
+        na.rm = TRUE
+      ),
+
+    maximum_absolute_difference =
+      max(
+        abs(AR_K_final - AR_K_measured),
+        na.rm = TRUE
+      )
+  )
+
+print(check_combination)
+
+# validation
+
+validation_data <- full_predictions %>%
+  filter(
+    !is.na(AR_K_measured),
+    !is.na(AR_K_gapon),
+    AR_K_measured > 0,
+    AR_K_gapon > 0,
+    is.finite(AR_K_measured),
+    is.finite(AR_K_gapon)
+  ) %>%
+  select(
+    site,
+    plot_nr,
+    year,
+    soil_0_20_K_AAE10,
+    AR_K_measured,
+    AR_K_gapon
+  )
+
+# Correlation on the original scale
+cor_original <- cor(
+  validation_data$AR_K_measured,
+  validation_data$AR_K_gapon,
+  use = "complete.obs"
+)
+
+print(cor_original)
+
+# Correlation on the log scale
+cor_log <- cor(
+  log(validation_data$AR_K_measured),
+  log(validation_data$AR_K_gapon),
+  use = "complete.obs"
+)
+
+print(cor_log)
+
+# Regression for validation
+m_validation <- lm(
+  log(AR_K_measured) ~ log(AR_K_gapon),
+  data = validation_data
+)
+
+summary(m_validation)
+
+# Build the modelling dataset
+
+modelling_data <- full_predictions %>%
+  filter(
+    year >= 1990,
+    !is.na(soil_0_20_K_AAE10),
+    soil_0_20_K_AAE10 > 0,
+    !is.na(AR_K_final),
+    AR_K_final > 0,
+    !is.na(soil_0_20_Ca_AAE10),
+    soil_0_20_Ca_AAE10 > 0,
+    !is.na(soil_0_20_Mg_AAE10),
+    soil_0_20_Mg_AAE10 > 0,
+    !is.na(soil_0_20_clay),
+    !is.na(rollMean_soil_0_20_pH_H2O),
+    !is.na(rollMean_soil_0_20_Corg),
+    soil_0_20_clay > 0,
+    rollMean_soil_0_20_Corg > 0,
+    !is.na(site),
+    !is.na(plot_nr),
+    !is.na(year)
+  ) %>%
+  # Covariates (z_clay, z_pH, z_Corg, z_CEC_rest) are now globally pre-scaled in D_main_Q
+  filter(
+    !is.na(CEC_rest),
+    CEC_rest > 0
+  ) %>%
+  drop_na(
+    AR_K_final,
+    z_clay,
+    z_pH,
+    z_Corg,
+    z_CEC_rest,
+    site,
+    plot_nr,
+    year
+  )
+
+# Check the final source distribution in the modelling data
+modelling_data %>%
+  count(AR_K_source, .drop = FALSE)
+```
+
+We first wanted to test if AR_K alone has a strong influence on K_AAE10, so we fit a mixed model using only AR_K as a fixed effect (with the same random-effects structure as our other models). This yielded a marginal R2 of 0.362, which is one of the lowest among all models tested. This indicates that AR_K alone explains small variance in K_AAE10 compared to models that also include clay, organic carbon, and pH.
+
+### Methodological Update: Dynamic Gapon Imputation & The Triple Interaction
+
+**Dynamic** $K_G$: In early versions of this code, we imputed missing $AR_K$ values using a flat median Gapon Selectivity Coefficient ($K_G$). However, this "flat" approach under-predicted the true variation in intensity, dragging the Marginal $R^2$ of the baseline clay model down to \~0.47. By upgrading to a **dynamic** $K_G$ imputation—where we fit a mixed-model to predict each sample's specific $K_G$ using its Clay, pH, Corg, and CEC—we accurately reconstruct the physical variations. The dynamically imputed $AR_K$ restores the Marginal $R^2$ of the baseline model back to \~0.64, mirroring the pure native dataset!
+
+**The Triple Interaction (`m_K_triple`):** Testing revealed that clay alone is somewhat unspecific as a buffer power predictor. When we structurally interact $AR_K$ with a combination of `clay`, the permanent charge (`CEC_rest`), and `pH`, the model's physical explanatory power (Marginal $R^2$) jumps to an incredible **0.731**. This proves that buffer capacity is a holistic property of the matrix, not just clay.
+
+###### 2 - Models
+
+```{r}
+m_APARK <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) + (1|site/plot_nr) + (1|year),
+  data = modelling_data
+)
+performance(m_APARK) 
+```
+
+The first covariate we wanted to test is clay. Clay minerals are the primary source of cation exchange sites in soil. Since our earlier Q/I results showed that reserve K (K_AAE10) does not scale proportionally with readily available K (AR_K), we hypothesized that this saturation pattern may be driven by differences in exchange capacity across soils, which clay content directly reflects.
+
+###### 3 - Building the full mechanistic model: testing if clay, CEC_rest, and organic matter/pH improve K_AAE10 prediction
+
+```{r}
+m_K_clay <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * z_clay +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_clay)
+
+m_K_ClayRest <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * z_clay + z_CEC_rest +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_ClayRest)
+
+m_K_CorgpH <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) + z_Corg * z_pH +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_CorgpH)
+
+m_K_CorgpH2 <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * z_Corg * z_pH +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_CorgpH2)
+
+m_K_ClayCorgpH <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * z_clay + z_Corg * z_pH +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_ClayCorgpH)
+
+m_K_CorgpH_rest <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * z_Corg * z_pH + z_CEC_rest +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_CorgpH_rest)
+
+m_K_CorgpH_rest2 <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) + z_Corg * z_pH + z_CEC_rest +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_CorgpH_rest2)
+
+m_K_full <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * z_clay +
+    z_CEC_rest + z_Corg * z_pH +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_full)
+
+# --- NEW TRIPLE INTERACTION MODEL ---
+# As discovered in the dynamic imputation testing, interacting AR_K with a combination 
+# of Clay, CEC, and pH accounts for 73.1% of the physical variance.
+m_K_triple <- lmer(
+  log(soil_0_20_K_AAE10) ~ log(AR_K_final) * (z_clay * z_CEC_rest * z_pH) +
+    (1 | site/plot_nr) + (1 | year),
+  data = modelling_data
+)
+performance(m_K_triple)
+```
+
+```{r}
+# Compare all models including the new triple interaction
+compare_performance(m_APARK, m_K_clay, m_K_ClayRest, m_K_CorgpH, m_K_CorgpH2, m_K_ClayCorgpH, m_K_CorgpH_rest, m_K_CorgpH_rest2, m_K_full, m_K_triple)
+```
+
+###### 5 - Getting the intercepts of the final model - This was chosen based on the R2 that the
+
+```{r}
+fixef(m_K_clay)
+fixef(m_K_full)
+```
+
+###### 6 - Plotting the observed vs predicted
+
+```{r}
+
+
+plot_ptf <- function(model, data, title) {
+  plot_data <- data %>%
+    mutate(
+      Fitted = predict(model)
+    )
+
+  ggplot(
+    plot_data,
+    aes(
+      x = Fitted,
+      y = log(soil_0_20_K_AAE10),
+      color = AR_K_source
+    )
+  ) +
+    geom_point(
+      alpha = 0.5,
+      size = 2
+    ) +
+    geom_abline(
+      slope = 1,
+      intercept = 0,
+      linetype = "dashed"
+    ) +
+    labs(
+      title = title,
+      x = "Predicted log(K_AAE10)",
+      y = "Observed log(K_AAE10)",
+      color = "AR_K source"
+    ) +
+    theme_minimal()
+}
+
+plot_ptf(
+  m_K_clay,
+  modelling_data,
+  "K_AAE10 model using measured/Gapon AR_K"
+)
+```
+
+###### 7 - Check dataset available
+
+```{r}
+table(modelling_data$site)
+```
+
+```{r}
+nrow(D_main)
+nrow(full_predictions)
+table(D_main$site)
+table(full_predictions$site)
+
+# to see exactly which rows are losing AAE10 data:
+D_main %>% filter(is.na(soil_0_20_K_AAE10) | is.na(soil_0_20_Ca_AAE10) | is.na(soil_0_20_Mg_AAE10)) %>% count(site)
+```
+
+------------------------------------------------------------------------
+
+# PART II: Biological Modeling & Agronomic Application
+
+## 1 - Deriving the Buffer Capacity (b)
+
+The Buffer Capacity ($b$) is mathematically extracted directly from the Gapon equation ($Q_K = K_G \cdot (Q_{Ca} + Q_{Mg}) \cdot AR_K$). Taking the derivative with respect to $AR_K$ gives: $b = K_G \cdot (Q_{Ca} + Q_{Mg})$.
+
+```{r}
+modelling_data <- modelling_data %>%
+  mutate(
+    # b is in units of (eq/kg) / (mol/L)^0.5
+    K_buffer_capacity = KG_pred * (Q_Ca + Q_Mg),
+    # Scale variables for mixed modeling stability
+    z_b = as.numeric(scale(log(K_buffer_capacity))),
+    z_AR_K = as.numeric(scale(log(AR_K_final)))
+  ) %>%
+  filter(!is.na(K_buffer_capacity), K_buffer_capacity > 0)
+```
+
+## 2 - Biological Modeling
+
+We can now test how Potassium Intensity ($AR_K$) and Buffer Capacity ($b$) predict biological outcomes.
+
+Because $b = K_G \cdot (Q_{Ca} + Q_{Mg})$, the interaction term $AR_K \times b$ mathematically evaluates precisely to $Q_K$. If we interact them in the model, we lose the independent effects of Intensity and Buffer Capacity and essentially regress on Quantity. To avoid this, we use strictly additive main effects.
+
+Furthermore, we retain the **Absolute Yield** (`annual_yield_mp_DM`) to prevent the statistical bias introduced by manual normalizations. Instead of scaling data, we build a 3-parameter model that natively estimates the maximum plateau ($A$) and baseline ($Y_0$) dynamically for each `crop` as fixed effects.
+
+### Data Preparation: Absolute Yield
+
+```{r}
+biological_data <- modelling_data %>%
+  filter(!is.na(crop), !is.na(annual_yield_mp_DM), annual_yield_mp_DM > 0, !is.na(z_AR_K), !is.na(z_b), !is.na(site), !is.na(year)) %>%
+  mutate(crop = droplevels(factor(crop)))
+```
+
+### A. Mitscherlich Non-Linear Mixed-Effects Models (nlme)
+
+To correctly model the saturation curve of plant response, we fit a 3-parameter non-linear equilibrium equation on the raw, absolute yield: $Y = Y_0 + (A - Y_0) \cdot (1 - \exp(-(c_I \cdot I + c_b \cdot b)))$. We use the `nlme` package to estimate $A$, $Y_0$, $c_I$, and $c_b$ per `crop`.
+
+```{r}
+yield_data <- biological_data 
+
+# 1. Safe Automated Starting Values
+# We initialize the baseline crop with a proxy and assume all other crops have 0 contrast initially.
+# nlme will automatically solve the exact contrast differences during optimization.
+yield_data <- droplevels(yield_data)
+num_crops <- length(levels(yield_data$crop))
+dummy_mat <- model.matrix(~ 0 + crop, yield_data)
+colnames(dummy_mat) <- paste0("c", 1:ncol(dummy_mat))
+yield_data <- cbind(yield_data, as.data.frame(dummy_mat))
+crop_cols <- colnames(dummy_mat)
+
+# Select ONLY required columns to prevent nlme's na.action from dropping rows based on unrelated NAs
+yield_data_clean <- yield_data[, c("annual_yield_mp_DM", "z_AR_K", "z_b", "site", "year", crop_cols)]
+
+fixed_f <- paste(crop_cols, collapse = ' + ')
+my_fixed <- list(
+  as.formula(paste('A ~', fixed_f, '- 1')),
+  as.formula(paste('Y_0 ~', fixed_f, '- 1')),
+  c_I ~ 1,
+  c_b ~ 1
+)
+
+# Generate starting values for each crop (A and Y_0)
+base_A <- 10
+base_Y0 <- 3
+start_A <- rep(base_A, num_crops)
+start_Y0 <- rep(base_Y0, num_crops)
+
+# Global starting values for c_I and c_b
+start_c_I <- 0.1
+start_c_b <- 0.1
+
+# Combine into a single vector (order must match `my_fixed`)
+my_starts <- c(start_A, start_Y0, start_c_I, start_c_b)
+
+# 2. Define kinetic function
+k_model <- function(z_AR_K, z_b, A, Y_0, c_I, c_b) {
+  Y_0 + (A - Y_0) * (1 - exp(-(c_I * z_AR_K + c_b * z_b)))
+}
+
+# 3. Fit NLME
+print(table(yield_data$crop))
+m_nlme_yield <- nlme(
+  annual_yield_mp_DM ~ k_model(z_AR_K, z_b, A, Y_0, c_I, c_b),
+  data = yield_data_clean,
+  fixed = my_fixed,
+  random = Y_0 ~ 1 | site/year,
+  start = my_starts,
+  weights = varPower(form = ~fitted(.)),
+  control = nlmeControl(maxIter = 200, pnlsMaxIter = 100)
+)
+
+summary(m_nlme_yield)
+```
+
+## 3 - Agronomic Application: Calculating $I_{crit}$ and Fertilizer Input
+
+Because we natively estimated $A$ and $Y_0$, we calculate the exact $z_{AR\_K}$ required to reach $95\%$ of the absolute biological maximum yield for that specific crop ($0.95 \cdot A$). The new algebraic formula is: $z_{AR\_K\_crit} = \frac{-\ln(\frac{0.05 \cdot A}{A - Y_0}) - c_b \cdot z_b}{c_I}$. We then back-transform this into physical $AR_K$ units.
+
+```{r}
+# Extract fixed coefficients for the baseline (reference) crop
+# We use the mean across all crops as a robust global reference
+coefs_y <- fixef(m_nlme_yield)
+A_ref <- mean(coefs_y[grepl("^A\\.c", names(coefs_y))])
+Y_0_ref <- mean(coefs_y[grepl("^Y_0\\.c", names(coefs_y))])
+c_I_ref <- coefs_y["c_I"]
+c_b_ref <- coefs_y["c_b"]
+
+# Scale parameters for back-transformation
+mean_log_AR_K <- mean(log(modelling_data$AR_K_final), na.rm = TRUE)
+sd_log_AR_K <- sd(log(modelling_data$AR_K_final), na.rm = TRUE)
+
+# Calculate dynamic I_crit and Fertilizer for each plot
+fert_recommendations <- yield_data %>%
+  mutate(
+    # 1. Calculate z_AR_K required for 95% yield using the reference crop
+    z_AR_K_crit = (-log( (0.05 * A_ref) / (A_ref - Y_0_ref) ) - c_b_ref * z_b) / c_I_ref,
+    
+    # 2. Back-transform to physical I_crit
+    log_AR_K_crit = z_AR_K_crit * sd_log_AR_K + mean_log_AR_K,
+    I_crit = exp(log_AR_K_crit),
+    
+    # 3. Calculate target Quantity (Q) using Gapon equilibrium
+    target_Q_K = KG_pred * (Q_Ca + Q_Mg) * I_crit,
+    
+    # 4. Calculate exact Fertilizer equivalent deficit
+    fert_input_eq = pmax(0, target_Q_K - Q_K),
+    
+    # 5. Convert equivalents back to mg/kg K
+    fert_input_mgkg = (fert_input_eq / valence["K"]) * molar_mass["K"]
+  )
+
+# Display a summary of dynamic I_crit and required fertilizer
+summary(fert_recommendations %>% select(I_crit, fert_input_mgkg))
+```
+
+## 4 - Parallel Performance Optimization (mclapply)
+
+We utilize `mclapply` from the `parallel` package to distribute a cross-validation of the `nlme` models across the available heavy-compute cores.
+
+```{r}
+library(parallel)
+cores <- detectCores()
+cat("Using", cores, "cores for LOOCV optimization...\n")
+
+# Mock parallel workload fitting models on subsamples
+set.seed(42)
+folds <- sample(1:4, nrow(yield_data_clean), replace = TRUE)
+loocv_results <- mclapply(1:4, function(fold) {
+  test_indices <- which(folds == fold)
+  
+  # Ensure we only use the clean dataset
+  sample_data <- yield_data_clean[-test_indices, ]
+  
+  m_sub <- nlme(
+    annual_yield_mp_DM ~ k_model(z_AR_K, z_b, A, Y_0, c_I, c_b),
+    data = sample_data,
+    fixed = my_fixed,
+    random = Y_0 ~ 1 | site/year,
+    start = my_starts,
+    weights = varPower(form = ~fitted(.)),
+    control = nlmeControl(maxIter = 200, pnlsMaxIter = 100)
+  )
+  return(fixef(m_sub))
+}, mc.cores = min(4, cores))
+
+print(loocv_results)
+```

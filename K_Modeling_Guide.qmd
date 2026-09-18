@@ -1,0 +1,123 @@
+---
+title: "Potassium Buffering and Desorption Kinetics"
+subtitle: "Modeling Guide & Theoretical Framework"
+author: "Yara Ayman El Adawi & Marc Perez"
+date: today
+format:
+  html:
+    toc: true
+    theme: cosmo
+---
+
+# Introduction & Feedback on Your Questions
+
+Hi Yara,
+
+Great work so far. You are asking exactly the right statistical questions, and your instincts on the interaction terms are spot on. Before we dive into the physical chemistry, here are the direct answers to the questions from your email:
+
+### 1. Random Effects Structure
+You asked whether to use `(1|year/plot_nr)` or `(1|plot_nr) + (1|year)`. 
+You should rather use the crossed structure: **`(1 | plot_nr) + (1 | year)`**. 
+If you use `(1 | year/plot_nr)`, you are telling the model that plots are nested within years (meaning Plot 1 in 1990 is a different physical entity than Plot 1 in 1991). Because we are working with a long-term experiment where the plots are permanent, the crossed structure correctly accounts for the permanent spatial effect of the plot, independent of the overarching effect of the year. Since we have different sites I recommend to use **`(1 | site / plot_nr) + (1 | year)`** to account for this nested structure. It accounts for the fact that the sites differ in mother stone, and that the plots within the sites might have different initial K and that there is variation within the site        
+
+### 2. Covariates and Interaction Terms
+You were completely correct to switch from a main effect to the interaction term `log(K_CO2) * clay`. In the log-linearized Freundlich isotherm ($\log(Q) = \log(K_f) + \frac{1}{n}\log(I)$), testing the interaction is the only way to see if the covariate modifies the *slope* ($1/n$), which physically dictates the buffer capacity. A main effect alone would only shift the intercept.
+
+### 3. Using `emtrends`
+Your use of `emtrends` to evaluate the slope at the 10th, 50th, and 90th percentiles is excellent. It is the standard, statistically rigorous way to visualize interactions with continuous variables. Keep using that approach!
+
+***
+
+# Theoretical Framework: Coupled Equilibria
+
+Unlike Phosphorus, which precipitates or bonds covalently to specific oxide surfaces, Potassium ($K^+$) is a base cation. In soil, its availability is dominated by cation exchange on negatively charged clay minerals and organic matter. Because $K^+$ shares this finite Cation Exchange Capacity (CEC) predominantly with Calcium ($Ca^{2+}$) and Magnesium ($Mg^{2+}$), we cannot model its desorption using an isolated, simple Freundlich isotherm. We must account for the **coupled chemical equilibrium**.
+
+This document outlines the refined theoretical framework and the corresponding R code to model the Potassium Buffer Capacity rigorously.
+
+# 1. The Potassium Activity Ratio ($AR_K$)
+
+To handle the competitive equilibrium in the soil solution, we must transition from raw Intensity ($K_{CO_2}$) to the **Potassium Activity Ratio ($AR_K$)**, originally defined by Beckett (1964). 
+
+Because $Ca^{2+}$ and $Mg^{2+}$ behave similarly and dominate the exchange complex in most agricultural soils, the true thermodynamic "Intensity" of K is its activity relative to the square root of the activities of Ca and Mg:
+
+$$ AR_K = \frac{K_{CO_2}}{\sqrt{Ca_{CO_2} + Mg_{CO_2}}} $$
+
+*Note: Replace the $CO_2$ variables below with your exact dataframe column names.*
+
+```{r}
+#| eval: false
+# Calculate the Activity Ratio (Intensity proxy)
+# Ensure units are chemically consistent (e.g., mmol/L or equivalent activities)
+df$AR_K <- df$K_CO2 / sqrt(df$Ca_CO2 + df$Mg_CO2)
+```
+
+# 2. Modeling the Intercept (The CEC Proxy)
+
+In the log-linearized Freundlich isotherm ($\ln(Q) = \ln(K_f) + \frac{1}{n}\ln(I)$), the intercept $\ln(K_f)$ represents the baseline capacity of the soil. Since we already have Potassium ($K_{AAE10}$) on the left side of the equation as our Quantity ($Q$), we need a covariate that represents the **size of the remaining CEC bucket**.
+
+We can partition this into two physical components:
+
+### A. Permanent Charge ($CEC_{rest}$)
+This is the capacity currently occupied by the competing base cations. We calculate it using the equivalent weights of Calcium (20.04 g/eq) and Magnesium (12.15 g/eq):
+
+```{r}
+#| eval: false
+# Calculate remaining permanent capacity (Quantity proxy)
+df$CEC_rest <- (df$Ca_AAE10 / 20.04) + (df$Mg_AAE10 / 12.15)
+```
+
+### B. Variable Charge (Organic Matter)
+Organic matter provides pH-dependent CEC. As the soil pH increases, the carboxylic and phenolic functional groups on humic/fulvic acids deprotonate, exposing new negative binding sites. To model this correctly, we use an interaction term `log(Corg) * pH`. `log(Corg)` represents the total potential pool of organic sites, and `* pH` dictates the fraction of those sites that are active.
+
+# 3. Modeling the Slope (Buffer Power)
+
+The slope in the Freundlich isotherm ($1/n$) dictates how tightly the soil holds onto the nutrient (the Buffer Power). For Potassium, the slope is almost entirely dictated by **Clay**. 
+
+2:1 clay minerals (like illite) have "wedge sites" between their silica layers that perfectly fit the bare $K^+$ ion but are too small for hydrated $Ca^{2+}$ or $Mg^{2+}$. Therefore, as clay content increases, the number of highly specific K-binding sites skyrockets. We model this by allowing clay to interact with the Intensity term.
+
+# 4. The Final Linear Mixed-Effects Model
+
+Putting the thermodynamics together, our final `lmer` model looks like this:
+
+```{r}
+#| eval: false
+library(lme4)
+
+# The Full Mechanistic Model
+m_K_final <- lmer(
+    log(K_AAE10) ~
+        # 1. The Slope Modifier (Buffer Power driven by specific clay sites)
+        log(AR_K) * clay +
+
+        # 2. The Intercept Modifiers (Baseline CEC capacity)
+        log(CEC_rest) + log(Corg) * pH +
+
+        # 3. The Random Effects (Crossed structure for long-term permanent plots)
+        (1 | plot_nr) + (1 | year),
+    data = df
+)
+
+summary(m_K_final)
+```
+
+# 5. Visualizing the Clay Interaction
+
+To visualize how the slope ($1/n$) changes with clay content, we use the `emtrends` function to evaluate the model at specific percentiles (e.g., 10th, 50th, and 90th percentiles of clay). This is the most statistically rigorous way to visualize continuous interactions.
+
+```{r}
+#| eval: false
+library(emmeans)
+
+# Calculate percentiles for clay
+clay_q <- quantile(df$clay, probs = c(0.1, 0.5, 0.9), na.rm = TRUE)
+
+# Calculate estimated marginal trends for the slope
+k_trends <- emtrends(
+    m_K_final,
+    ~clay,
+    var = "log(AR_K)",
+    at = list(clay = clay_q)
+)
+
+print(k_trends)
+```

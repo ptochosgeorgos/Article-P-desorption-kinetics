@@ -1,0 +1,419 @@
+---
+title: "Bayesian Phosphorus Yield Modeling"
+author: "Antigravity Agent"
+format: html
+---
+
+## Setup and Data Loading
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(brms)
+
+# Create models directory if it doesn't exist
+if (!dir.exists("models")) {
+  dir.create("models")
+}
+
+# Load the prepared dataset
+D_Yield <- readRDS("models/D_Yield.rds")
+
+# Remove rows with NA in the crucial predictors
+d_brms <- D_Yield |>
+  filter(!is.na(total_yield),
+         !is.na(soil_0_20_P_AAE10),
+         !is.na(soil_0_20_P_CO2),
+         !is.na(a_CO2_total_mg_L),
+         !is.na(z_inv_b),
+         !is.na(z_inv_b_cons),
+         !is.na(z_fert_N),
+         !is.na(z_Temp_Mean),
+         !is.na(z_Prec_Anom),
+         !is.na(crop),
+         !is.na(site),
+         !is.na(year)) |>
+  # Crop factor is necessary for brms group-level effects
+  mutate(crop = as.factor(crop),
+         site = as.factor(site),
+         year = as.factor(year))
+```
+
+## Define Priors and Configuration
+
+We use biological bounds to prevent the frequentist singularities (D -> infinity, c -> 0).
+
+```{r priors}
+# Common priors for the three Yield models
+bprior_yield <- c(
+  prior(normal(50, 50), nlpar = "Y0", lb = 0),     
+  prior(normal(100, 50), nlpar = "A", lb = 0),     
+  prior(lognormal(-2, 2), nlpar = "cbase", lb = 0), 
+  prior(normal(0, 1), nlpar = "betainvb"),
+  prior(normal(0, 1), nlpar = "betaN"),
+  prior(normal(0, 1), nlpar = "betaTemp"),
+  prior(normal(0, 1), nlpar = "betaPrec")
+)
+
+# Priors for the Uptake model (Michaelis-Menten)
+bprior_uptake <- c(
+  prior(normal(30, 15), nlpar = "Vmax", lb = 0),
+  prior(lognormal(1, 1), nlpar = "Kbase", lb = 0),
+  prior(normal(0, 1), nlpar = "betainvb"),
+  prior(normal(0, 1), nlpar = "betaN"),
+  prior(normal(0, 1), nlpar = "betaTemp"),
+  prior(normal(0, 1), nlpar = "betaPrec")
+)
+
+# Priors for the CP model (Mitscherlich)
+bprior_cp <- c(
+  prior(normal(1.5, 1), nlpar = "Cmin", lb = 0),
+  prior(normal(2.0, 1.5), nlpar = "DeltaC", lb = 0),
+  prior(lognormal(-2, 2), nlpar = "cbase", lb = 0),
+  prior(normal(0, 1), nlpar = "betainvb"),
+  prior(normal(0, 1), nlpar = "betaTemp"),
+  prior(normal(0, 1), nlpar = "betaPrec")
+)
+
+# HMC Sampling config
+sampling_iter <- 2000
+sampling_chains <- 4
+sampling_cores <- 4 
+```
+
+## Model 1: Empirical Quantity ($P_{\text{AAE10}}$)
+
+```{r fit-aae10}
+bform_aae <- bf(
+  total_yield ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b_cons + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom) * soil_0_20_P_AAE10))),
+  Y0 ~ crop - 1 + (1 | site/year),
+  A ~ crop - 1 + (1 | site/year),
+  cbase ~ crop - 1,
+  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+# Fit model (uses cmdstanr or rstan backend natively if configured, we just run brm)
+m_brms_raw_aae <- brm(
+  formula = bform_aae,
+  data = d_brms,
+  prior = bprior_yield,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_yield_raw_aae"
+)
+
+metrics_file_1 <- "models/brms_yield_raw_aae_metrics.rds"
+if (!file.exists(metrics_file_1)) {
+  r2 <- bayes_R2(m_brms_raw_aae, re_formula = NA)
+  saveRDS(r2, metrics_file_1)
+}
+
+rm(m_brms_raw_aae)
+gc()
+```
+
+## Model 2: Empirical Intensity ($P_{\text{CO}_2}$)
+
+```{r fit-co2}
+bform_co2 <- bf(
+  total_yield ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom) * soil_0_20_P_CO2))),
+  Y0 ~ crop - 1 + (1 | site/year),
+  A ~ crop - 1 + (1 | site/year),
+  cbase ~ crop - 1,
+  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_raw_co2 <- brm(
+  formula = bform_co2,
+  data = d_brms,
+  prior = bprior_yield,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_yield_raw_co2"
+)
+
+metrics_file_2 <- "models/brms_yield_raw_co2_metrics.rds"
+if (!file.exists(metrics_file_2)) {
+  r2 <- bayes_R2(m_brms_raw_co2, re_formula = NA)
+  saveRDS(r2, metrics_file_2)
+}
+
+rm(m_brms_raw_co2)
+gc()
+```
+
+## Model 3: Thermodynamic Activity ($a_{\text{CO}_2}$)
+
+```{r fit-thm}
+bform_thm <- bf(
+  total_yield ~ Y0 + (A - Y0) * (1 - exp(-(cbase * exp(betainvb * z_inv_b + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom) * a_CO2_total_mg_L))),
+  Y0 ~ crop - 1 + (1 | site/year),
+  A ~ crop - 1 + (1 | site/year),
+  cbase ~ crop - 1,
+  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_thm_co2 <- brm(
+  formula = bform_thm,
+  data = d_brms,
+  prior = bprior_yield,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_yield_thm_co2"
+)
+
+metrics_file_3 <- "models/brms_yield_thm_co2_metrics.rds"
+if (!file.exists(metrics_file_3)) {
+  r2 <- bayes_R2(m_brms_thm_co2, re_formula = NA)
+  saveRDS(r2, metrics_file_3)
+}
+
+rm(m_brms_thm_co2)
+gc()
+```
+
+## Phosphorus Uptake ($P_{\text{uptake}}$) Models
+
+### Model 4: Uptake vs Empirical Quantity ($P_{\text{AAE10}}$)
+```{r fit-uptake-aae}
+bform_uptake_aae <- bf(
+  annual_P_uptake ~ (Vmax * soil_0_20_P_AAE10) / ((Kbase * exp(betainvb * z_inv_b_cons + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) + soil_0_20_P_AAE10),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_uptake_aae <- brm(
+  formula = bform_uptake_aae,
+  data = d_brms,
+  prior = bprior_uptake,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_uptake_raw_aae"
+)
+
+metrics_file_4 <- "models/brms_uptake_raw_aae_metrics.rds"
+if (!file.exists(metrics_file_4)) {
+  r2 <- bayes_R2(m_brms_uptake_aae, re_formula = NA)
+  saveRDS(r2, metrics_file_4)
+}
+
+rm(m_brms_uptake_aae)
+gc()
+```
+
+### Model 5: Uptake vs Empirical Intensity ($P_{\text{CO}_2}$)
+```{r fit-uptake-co2}
+bform_uptake_co2 <- bf(
+  annual_P_uptake ~ (Vmax * soil_0_20_P_CO2) / ((Kbase * exp(betainvb * z_inv_b_cons + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) + soil_0_20_P_CO2),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_uptake_co2 <- brm(
+  formula = bform_uptake_co2,
+  data = d_brms,
+  prior = bprior_uptake,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_uptake_raw_co2"
+)
+
+metrics_file_5 <- "models/brms_uptake_raw_co2_metrics.rds"
+if (!file.exists(metrics_file_5)) {
+  r2 <- bayes_R2(m_brms_uptake_co2, re_formula = NA)
+  saveRDS(r2, metrics_file_5)
+}
+
+rm(m_brms_uptake_co2)
+gc()
+```
+
+### Model 6: Uptake vs Thermodynamic Activity ($a_{\text{CO}_2}$)
+```{r fit-uptake-thm}
+bform_uptake_thm <- bf(
+  annual_P_uptake ~ (Vmax * a_CO2_total_mg_L) / ((Kbase * exp(betainvb * z_inv_b_cons + betaN * z_fert_N + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) + a_CO2_total_mg_L),
+  Vmax ~ crop - 1 + (1 | site/year),
+  Kbase ~ crop - 1,
+  betainvb + betaN + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_uptake_thm <- brm(
+  formula = bform_uptake_thm,
+  data = d_brms,
+  prior = bprior_uptake,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_uptake_thm_co2"
+)
+
+metrics_file_6 <- "models/brms_uptake_thm_co2_metrics.rds"
+if (!file.exists(metrics_file_6)) {
+  r2 <- bayes_R2(m_brms_uptake_thm, re_formula = NA)
+  saveRDS(r2, metrics_file_6)
+}
+
+rm(m_brms_uptake_thm)
+gc()
+```
+
+
+## Critical P Concentration ($C_P$) Models
+
+```{r setup-cp}
+d_brms_cp <- d_brms |> 
+  mutate(C_P = annual_P_uptake / annual_yield_mp_DM) |> 
+  filter(is.finite(C_P), C_P > 0)
+```
+
+### Model 7: CP vs Empirical Quantity ($P_{\text{AAE10}}$)
+```{r fit-cp-aae}
+bform_cp_aae <- bf(
+  C_P ~ Cmin + DeltaC * (1 - exp(-(cbase * exp(betainvb * z_inv_b_cons + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) * soil_0_20_P_AAE10)),
+  Cmin ~ crop - 1 + (1 | site/year),
+  DeltaC ~ crop - 1 + (1 | site/year),
+  cbase ~ crop - 1,
+  betainvb + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_cp_aae <- brm(
+  formula = bform_cp_aae,
+  data = d_brms_cp,
+  prior = bprior_cp,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_cp_raw_aae"
+)
+
+metrics_file_7 <- "models/brms_cp_raw_aae_metrics.rds"
+if (!file.exists(metrics_file_7)) {
+  r2 <- bayes_R2(m_brms_cp_aae, re_formula = NA)
+  saveRDS(r2, metrics_file_7)
+}
+
+rm(m_brms_cp_aae)
+gc()
+```
+
+### Model 8: CP vs Empirical Intensity ($P_{\text{CO}_2}$)
+```{r fit-cp-co2}
+bform_cp_co2 <- bf(
+  C_P ~ Cmin + DeltaC * (1 - exp(-(cbase * exp(betainvb * z_inv_b_cons + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) * soil_0_20_P_CO2)),
+  Cmin ~ crop - 1 + (1 | site/year),
+  DeltaC ~ crop - 1 + (1 | site/year),
+  cbase ~ crop - 1,
+  betainvb + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_cp_co2 <- brm(
+  formula = bform_cp_co2,
+  data = d_brms_cp,
+  prior = bprior_cp,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_cp_raw_co2"
+)
+
+metrics_file_8 <- "models/brms_cp_raw_co2_metrics.rds"
+if (!file.exists(metrics_file_8)) {
+  r2 <- bayes_R2(m_brms_cp_co2, re_formula = NA)
+  saveRDS(r2, metrics_file_8)
+}
+
+rm(m_brms_cp_co2)
+gc()
+```
+
+### Model 9: CP vs Thermodynamic Activity ($a_{\text{CO}_2}$)
+```{r fit-cp-thm}
+bform_cp_thm <- bf(
+  C_P ~ Cmin + DeltaC * (1 - exp(-(cbase * exp(betainvb * z_inv_b_cons + betaTemp * z_Temp_Mean + betaPrec * z_Prec_Anom)) * a_CO2_total_mg_L)),
+  Cmin ~ crop - 1 + (1 | site/year),
+  DeltaC ~ crop - 1 + (1 | site/year),
+  cbase ~ crop - 1,
+  betainvb + betaTemp + betaPrec ~ 1,
+  nl = TRUE
+)
+
+m_brms_cp_thm <- brm(
+  formula = bform_cp_thm,
+  data = d_brms_cp,
+  prior = bprior_cp,
+  family = gaussian(),
+  backend = "cmdstanr",
+  threads = threading(2),
+  chains = sampling_chains, 
+  cores = sampling_cores, 
+  iter = sampling_iter,
+  control = list(adapt_delta = 0.95),
+  seed = 42,
+  file = "models/brms_cp_thm_co2"
+)
+
+metrics_file_9 <- "models/brms_cp_thm_co2_metrics.rds"
+if (!file.exists(metrics_file_9)) {
+  r2 <- bayes_R2(m_brms_cp_thm, re_formula = NA)
+  saveRDS(r2, metrics_file_9)
+}
+
+rm(m_brms_cp_thm)
+gc()
+```
+
+All 9 models have been sequentially compiled, sampled, cached, and flushed from memory!

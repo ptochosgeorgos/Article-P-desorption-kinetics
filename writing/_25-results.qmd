@@ -15,8 +15,8 @@ suppressPackageStartupMessages({
 })
 
 # Load cluster results payload
-res <- readRDS("../data/cluster_results.rds")
-\n
+res <- readRDS("data/cluster_results.rds")
+```
 
 ## The Blind Spot of Empirical Soil Tests
 
@@ -30,12 +30,13 @@ Ultimately, there appears to be no distinct connection between empirical STP mea
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 10
-#| fig-height: 12
+#| fig-width: 8
+#| fig-height: 10
+#| dev: pdf
 #| fig-cap: "Distribution of long-term P balance across standard empirical tests ($P_{CO_2}$, $P_{AAE10}$) versus physical desorption kinetics (Buffer capacity $b$, Diffusion proxy $1/b$, and Desorption rate $k$). Red indicates a positive P balance (surplus), while green indicates a negative P balance (deficit). Note the lack of correlation between the empirical 'stock' and the physical 'flow' properties."
 #| label: fig-kinetic-vs-empirical
 
-D_Yield <- readRDS("../models/D_Yield.rds")
+D_Yield <- readRDS("models/D_Yield.rds")
 
 d_plot <- D_Yield %>%
   select(site, plot_nr, year, inv_b_cons, k, soil_0_20_P_CO2, soil_0_20_P_AAE10, annual_P_balance) %>%
@@ -97,8 +98,9 @@ When evaluating predictive performance, it is important to strictly distinguish 
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 10
-#| fig-height: 8
+#| fig-width: 8
+#| fig-height: 6
+#| dev: pdf
 #| fig-cap: "Total Yield versus Annual P Uptake grouped by crop type. The polynomial trend lines highlight the non-linear decoupling of yield from uptake at higher availability levels, driven by fluctuating internal plant P concentrations ($C_P$)."
 #| label: fig-yield-vs-uptake
 
@@ -121,12 +123,12 @@ To evaluate whether thermodynamic kinetic parameters offer an advantage over emp
 
 | Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
 |:---|:---|:---|---:|---:|---:|---:|---:|
-| **Base Model CO2** | `Supply_class_CO2` | *(None)* | 12.36 | - | [TBD] | 79255 | 130.6 |
-| **Base Model AAE10** | `Supply_class_AAE10` | *(None)* | 12.34 | - | [TBD] | 79218 | [TBD] |
+| **Base Model CO2** | Supply_class_CO2 | *(None)* | 12.36 | - | [TBD] | 79255 | 130.6 |
+| **Base Model AAE10** | Supply_class_AAE10 | *(None)* | 12.34 | - | [TBD] | 79218 | [TBD] |
 | **Null Model** | $P_{CO_2}$ | *(None)* | 11.50 | - | [TBD] | 77999 | 231.4 |
-| **Heuristic CO2** | $P_{CO_2}$ | `pH, Clay, Corg, Ca, Temp, Prec` | 10.56 | 0.701 | 0.929 | 77721 | 1104.8 |
-| **Heuristic AAE10** | $P_{AAE10}$ | `pH, Clay, Corg, Ca, Temp, Prec` | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
-| **Mechanistic** | $P_{CO_2}$ | `1/b, k, N, Temp, Prec` | 10.72 | 0.701 | 0.931 | 76635 | 247.2 |
+| **Heuristic CO2** | $P_{CO_2}$ | pH, Clay, Corg, Ca, Temp, Prec | 10.56 | 0.701 | 0.929 | 77721 | 1104.8 |
+| **Heuristic AAE10** | $P_{AAE10}$ | pH, Clay, Corg, Ca, Temp, Prec | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| **Mechanistic** | $P_{CO_2}$ | 1/b, k, N, Temp, Prec | 10.72 | 0.701 | 0.931 | 76635 | 247.2 |
 
 While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
 
@@ -145,7 +147,7 @@ To evaluate true predictive power, we relied on the Expected Log Predictive Dens
 library(ggplot2)
 library(dplyr)
 
-res <- readRDS("../data/cluster_results.rds")
+res <- readRDS("data/cluster_results.rds")
 
 # Extract LOO comparison
 comp_df <- as.data.frame(res$yield$comparison)
@@ -178,6 +180,7 @@ ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
 #| fig-cap: "Conditional effects of $P_{CO_2}$ substrate on predicted yield across crops. The Mechanistic model (blue) produces constrained asymptotic responses bounded by physical desorption parameters. The Heuristic model (orange) demonstrates massive uncertainty and flat average responses, indicating that its predictive power was inappropriately shifted to pedoclimatic covariates."
 #| warning: false
 #| message: false
+#| dev: pdf
 
 # Extract conditional effects
 d_null <- res$yield$plot_data$null
@@ -210,12 +213,12 @@ We repeated the identical model hierarchy to predict total plant phosphorus upta
 
 | Model | Substrate | $K_{base}$ Modulators | RMSE | $R^2_{Marg}$ | $R^2_{Cond}$ | LOOIC | $p_{loo}$ |
 |:---|:---|:---|---:|---:|---:|---:|---:|
-| **Base Model CO2** | `Supply_class_CO2` | *(None)* | 0.69 | [TBD] | [TBD] | 21539 | 118.9 |
-| **Base Model AAE10** | `Supply_class_AAE10` | *(None)* | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| **Base Model CO2** | Supply_class_CO2 | *(None)* | 0.69 | [TBD] | [TBD] | 21539 | 118.9 |
+| **Base Model AAE10** | Supply_class_AAE10 | *(None)* | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
 | **Null Model** | $P_{CO_2}$ | *(None)* | 0.64 | [TBD] | [TBD] | 20052 | 144.3 |
-| **Heuristic CO2** | $P_{CO_2}$ | `pH, Clay, Corg, Ca, Temp, Prec` | 0.62 | 0.540 | 0.791 | 19374 | 163.2 |
-| **Heuristic AAE10** | $P_{AAE10}$ | `pH, Clay, Corg, Ca, Temp, Prec` | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
-| **Mechanistic** | $P_{CO_2}$ | `1/b, k, N, Temp, Prec` | 0.63 | 0.534 | 0.782 | 19819 | 160.7 |
+| **Heuristic CO2** | $P_{CO_2}$ | pH, Clay, Corg, Ca, Temp, Prec | 0.62 | 0.540 | 0.791 | 19374 | 163.2 |
+| **Heuristic AAE10** | $P_{AAE10}$ | pH, Clay, Corg, Ca, Temp, Prec | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| **Mechanistic** | $P_{CO_2}$ | 1/b, k, N, Temp, Prec | 0.63 | 0.534 | 0.782 | 19819 | 160.7 |
 
 In a stark divergence from the yield models, the Heuristic $CO_2$ model demonstrated the highest predictive power both in-sample (RMSE = 0.62) and out-of-sample (LOOIC = 19374). 
 
@@ -230,7 +233,7 @@ This phenomenological divergence is biologically consistent. While absolute dry 
 #| message: false
 
 library(ggplot2)
-res <- readRDS("../data/cluster_results.rds")
+res <- readRDS("data/cluster_results.rds")
 
 comp_df <- as.data.frame(res$uptake$comparison)
 comp_df$Model <- rownames(comp_df)
@@ -255,6 +258,7 @@ ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
 #| fig-cap: "Conditional effects of substrate on P-Uptake. Because the pedoclimatic covariates capture true signal for P-acquisition, the Heuristic model produces stable, physically meaningful response curves without hallucinating."
 #| warning: false
 #| message: false
+#| dev: pdf
 
 d_null <- res$uptake$plot_data$null
 d_heur <- res$uptake$plot_data$heur
@@ -289,15 +293,15 @@ To fully understand *why* the pedoclimatic covariates induce severe overfitting 
 
 library(ggplot2)
 library(dplyr)
-res <- readRDS("../data/cluster_results.rds")
+res <- readRDS("data/cluster_results.rds")
 
 extract_covariates <- function(df, model_name, response_name) {
   rn <- rownames(df)
-  cov_idx <- grep("^b_k_(pH|clay|Corg|Ca|temp_anom|prec_anom|b|k|N_total)", rn)
+  cov_idx <- grep("^beta", rn)
   if(length(cov_idx) > 0) {
     sub_df <- df[cov_idx, ]
     sub_df$Parameter <- rn[cov_idx]
-    sub_df$Parameter <- gsub("^b_k_", "", sub_df$Parameter)
+    sub_df$Parameter <- gsub("^beta|_Intercept", "", sub_df$Parameter)
     sub_df$Model <- model_name
     sub_df$Response <- response_name
     return(sub_df)
@@ -313,11 +317,11 @@ df_up_h <- extract_covariates(res$uptake$parameters$heur, "Heuristic CO2", "Upta
 d_plot <- bind_rows(df_yu_m, df_yu_h, df_up_m, df_up_h)
 
 # Clean parameter names
-d_plot$Parameter[d_plot$Parameter == "temp_anom"] <- "Temperature"
-d_plot$Parameter[d_plot$Parameter == "prec_anom"] <- "Precipitation"
-d_plot$Parameter[d_plot$Parameter == "Corg"] <- "C_org"
-d_plot$Parameter[d_plot$Parameter == "N_total"] <- "Nitrogen"
-d_plot$Parameter[d_plot$Parameter == "b"] <- "1/b (Buffer)"
+d_plot$Parameter[d_plot$Parameter == "Temp"] <- "Temperature"
+d_plot$Parameter[d_plot$Parameter == "Prec"] <- "Precipitation"
+d_plot$Parameter[d_plot$Parameter == "Corg"] <- "$C_{org}$"
+d_plot$Parameter[d_plot$Parameter == "N"] <- "Nitrogen"
+d_plot$Parameter[d_plot$Parameter == "invb"] <- "1/b (Buffer)"
 d_plot$Parameter[d_plot$Parameter == "k"] <- "k (Desorption)"
 
 ggplot(d_plot, aes(x = Estimate, y = Parameter, color = Model)) +
@@ -328,6 +332,6 @@ ggplot(d_plot, aes(x = Estimate, y = Parameter, color = Model)) +
   facet_wrap(~Response, scales = "free_x") +
   theme_bw(base_size = 12) +
   scale_color_manual(values = c("Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
-  labs(x = "Effect Size on Base Availability (95% CI)", y = "Covariate Modifier") +
+  labs(x = "Effect Size on Base Availability (95\\% CI)", y = "Covariate Modifier") +
   theme(legend.position = "bottom")
 ```

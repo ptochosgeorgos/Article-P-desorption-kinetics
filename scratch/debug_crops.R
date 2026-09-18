@@ -1,0 +1,5 @@
+source("scratch/purl_data_only.R", echo=FALSE)
+cat("Distribution of crops:\n")
+print(table(D_Long_Agro$crop))
+cat("\nDistribution of crops by site:\n")
+print(table(D_Long_Agro$crop, D_Long_Agro$site))
