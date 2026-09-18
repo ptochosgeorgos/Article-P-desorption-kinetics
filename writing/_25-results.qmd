@@ -30,9 +30,8 @@ Ultimately, there appears to be no distinct connection between empirical STP mea
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 8
-#| fig-height: 10
-#| dev: pdf
+#| fig-width: 6
+#| fig-height: 9
 #| fig-cap: "Distribution of long-term P balance across standard empirical tests ($P_{CO_2}$, $P_{AAE10}$) versus physical desorption kinetics (Buffer capacity $b$, Diffusion proxy $1/b$, and Desorption rate $k$). Red indicates a positive P balance (surplus), while green indicates a negative P balance (deficit). Note the lack of correlation between the empirical 'stock' and the physical 'flow' properties."
 #| label: fig-kinetic-vs-empirical
 
@@ -98,9 +97,8 @@ When evaluating predictive performance, it is important to strictly distinguish 
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-width: 8
-#| fig-height: 6
-#| dev: pdf
+#| fig-width: 6
+#| fig-height: 4.5
 #| fig-cap: "Total Yield versus Annual P Uptake grouped by crop type. The polynomial trend lines highlight the non-linear decoupling of yield from uptake at higher availability levels, driven by fluctuating internal plant P concentrations ($C_P$)."
 #| label: fig-yield-vs-uptake
 
@@ -143,6 +141,8 @@ To evaluate true predictive power, we relied on the Expected Log Predictive Dens
 #| fig-cap: "Out-of-Sample Predictive Performance (LOO) of yield models relative to the best model. Error bars represent $\\pm 2$ standard errors of the ELPD difference."
 #| warning: false
 #| message: false
+#| fig-width: 6
+#| fig-height: 4.5
 
 library(ggplot2)
 library(dplyr)
@@ -180,7 +180,8 @@ ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
 #| fig-cap: "Conditional effects of $P_{CO_2}$ substrate on predicted yield across crops. The Mechanistic model (blue) produces constrained asymptotic responses bounded by physical desorption parameters. The Heuristic model (orange) demonstrates massive uncertainty and flat average responses, indicating that its predictive power was inappropriately shifted to pedoclimatic covariates."
 #| warning: false
 #| message: false
-#| dev: pdf
+#| fig-width: 6
+#| fig-height: 4.5
 
 # Extract conditional effects
 d_null <- res$yield$plot_data$null
@@ -258,7 +259,8 @@ ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
 #| fig-cap: "Conditional effects of substrate on P-Uptake. Because the pedoclimatic covariates capture true signal for P-acquisition, the Heuristic model produces stable, physically meaningful response curves without hallucinating."
 #| warning: false
 #| message: false
-#| dev: pdf
+#| fig-width: 6
+#| fig-height: 4.5
 
 d_null <- res$uptake$plot_data$null
 d_heur <- res$uptake$plot_data$heur
@@ -288,8 +290,8 @@ To fully understand *why* the pedoclimatic covariates induce severe overfitting 
 #| fig-cap: "Forest plot of estimated covariate modifiers on base P availability ($K_{base}$) for both Yield and P-Uptake. The Heuristic model's reliance on soil pH, clay, and organic carbon to predict yield exhibits massive uncertainty (wide 95% CIs) and instability, characteristic of overfitting. In contrast, the effects on P-Uptake are tightly constrained and biologically meaningful."
 #| warning: false
 #| message: false
-#| fig-width: 8
-#| fig-height: 5
+#| fig-width: 6
+#| fig-height: 4
 
 library(ggplot2)
 library(dplyr)
@@ -319,7 +321,7 @@ d_plot <- bind_rows(df_yu_m, df_yu_h, df_up_m, df_up_h)
 # Clean parameter names
 d_plot$Parameter[d_plot$Parameter == "Temp"] <- "Temperature"
 d_plot$Parameter[d_plot$Parameter == "Prec"] <- "Precipitation"
-d_plot$Parameter[d_plot$Parameter == "Corg"] <- "$C_{org}$"
+d_plot$Parameter[d_plot$Parameter == "Corg"] <- "C_{org}"
 d_plot$Parameter[d_plot$Parameter == "N"] <- "Nitrogen"
 d_plot$Parameter[d_plot$Parameter == "invb"] <- "1/b (Buffer)"
 d_plot$Parameter[d_plot$Parameter == "k"] <- "k (Desorption)"
@@ -332,6 +334,7 @@ ggplot(d_plot, aes(x = Estimate, y = Parameter, color = Model)) +
   facet_wrap(~Response, scales = "free_x") +
   theme_bw(base_size = 12) +
   scale_color_manual(values = c("Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
-  labs(x = "Effect Size on Base Availability (95\\% CI)", y = "Covariate Modifier") +
+  scale_y_discrete(labels = latex2exp::TeX) +
+  labs(x = tex_lab("Effect Size on Base Availability (95% CI)"), y = "Covariate Modifier") +
   theme(legend.position = "bottom")
 ```
