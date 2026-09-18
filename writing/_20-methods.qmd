@@ -249,27 +249,25 @@ To prevent mathematical singularities and ensure the parameter space remained st
 - **Environmental Covariates ($\beta$):** Even with strict structural bounds, the simultaneous estimation of five exponential environmental covariates on the kinetic rate constant created a flat probability valley, preventing HMC convergence. To resolve this unidentifiability, an **Empirical Bayes** algebraic linearization technique was deployed. The Michaelis-Menten equation was algebraically rearranged into an affine linear model: $Z = \ln((A - Y)/(Y - Y_0)) + \ln(\text{STP})$. By passing this linearized response into a frequentist linear mixed-effects model (`lmer`), exact empirical point estimates for the $\beta$ modifiers were calculated. These empirically derived coordinates were then injected into the Bayesian model as highly informative priors (e.g., `normal(0.776, 0.10)` for $\beta_N$), dropping the Markov chains directly onto the global minimum and guaranteeing robust HMC convergence.
 
 ```{r}
-#| label: tbl-variables-updated
-#| tbl-cap: "Comprehensive description of all response variables and covariates used in the thermodynamic and agronomic models, including their explicit preprocessing pipelines."
 #| echo: false
 #| results: asis
 
 variables_df <- data.frame(
   Abbreviation = c(
-    "$Y_{\\text{rel}}$", "$P_{\\text{up, rel}}$", "$\\ln(P_{\\text{AAE10}})$",
+    "$Y$", "$P_{\\text{up}}$", "$\\ln(P_{\\text{AAE10}})$",
     "$P_{\\text{CO}_2}$", "$a_{\\text{CO}_2}$", "$k_{\\text{des}}$", "$v_{\\text{des}}$", "$\\text{PBC}^{-1}$",
-    "$Fe_{\\text{ox}}, Al_{\\text{ox}}$", "$\\text{Clay} + \\text{Silt}$", "$\\text{pH}_{\\text{H}_2\\text{O}}$", "$C_{\\text{org}}$", "$Ca_{\\text{ex}}, Mg_{\\text{ex}}, K_{\\text{ex}}$",
+    "$Fe_{\\text{ox}}, Al_{\\text{ox}}$", "$\\text{Clay}$", "$\\text{pH}_{\\text{H}_2\\text{O}}$", "$C_{\\text{org}}$", "$Ca_{\\text{ex}}$",
     "$T_{\\text{anom}}, Pr_{\\text{anom}}$", "$N_{\\text{fert}}$"
   ),
   `Variable` = c(
-    "Relative Yield", "Relative P Uptake", "Log Quantity Pool",
+    "Absolute Yield", "Absolute P Uptake", "Log Quantity Pool",
     "Empirical Intensity", "Thermodynamic Intensity", "Desorption Rate Constant", "Initial Desorption Velocity", "Inverse Buffer Power",
-    "Amorphous Oxides", "Fine Texture", "Soil pH", "Organic Carbon", "Exchangeable Cations",
+    "Amorphous Oxides", "Clay Content", "Soil pH", "Organic Carbon", "Exchangeable Calcium",
     "Climate Anomalies", "Nitrogen Fertilizer"
   ),
   Description = c(
-    "Plot yield normalized by the local year's maximum.",
-    "Plot P-uptake normalized by the local year's maximum.",
+    "Crop dry matter yield (dt/ha).",
+    "Total phosphorus uptake in above-ground biomass (kg P/ha).",
     "Standard mass of extractable P (AAE10 method).",
     "Water-extractable P ($CO_2$ saturated).",
     "Thermodynamic activity of the water pool.",
@@ -277,27 +275,27 @@ variables_df <- data.frame(
     "Initial dynamic supply rate.",
     "Inverse of the dynamic $Q/I$ slope ($dI/dQ$).",
     "Amorphous Iron and Aluminum oxides.",
-    "Sum of clay and silt fractions.",
+    "Clay mass fraction.",
     "Soil pH measured in water.",
     "Total organic carbon.",
-    "AAE10-extractable background cations.",
+    "AAE10-extractable background calcium.",
     "Juvenile phase temp/prec deviations.",
     "Total applied nitrogen fertilizer."
   ),
   `Processing and Filtering` = c(
-    "Normalized by the mean of the P166 treatment within the specific site $\\times$ crop $\\times$ year. Filtered for finite values.",
-    "Normalized by the local P166 maximum. Rows with 0 uptake dropped.",
+    "Raw measured absolute yield. Handled via log-link function in the Bayesian models.",
+    "Calculated as absolute yield multiplied by tissue P concentration ($C_P$). Handled via log-link function.",
     "Natural log transformed to ensure strictly positive predictions and stabilize variance in mixed models.",
     "Raw measured values. Log-transformed for PTF training.",
     "Calculated via Davies equation accounting for ionic strength. Log-transformed.",
     "Missing historical plots were imputed using a pedogenetic PTF trained on log(Al/Fe) + pH. Standardized (z-score).",
-    "Calculated as product of predicted $k$ and empirical $P_{\text{CO}_2}$. Standardized (z-score).",
+    "Calculated as product of predicted $k$ and empirical $P_{\\text{CO}_2}$. Standardized (z-score).",
     "Analytically derived from predicted Freundlich isotherms. Standardized (z-score).",
     "Averaged into invariant site-means to remove management artifacts, log-transformed, and standardized.",
-    "Log-transformed sum to linearize bounds, standardized. Missing values imputed with site-means.",
+    "Standardized directly. Missing values imputed with site-means.",
     "Standardized directly.",
     "Log-transformed and standardized. Missing values imputed with site-means.",
-    "Missing values imputed using site medians (or global medians if site missing). Log-transformed and standardized.",
+    "Missing values imputed using site medians. Log-transformed and standardized.",
     "Calculated as absolute deviation from the site's long-term historical mean. Standardized.",
     "Standardized directly."
   ),
@@ -305,7 +303,20 @@ variables_df <- data.frame(
 )
 
 # Apply styling to handle the long text in the processing column
-knitr::kable(variables_df, format = "markdown", escape = FALSE)
+if (knitr::is_latex_output()) {
+  library(kableExtra)
+  out <- knitr::kable(variables_df, format = "latex", escape = FALSE, booktabs = TRUE, table.envir = "table*",
+                      caption = "Comprehensive description of all response variables and covariates used in the thermodynamic and agronomic models, including their explicit preprocessing pipelines.\\label{tbl-variables-updated}") %>%
+    kable_styling(position = "center") %>%
+    column_spec(3, width = "4cm") %>%
+    column_spec(4, width = "8cm")
+  cat(out)
+} else {
+  cat("::: {#tbl-variables-updated}\n\n")
+  print(knitr::kable(variables_df, format = "markdown"))
+  cat("\n\nTable: Comprehensive description of all response variables and covariates used in the thermodynamic and agronomic models, including their explicit preprocessing pipelines.\n")
+  cat(":::\n")
+}
 ```
 
 ### 5. Mechanistic Modeling of the Rhizosphere (Barber-Cushman Modification)
@@ -371,3 +382,5 @@ Rather than directly feeding raw soil chemistry into the agronomic model, the Me
 
 **Model Evaluation**
 By condensing raw covariates into physical constraints ($b$ and $k$), we sought to determine if the Mechanistic approach generalizes more robustly to unseen data, or if the direct inclusion of all raw soil variables in the Heuristic model provides superior predictive power. Models were rigorously evaluated and compared based on their Hamiltonian stability ($\hat{R}$), root-mean-square error (RMSE), pseudo-$R^2$ (marginal and conditional), and out-of-sample expected log predictive density utilizing Leave-One-Out Cross-Validation (LOOIC).
+
+For an agronomic and environmental science context, it is crucial to distinguish between a model's ability to "fit" the data it was trained on (RMSE, $R^2$) versus its ability to safely predict entirely new, unseen field sites (LOOIC). LOOIC operates by iteratively hiding one observation at a time, forcing the model to predict the missing data point; models with a lower (more negative) LOOIC generalize better to the real world. During this cross-validation process, we also calculate the effective number of parameters ($p_{loo}$). In complex agronomic models with multiple interacting pedoclimatic covariates, an inflated $p_{loo}$ metric acts as a direct diagnostic warning for "overfitting"—indicating that the model is hallucinating relationships and memorizing random micro-climate noise rather than capturing universally applicable physical mechanisms.

@@ -2,11 +2,28 @@
 title: "P-release kinetics as a predictor for P-availability in Swiss cropping systems"
 author:
   - name: Marc Jerónimo Pérez y Ropero
+    email: marc.perez@agroscope.admin.ch
+    attributes:
+      corresponding: true
     affiliations:
-      - name: Agroscope Reckenholz, Water Protection and Substance Flows
+      - id: agroscope
+        name: Agroscope Reckenholz
+        department: Water Protection and Substance Flows
+        city: Zurich
+        country: Switzerland
   - name: Frank Liebisch
     affiliations:
-      - name: Agroscope Reckenholz, Water Protection and Substance Flows
+      - ref: agroscope
+
+abstract: |
+  Current empirical Soil Test Phosphorus (STP) methods ($P_{CO_2}$, $P_{AAE10}$) use static pools and arbitrary supply classes that ignore the physics of how soils release P over time. In this study, we evaluate... [Insert full abstract here]
+  
+keywords:
+  - Phosphorus Desorption
+  - Soil Test Phosphorus (STP)
+  - Bayesian Mixed Models
+  - Crop Yield Predictability
+  - STYCS
 
 date: today
 format:
@@ -14,24 +31,19 @@ format:
   docx:
     toc: false 
     number-sections: true
-  pdf:
-    documentclass: article
-    papersize: a4
+  elsevier-pdf:
+    keep-tex: true
+    journal:
+      name: Science of the Total Environment
+      formatting: preprint
+      model: 3p
     pdf-engine: lualatex
     number-sections: true
-    mainfont: "Latin Modern Roman"
-    sansfont: "Latin Modern Sans"
-    monofont: "Latin Modern Mono"
     colorlinks: true
     include-in-header:
       text: |
         \usepackage{tikz}
         \usetikzlibrary{shapes, shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
-    geometry:
-      - top=25mm
-      - left=25mm
-      - right=25mm
-      - bottom=25mm
 execute:
   echo: false
   warning: false

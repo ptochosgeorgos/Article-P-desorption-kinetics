@@ -117,13 +117,13 @@ ggplot(d_yield_uptake, aes(x = annual_P_uptake, y = total_yield, color = crop)) 
 
 ## Yield model comparison
 
-To evaluate whether thermodynamic kinetic parameters offer an advantage over empirical supply classes, we compared the predictive power of five non-linear mixed-effects models against a null model. All models accounted for site-specific and crop-specific yield ceilings via hierarchical random effects ($1 | \text{site/year}$). They differed in how the base availability ($K_{base}$) of the substrate ($P_{CO_2}$ or $P_{AAE10}$) was modulated. 
+To evaluate whether thermodynamic kinetic parameters offer an advantage over empirical supply classes, we compared the predictive power of five non-linear mixed-effects models against a null model. All models accounted for site-specific and crop-specific yield ceilings via hierarchical random effects ($1 | \text{site/year}$). They differed in how the base availability ($K_{base}$) of the STP ($P_{CO_2}$ or $P_{AAE10}$) was modulated. 
 
 ```{r}
-#| label: tbl-yield-comparison
 #| echo: false
 #| warning: false
 #| message: false
+#| results: asis
 library(knitr)
 
 # Safely extract metrics
@@ -151,9 +151,8 @@ r2_marg <- function(r2_obj) {
 }
 
 df_yield <- data.frame(
-  Model = c("**Base Model CO2**", "**Base Model AAE10**", "**Null Model**", "**Heuristic CO2**", "**Heuristic AAE10**", "**Mechanistic**"),
-  Substrate = c("Supply_class_CO2", "Supply_class_AAE10", "$P_{CO_2}$", "$P_{CO_2}$", "$P_{AAE10}$", "$P_{CO_2}$"),
-  `K_base Modulators` = c("*(None)*", "*(None)*", "*(None)*", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
+  Model = c("Base Model CO2", "Base Model AAE10", "Null Model", "Heuristic CO2", "Heuristic AAE10", "Mechanistic"),
+  `Pedoclimatic Covariates` = c("(None)", "(None)", "(None)", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
   RMSE = c(get_metric(res$yield$rmse$base), get_metric(res$yield$rmse$base_aae), get_metric(res$yield$rmse$null), get_metric(res$yield$rmse$heur), get_metric(res$yield$rmse$heur_aae), get_metric(res$yield$rmse$mech)),
   `R2_Marg` = c("-", "-", "-", r2_marg(res$yield$r2_heur), r2_marg(res$yield$r2_heur_aae), r2_marg(res$yield$r2_mech)),
   `R2_Cond` = c("-", "-", "-", r2_cond(res$yield$r2_heur), r2_cond(res$yield$r2_heur_aae), r2_cond(res$yield$r2_mech)),
@@ -162,7 +161,20 @@ df_yield <- data.frame(
   check.names = FALSE
 )
 
-kable(df_yield, format = "markdown", col.names = c("Model", "Substrate", "$K_{base}$ Modulators", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$"))
+if (knitr::is_latex_output()) {
+  library(kableExtra)
+  out <- kable(df_yield, format = "latex", escape = FALSE, booktabs = TRUE, table.envir = "table*",
+        caption = "Comparison of cross-validated predictive performance for yield models.\\label{tbl-yield-comparison}",
+        col.names = c("Model", "Pedoclimatic Covariates", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$")) %>%
+    kable_styling(position = "center") %>%
+    row_spec(0, bold = TRUE)
+  cat(out)
+} else {
+  cat("::: {#tbl-yield-comparison}\n\n")
+  print(kable(df_yield, format = "markdown", col.names = c("Model", "Pedoclimatic Covariates", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$")))
+  cat("\n\nTable: Comparison of cross-validated predictive performance for yield models.\n")
+  cat(":::\n")
+}
 ```
 
 While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
@@ -214,11 +226,11 @@ ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
 
 ```{r}
 #| label: fig-yield-conditional
-#| fig-cap: "Conditional effects of $P_{CO_2}$ substrate on predicted yield across crops. The Mechanistic model (blue) produces constrained asymptotic responses bounded by physical desorption parameters. The Heuristic model (orange) demonstrates massive uncertainty and flat average responses, indicating that its predictive power was inappropriately shifted to pedoclimatic covariates."
+#| fig-cap: "Conditional effects of $P_{CO_2}$ STP on predicted yield across crops. The Mechanistic model (blue) produces constrained asymptotic responses bounded by physical desorption parameters. The Heuristic model (orange) demonstrates massive uncertainty and flat average responses, indicating that its predictive power was inappropriately shifted to pedoclimatic covariates."
 #| warning: false
 #| message: false
 #| fig-width: 6
-#| fig-height: 4.5
+#| fig-height: 8
 
 # Extract conditional effects
 d_null <- res$yield$plot_data$null
@@ -234,14 +246,50 @@ d_plot <- bind_rows(d_null, d_heur, d_mech)
 ggplot(d_plot, aes(x = effect1__, y = estimate__, color = Model, fill = Model)) +
   geom_line(linewidth = 1.2) +
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
-  facet_wrap(~crop, scales = "free") +
+  facet_wrap(~crop, scales = "free", ncol = 2) +
   theme_bw(base_size = 12) +
   labs(
-    x = tex_lab("Substrate $P_{CO_2}$ (mg / kg)"),
+    x = tex_lab("STP $P_{CO_2}$ (mg / kg)"),
     y = "Predicted Yield (dt/ha)"
   ) +
   scale_color_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
   scale_fill_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: fig-yield-shrinkage
+#| fig-cap: "Posterior uncertainty (shrinkage) of the crop-specific base affinity ($K_{base}$) for the Mechanistic and Heuristic yield models. The massive 95% credible intervals for the Heuristic model indicate severe overfitting and an inability to constrain the fundamental agronomic relationship, whereas the Mechanistic model is tightly constrained by physical desorption kinetics."
+#| warning: false
+#| message: false
+#| fig-width: 8
+#| fig-height: 5
+
+extract_kbase <- function(df, model_name) {
+  rn <- rownames(df)
+  k_idx <- grep("^Kbase_crop", rn)
+  sub_df <- df[k_idx, ]
+  sub_df$Crop <- gsub("Kbase_crop", "", rn[k_idx])
+  sub_df$Model <- model_name
+  return(sub_df)
+}
+
+df_m <- extract_kbase(res$yield$parameters$mech, "Mechanistic")
+df_h <- extract_kbase(res$yield$parameters$heur, "Heuristic CO2")
+
+d_plot_k <- bind_rows(df_m, df_h)
+
+ggplot(d_plot_k, aes(x = Crop, y = Estimate, color = Model)) +
+  geom_point(position = position_dodge(width = 0.6), size = 3) +
+  geom_errorbar(aes(ymin = `l-95% CI`, ymax = `u-95% CI`), 
+                position = position_dodge(width = 0.6), width = 0.2, linewidth = 1) +
+  scale_y_log10(labels = scales::comma) +
+  theme_bw(base_size = 12) +
+  scale_color_manual(values = c("Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
+  labs(
+    x = "Crop",
+    y = tex_lab("Posterior Estimate of Base Affinity ($K_{base}$) [Log Scale]")
+  ) +
   theme(legend.position = "bottom")
 ```
 
@@ -250,10 +298,10 @@ ggplot(d_plot, aes(x = effect1__, y = estimate__, color = Model, fill = Model)) 
 We repeated the identical model hierarchy to predict total plant phosphorus uptake rather than dry matter yield. 
 
 ```{r}
-#| label: tbl-uptake-comparison
 #| echo: false
 #| warning: false
 #| message: false
+#| results: asis
 
 comp_u <- res$uptake$comparison
 looic_val_u <- function(m_name) {
@@ -266,9 +314,8 @@ ploo_val_u <- function(m_name) {
 }
 
 df_uptake <- data.frame(
-  Model = c("**Base Model CO2**", "**Base Model AAE10**", "**Null Model**", "**Heuristic CO2**", "**Heuristic AAE10**", "**Mechanistic**"),
-  Substrate = c("Supply_class_CO2", "Supply_class_AAE10", "$P_{CO_2}$", "$P_{CO_2}$", "$P_{AAE10}$", "$P_{CO_2}$"),
-  `K_base Modulators` = c("*(None)*", "*(None)*", "*(None)*", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
+  Model = c("Base Model CO2", "Base Model AAE10", "Null Model", "Heuristic CO2", "Heuristic AAE10", "Mechanistic"),
+  `Pedoclimatic Covariates` = c("(None)", "(None)", "(None)", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
   RMSE = c(get_metric(res$uptake$rmse$base), get_metric(res$uptake$rmse$base_aae), get_metric(res$uptake$rmse$null), get_metric(res$uptake$rmse$heur), get_metric(res$uptake$rmse$heur_aae), get_metric(res$uptake$rmse$mech)),
   `R2_Marg` = c("-", "-", "-", r2_marg(res$uptake$r2_heur), r2_marg(res$uptake$r2_heur_aae), r2_marg(res$uptake$r2_mech)),
   `R2_Cond` = c("-", "-", "-", r2_cond(res$uptake$r2_heur), r2_cond(res$uptake$r2_heur_aae), r2_cond(res$uptake$r2_mech)),
@@ -277,14 +324,27 @@ df_uptake <- data.frame(
   check.names = FALSE
 )
 
-kable(df_uptake, format = "markdown", col.names = c("Model", "Substrate", "$K_{base}$ Modulators", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$"))
+if (knitr::is_latex_output()) {
+  library(kableExtra)
+  out <- kable(df_uptake, format = "latex", escape = FALSE, booktabs = TRUE, table.envir = "table*",
+        caption = "Comparison of cross-validated predictive performance for total phosphorus uptake models.\\label{tbl-uptake-comparison}",
+        col.names = c("Model", "Pedoclimatic Covariates", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$")) %>%
+    kable_styling(position = "center") %>%
+    row_spec(0, bold = TRUE)
+  cat(out)
+} else {
+  cat("::: {#tbl-uptake-comparison}\n\n")
+  print(kable(df_uptake, format = "markdown", col.names = c("Model", "Pedoclimatic Covariates", "RMSE", "$R^2_{Marg}$", "$R^2_{Cond}$", "LOOIC", "$p_{loo}$")))
+  cat("\n\nTable: Comparison of cross-validated predictive performance for total phosphorus uptake models.\n")
+  cat(":::\n")
+}
 ```
 
 In a stark divergence from the yield models, the Heuristic $CO_2$ model demonstrated the highest predictive power both in-sample (RMSE = 0.62) and out-of-sample (LOOIC = 19374). 
 
 Crucially, the Heuristic uptake model did not suffer from the severe overfitting observed in the yield predictions; its effective number of parameters ($p_{loo} = 163.2$) was nearly identical to the strictly constrained Mechanistic model ($p_{loo} = 160.7$). This indicates that the pedoclimatic covariates (pH, Clay, Temperature, Precipitation) were capturing true, generalizable physical signals rather than memorizing local noise.
 
-This phenomenological divergence is biologically consistent. While absolute dry matter yield is a highly confounded metric capped by dozens of non-phosphorus environmental factors, luxury plant P-uptake ($C_P$) is tightly coupled to the physical diffusion of P to the roots and active root metabolism. Therefore, allowing local soil properties and climate variables to flexibly modulate the apparent availability of the empirical substrate ($P_{CO_2}$) legitimately improves the prediction of biological P-acquisition over purely thermodynamic bounds.
+This phenomenological divergence is biologically consistent. While absolute dry matter yield is a highly confounded metric capped by dozens of non-phosphorus environmental factors, luxury plant P-uptake ($C_P$) is tightly coupled to the physical diffusion of P to the roots and active root metabolism. Therefore, allowing local soil properties and climate variables to flexibly modulate the apparent availability of the empirical STP ($P_{CO_2}$) legitimately improves the prediction of biological P-acquisition over purely thermodynamic bounds.
 
 ```{r}
 #| label: fig-uptake-looic
@@ -315,7 +375,7 @@ ggplot(comp_df, aes(x = reorder(Model_Clean, elpd_diff), y = elpd_diff)) +
 
 ```{r}
 #| label: fig-uptake-conditional
-#| fig-cap: "Conditional effects of substrate on P-Uptake. Because the pedoclimatic covariates capture true signal for P-acquisition, the Heuristic model produces stable, physically meaningful response curves without hallucinating."
+#| fig-cap: "Conditional effects of STP on P-Uptake. Because the pedoclimatic covariates capture true signal for P-acquisition, the Heuristic model produces stable, physically meaningful response curves without hallucinating."
 #| warning: false
 #| message: false
 #| fig-width: 6
@@ -336,7 +396,7 @@ ggplot(d_plot, aes(x = effect1__, y = estimate__, color = Model, fill = Model)) 
   geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, color = NA) +
   facet_wrap(~crop, scales = "free") +
   theme_bw(base_size = 12) +
-  labs(x = tex_lab("Substrate $P_{CO_2}$ (mg / kg)"), y = "Predicted P-Uptake (kg P/ha)") +
+  labs(x = tex_lab("STP $P_{CO_2}$ (mg / kg)"), y = "Predicted P-Uptake (kg P/ha)") +
   scale_color_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
   scale_fill_manual(values = c("Null Model" = "gray50", "Heuristic CO2" = "#E69F00", "Mechanistic" = "#0072B2")) +
   theme(legend.position = "bottom")
