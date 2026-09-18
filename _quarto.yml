@@ -5,8 +5,6 @@ project:
   render:
     - index.qmd
     - "notebooks/qi_modelling1.qmd"
-    - "notebooks/qi_modelling_parallel.qmd"
-    - "notebooks/bayesian_modelling.qmd"
     - "notebooks/sanity_checks.qmd"
     - "presentation/index.qmd"
     - "presentation_grud/index.qmd"
