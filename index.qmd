@@ -43,6 +43,7 @@ format:
     include-in-header:
       text: |
         \usepackage{tikz}
+        \usepackage{placeins}
         \usetikzlibrary{shapes, shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
 execute:
   echo: false

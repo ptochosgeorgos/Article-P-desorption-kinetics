@@ -1,4 +1,4 @@
-\clearpage
+\FloatBarrier
 
 # Results
 ```{r setup-results}
@@ -120,6 +120,13 @@ ggplot(d_yield_uptake, aes(x = annual_P_uptake, y = total_yield, color = crop)) 
 
 To evaluate whether thermodynamic kinetic parameters offer an advantage over empirical supply classes, we compared the predictive power of five non-linear mixed-effects models against a null model. All models accounted for site-specific and crop-specific yield ceilings via hierarchical random effects ($1 | \text{site/year}$). They differed in how the base availability ($K_{base}$) of the STP ($P_{CO_2}$ or $P_{AAE10}$) was modulated. 
 
+
+While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
+
+In contrast, the Mechanistic model, which constrained $K_{base}$ strictly to the physical limits of the desorption rate ($k$) and buffer capacity ($1/b$), generalized better ($\Delta LOOIC = -1086$ vs. Heuristic $CO_2$; $p_{loo} = 247.2$). 
+
+However, neither the empirical STPs nor the kinetic parameters demonstrated strong predictive power for absolute crop yield when compared to the Null model ($\Delta LOOIC = -1364$ vs. Mechanistic). This confirms that short-term agronomic yield is overwhelmingly dominated by local micro-climates and crop biology, rendering the specific physical P-supply mechanism secondary for short-term predictions.
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -177,12 +184,6 @@ if (knitr::is_latex_output()) {
   cat(":::\n")
 }
 ```
-
-While the Heuristic $CO_2$ model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation ($LOOIC$) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates ($p_{loo} = 1104.8$). 
-
-In contrast, the Mechanistic model, which constrained $K_{base}$ strictly to the physical limits of the desorption rate ($k$) and buffer capacity ($1/b$), generalized better ($\Delta LOOIC = -1086$ vs. Heuristic $CO_2$; $p_{loo} = 247.2$). 
-
-However, neither the empirical STPs nor the kinetic parameters demonstrated strong predictive power for absolute crop yield when compared to the Null model ($\Delta LOOIC = -1364$ vs. Mechanistic). This confirms that short-term agronomic yield is overwhelmingly dominated by local micro-climates and crop biology, rendering the specific physical P-supply mechanism secondary for short-term predictions.
 
 To evaluate true predictive power, we relied on the Expected Log Predictive Density (ELPD) calculated via Bayesian leave-one-out cross-validation (LOO-CV). Unlike in-sample error metrics such as RMSE, which invariably reward overly complex models, ELPD rigorously penalizes models that overfit to local noise. The difference in ELPD ($\Delta$ELPD) serves as a relative measure of out-of-sample performance. This metric fundamentally exposes models that achieve low training error merely by hallucinating relationships with non-causal covariates.
 
