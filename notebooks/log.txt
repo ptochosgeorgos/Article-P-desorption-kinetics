@@ -1,0 +1,24 @@
+2: Found 2 observations with a pareto_k > 0.7 in model 'mod_mech_U'. We recommend to set 'moment_match = TRUE' in order to perform moment matching for problematic observations.  
+           used  (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells  3371948 180.1    5461929   291.7    5461929   291.7
+Vcells 10574899  80.7 1522162118 11613.2 2116003205 16143.9
+Extracting LOO metrics for direct comparison...
+SUCCESS. cluster_results.rds has been generated.
+Error in `validate_newdata()`:
+! New factor levels are not allowed.
+Levels allowed: 'FR', 'KA', 'KM', 'RA', 'SJ', 'WG', 'Wheat', 'ZR'
+Levels found: 'CH', 'FR', 'KA', 'KM', 'KW', 'RA', 'SJ', 'SM', 'WG', 'Wheat', 'ZF', 'ZR'
+Backtrace:
+     ▆
+  1. ├─stats::predict(mod_heur_U, newdata = d_brms)
+  2. └─brms:::predict.brmsfit(mod_heur_U, newdata = d_brms)
+  3.   ├─brms::prepare_predictions(...)
+  4.   └─brms:::prepare_predictions.brmsfit(...)
+  5.     ├─brms::standata(...)
+  6.     └─brms:::standata.brmsfit(...)
+  7.       └─brms:::current_data(...)
+  8.         └─brms::validate_newdata(newdata, object = object, ...)
+  9.           └─brms:::stop2(...)
+ 10.             └─rlang::abort(...)
+Execution halted
+
