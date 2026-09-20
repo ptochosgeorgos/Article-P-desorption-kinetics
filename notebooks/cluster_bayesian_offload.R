@@ -96,8 +96,8 @@ d_brms <- d_brms |>
     mutate(
       C_P = annual_P_uptake / annual_yield_mp_DM,
       z_k_pred = scale(ln_K_pred_agro)[, 1],
-      Supply_class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
-      Supply_class_AAE10 = get_grud_aae_vec(soil_0_20_P_AAE10, rollMean_soil_0_20_clay),
+      Class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
+      Class_AAE = get_grud_aae_vec(soil_0_20_P_AAE10, rollMean_soil_0_20_clay),
       crop = as.factor(crop),
       site = as.factor(site),
       year = as.factor(year)
@@ -108,13 +108,13 @@ d_brms <- d_brms |>
       !is.na(z_inv_b),
       !is.na(z_k_pred),
       !is.na(Y_ref),
-      !is.na(Supply_class_CO2),
+      !is.na(Class_CO2),
       !is.na(juvdev_temp),
       !is.na(juvdev_prec),
       !is.na(z_ln_Corg),
       !is.na(z_ln_Ca),
       !is.na(soil_0_20_P_AAE10),
-      !is.na(Supply_class_AAE10)
+      !is.na(Class_AAE)
     )
 
 # Standard Priors
@@ -177,7 +177,7 @@ get_rmse <- function(mod, y) {
 
 ## ----fit-base-----------------------------------------------------------------
 # Yield
-mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year),
+mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n), 
     iter = iter_n, file = "../models/base_yield", file_refit = "on_change")
@@ -188,7 +188,7 @@ rmse_base <- get_rmse(mod_base_Y, d_brms$annual_yield_mp_DM)
 rm(mod_base_Y); gc()
 
 # Uptake
-mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year),
+mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake", file_refit = "on_change")
@@ -199,7 +199,7 @@ rm(mod_base_U); gc()
 
 ## ----fit-base-AAE10-----------------------------------------------------------
 # Yield
-mod_base_Y_aae <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_AAE10 + (1 | site/year),
+mod_base_Y_aae <- brm(annual_yield_mp_DM ~ Y_ref * Class_AAE + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n), 
     iter = iter_n, file = "../models/base_yield_aae", file_refit = "on_change")
@@ -210,7 +210,7 @@ rmse_base_aae <- get_rmse(mod_base_Y_aae, d_brms$annual_yield_mp_DM)
 rm(mod_base_Y_aae); gc()
 
 # Uptake
-mod_base_U_aae <- brm(annual_P_uptake ~ P_up_ref * Supply_class_AAE10 + (1 | site/year),
+mod_base_U_aae <- brm(annual_P_uptake ~ P_up_ref * Class_AAE + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake_aae", file_refit = "on_change")
@@ -413,35 +413,35 @@ cat("SUCCESS. cluster_results.rds has been generated.\n")
 # P-BALANCE MODELS & EVALUATION
 #######################################################################
 # Convert normative P2O5 requirement to P (kg/ha)
-D_env$P_up_norm <- D_env$fert_P2O5_NORM * 0.4364
+d_brms$P_up_norm <- d_brms$fert_P2O5_NORM * 0.4364
 
 # Define GRUD Multipliers for Supply Classes
 # Usually A=1.5, B=1.2, C=1.0, D=0.5, E=0
 grud_multipliers <- c('A' = 1.5, 'B' = 1.2, 'C' = 1.0, 'D' = 0.5, 'E' = 0.0)
-D_env$M_class_CO2 <- grud_multipliers[as.character(D_env$Supply_class_CO2)]
-D_env$M_class_AAE10 <- grud_multipliers[as.character(D_env$Supply_class_AAE10)]
+d_brms$M_class_CO2 <- grud_multipliers[as.character(d_brms$Class_CO2)]
+d_brms$M_class_AAE10 <- grud_multipliers[as.character(d_brms$Class_AAE)]
 
 # True annual P balance
-D_env$annual_P_bal_true <- D_env$fert_P_tot - D_env$annual_P_uptake
+d_brms$annual_P_bal_true <- d_brms$fert_P_tot - d_brms$annual_P_uptake
 
 # GRUD Base Models (Deterministic, based on norms and multipliers)
-D_env$annual_P_bal_pred_CO2 <- D_env$P_up_norm * (D_env$M_class_CO2 - 1)
-D_env$annual_P_bal_pred_AAE10 <- D_env$P_up_norm * (D_env$M_class_AAE10 - 1)
+d_brms$annual_P_bal_pred_CO2 <- d_brms$P_up_norm * (d_brms$M_class_CO2 - 1)
+d_brms$annual_P_bal_pred_AAE10 <- d_brms$P_up_norm * (d_brms$M_class_AAE10 - 1)
 
 # For Heuristic and Mechanistic, predict the uptake from the fitted models
 mod_heur_U <- readRDS("../models/heur_uptake.rds")
 mod_mech_U <- readRDS("../models/mech_uptake.rds")
 
-pred_heur <- predict(mod_heur_U, newdata = D_env)
-pred_mech <- predict(mod_mech_U, newdata = D_env)
-D_env$annual_P_bal_pred_heur <- D_env$fert_P_tot - pred_heur[, 'Estimate']
-D_env$annual_P_bal_pred_mech <- D_env$fert_P_tot - pred_mech[, 'Estimate']
+pred_heur <- predict(mod_heur_U, newdata = d_brms)
+pred_mech <- predict(mod_mech_U, newdata = d_brms)
+d_brms$annual_P_bal_pred_heur <- d_brms$fert_P_tot - pred_heur[, 'Estimate']
+d_brms$annual_P_bal_pred_mech <- d_brms$fert_P_tot - pred_mech[, 'Estimate']
 
 rm(mod_heur_U, mod_mech_U); gc()
 
 # Aggregate cumulatively to 30-year balances per plot
 library(dplyr)
-pbal_agg <- D_env %>%
+pbal_agg <- d_brms %>%
   group_by(site, plot_nr) %>%
   summarise(
     Cum_P_bal_true = sum(annual_P_bal_true, na.rm = TRUE),
