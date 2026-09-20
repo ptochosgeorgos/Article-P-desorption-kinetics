@@ -8,7 +8,7 @@
 
 <meta name="author" content="Marc Jerónimo Pérez y Ropero">
 <meta name="author" content="Frank Liebisch">
-<meta name="dcterms.date" content="2026-09-18">
+<meta name="dcterms.date" content="2026-09-20">
 <meta name="keywords" content="Phosphorus Desorption, Soil Test Phosphorus (STP), Bayesian Mixed Models, Crop Yield Predictability, STYCS">
 
 <title>P-release kinetics as a predictor for P-availability in Swiss cropping systems – STYCS P-Kinetics Manuscript</title>
@@ -253,7 +253,7 @@ window.Quarto = {
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>PDF (elsevier)</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -289,7 +289,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 18, 2026</p>
+      <p class="date">September 20, 2026</p>
     </div>
   </div>
   
@@ -639,18 +639,18 @@ C_P = C_{\text{min}} + \Delta C \cdot \left(1 - \exp\left(- c_{\text{eff}} \cdot
 <li><strong>Accumulation Rate (<span class="math inline">\(c_{\text{eff}}\)</span>):</strong> This rate is significantly driven by pedoclimatic covariates and transport penalties, dictating how rapidly the soil can push excess phosphorus into the plant.</li>
 </ul>
 <p><strong>Bayesian Prior Elicitation and Biological Bounds</strong> To prevent mathematical singularities and ensure the parameter space remained strictly within physical reality, informative bounds were placed on the fundamental biological constants: - <strong>Baseline and Maximum Yield (<span class="math inline">\(Y_0, A\)</span>):</strong> Bounded strictly <span class="math inline">\(&gt; 0\)</span>. To resolve parameter unidentifiability in the flat plateaus of the data, highly informative empirical bounds were dynamically extracted from the dataset. For each crop, <span class="math inline">\(Y_0\)</span> was constrained around the absolute minimum observed yield, and <span class="math inline">\(A\)</span> around the absolute maximum, rigidly anchoring the vertical geometry of the curve. - <strong>Maximum Uptake Velocity (<span class="math inline">\(V_{\text{max}}\)</span>):</strong> Bounded <span class="math inline">\(&gt; 0\)</span> with <code>normal(30, 15)</code>, reflecting standard crop physiological limits (typically 15–45 kg P/ha). - <strong>Tissue Concentration Minimum (<span class="math inline">\(C_{\text{min}}\)</span>):</strong> Bounded <span class="math inline">\(&gt; 0\)</span> with <code>normal(1.5, 1.0)</code>, as a baseline tissue concentration of <span class="math inline">\(\approx 1.5 \text{ g/kg DM}\)</span> is universally required for basic cellular function in these crops. - <strong>Environmental Covariates (<span class="math inline">\(\beta\)</span>):</strong> Even with strict structural bounds, the simultaneous estimation of five exponential environmental covariates on the kinetic rate constant created a flat probability valley, preventing HMC convergence. To resolve this unidentifiability, an <strong>Empirical Bayes</strong> algebraic linearization technique was deployed. The Michaelis-Menten equation was algebraically rearranged into an affine linear model: <span class="math inline">\(Z = \ln((A - Y)/(Y - Y_0)) + \ln(\text{STP})\)</span>. By passing this linearized response into a frequentist linear mixed-effects model (<code>lmer</code>), exact empirical point estimates for the <span class="math inline">\(\beta\)</span> modifiers were calculated. These empirically derived coordinates were then injected into the Bayesian model as highly informative priors (e.g., <code>normal(0.776, 0.10)</code> for <span class="math inline">\(\beta_N\)</span>), dropping the Markov chains directly onto the global minimum and guaranteeing robust HMC convergence.</p>
-<div id="tbl-variables-updated" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<div id="tbl-variables-updated" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Table&nbsp;3: Comprehensive description of all response variables and covariates used in the thermodynamic and agronomic models, including their explicit preprocessing pipelines.
 </figcaption>
 <div aria-describedby="tbl-variables-updated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="cell caption-top table table-sm table-striped small">
+<table class="caption-top table">
 <colgroup>
-<col style="width: 18%">
-<col style="width: 10%">
-<col style="width: 21%">
-<col style="width: 49%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 24%">
+<col style="width: 48%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -662,16 +662,16 @@ Table&nbsp;3: Comprehensive description of all response variables and covariates
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(Y_{\text{rel}}\)</span></td>
-<td style="text-align: left;">Relative Yield</td>
-<td style="text-align: left;">Plot yield normalized by the local year’s maximum.</td>
-<td style="text-align: left;">Normalized by the mean of the P166 treatment within the specific site <span class="math inline">\(\times\)</span> crop <span class="math inline">\(\times\)</span> year. Filtered for finite values.</td>
+<td style="text-align: left;"><span class="math inline">\(Y\)</span></td>
+<td style="text-align: left;">Absolute Yield</td>
+<td style="text-align: left;">Crop dry matter yield (dt/ha).</td>
+<td style="text-align: left;">Raw measured absolute yield. Handled via log-link function in the Bayesian models.</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(P_{\text{up, rel}}\)</span></td>
-<td style="text-align: left;">Relative P Uptake</td>
-<td style="text-align: left;">Plot P-uptake normalized by the local year’s maximum.</td>
-<td style="text-align: left;">Normalized by the local P166 maximum. Rows with 0 uptake dropped.</td>
+<td style="text-align: left;"><span class="math inline">\(P_{\text{up}}\)</span></td>
+<td style="text-align: left;">Absolute P Uptake</td>
+<td style="text-align: left;">Total phosphorus uptake in above-ground biomass (kg P/ha).</td>
+<td style="text-align: left;">Calculated as absolute yield multiplied by tissue P concentration (<span class="math inline">\(C_P\)</span>). Handled via log-link function.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><span class="math inline">\(\ln(P_{\text{AAE10}})\)</span></td>
@@ -701,7 +701,7 @@ Table&nbsp;3: Comprehensive description of all response variables and covariates
 <td style="text-align: left;"><span class="math inline">\(v_{\text{des}}\)</span></td>
 <td style="text-align: left;">Initial Desorption Velocity</td>
 <td style="text-align: left;">Initial dynamic supply rate.</td>
-<td style="text-align: left;">Calculated as product of predicted <span class="math inline">\(k\)</span> and empirical <span class="math inline">\(P_{ ext{CO}_2}\)</span>. Standardized (z-score).</td>
+<td style="text-align: left;">Calculated as product of predicted <span class="math inline">\(k\)</span> and empirical <span class="math inline">\(P_{\text{CO}_2}\)</span>. Standardized (z-score).</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><span class="math inline">\(\text{PBC}^{-1}\)</span></td>
@@ -716,10 +716,10 @@ Table&nbsp;3: Comprehensive description of all response variables and covariates
 <td style="text-align: left;">Averaged into invariant site-means to remove management artifacts, log-transformed, and standardized.</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><span class="math inline">\(\text{Clay} + \text{Silt}\)</span></td>
-<td style="text-align: left;">Fine Texture</td>
-<td style="text-align: left;">Sum of clay and silt fractions.</td>
-<td style="text-align: left;">Log-transformed sum to linearize bounds, standardized. Missing values imputed with site-means.</td>
+<td style="text-align: left;"><span class="math inline">\(\text{Clay}\)</span></td>
+<td style="text-align: left;">Clay Content</td>
+<td style="text-align: left;">Clay mass fraction.</td>
+<td style="text-align: left;">Standardized directly. Missing values imputed with site-means.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><span class="math inline">\(\text{pH}_{\text{H}_2\text{O}}\)</span></td>
@@ -734,10 +734,10 @@ Table&nbsp;3: Comprehensive description of all response variables and covariates
 <td style="text-align: left;">Log-transformed and standardized. Missing values imputed with site-means.</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><span class="math inline">\(Ca_{\text{ex}}, Mg_{\text{ex}}, K_{\text{ex}}\)</span></td>
-<td style="text-align: left;">Exchangeable Cations</td>
-<td style="text-align: left;">AAE10-extractable background cations.</td>
-<td style="text-align: left;">Missing values imputed using site medians (or global medians if site missing). Log-transformed and standardized.</td>
+<td style="text-align: left;"><span class="math inline">\(Ca_{\text{ex}}\)</span></td>
+<td style="text-align: left;">Exchangeable Calcium</td>
+<td style="text-align: left;">AAE10-extractable background calcium.</td>
+<td style="text-align: left;">Missing values imputed using site medians. Log-transformed and standardized.</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><span class="math inline">\(T_{\text{anom}}, Pr_{\text{anom}}\)</span></td>
@@ -799,7 +799,7 @@ q_{\text{up}} = \frac{P_{crit\_up}}{K_{\text{eff}} + P_{crit\_up}} \implies P_{c
 </section>
 </section>
 </section>
-<section id="results" class="level1 page-columns page-full" data-number="3">
+<section id="results" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> Results</h1>
 <section id="the-blind-spot-of-empirical-soil-tests" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="the-blind-spot-of-empirical-soil-tests"><span class="header-section-number">3.1</span> The Blind Spot of Empirical Soil Tests</h2>
@@ -839,18 +839,19 @@ Figure&nbsp;2: Total Yield versus Annual P Uptake grouped by crop type. The poly
 </div>
 </div>
 </section>
-<section id="yield-model-comparison" class="level2 page-columns page-full" data-number="3.3">
+<section id="yield-model-comparison" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="yield-model-comparison"><span class="header-section-number">3.3</span> Yield model comparison</h2>
 <p>To evaluate whether thermodynamic kinetic parameters offer an advantage over empirical supply classes, we compared the predictive power of five non-linear mixed-effects models against a null model. All models accounted for site-specific and crop-specific yield ceilings via hierarchical random effects (<span class="math inline">\(1 | \text{site/year}\)</span>). They differed in how the base availability (<span class="math inline">\(K_{base}\)</span>) of the STP (<span class="math inline">\(P_{CO_2}\)</span> or <span class="math inline">\(P_{AAE10}\)</span>) was modulated.</p>
-<div class="cell page-columns page-full">
-<div id="tbl-yield-comparison" class="cell quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
-<figure class="quarto-float quarto-float-tbl figure page-columns page-full">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-yield-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4
+<p>While the Heuristic <span class="math inline">\(CO_2\)</span> model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation (<span class="math inline">\(LOOIC\)</span>) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates (<span class="math inline">\(p_{loo} = 1104.8\)</span>).</p>
+<p>In contrast, the Mechanistic model, which constrained <span class="math inline">\(K_{base}\)</span> strictly to the physical limits of the desorption rate (<span class="math inline">\(k\)</span>) and buffer capacity (<span class="math inline">\(1/b\)</span>), generalized better (<span class="math inline">\(\Delta LOOIC = -1086\)</span> vs.&nbsp;Heuristic <span class="math inline">\(CO_2\)</span>; <span class="math inline">\(p_{loo} = 247.2\)</span>).</p>
+<p>However, neither the empirical STPs nor the kinetic parameters demonstrated strong predictive power for absolute crop yield when compared to the Null model (<span class="math inline">\(\Delta LOOIC = -1364\)</span> vs.&nbsp;Mechanistic). This confirms that short-term agronomic yield is overwhelmingly dominated by local micro-climates and crop biology, rendering the specific physical P-supply mechanism secondary for short-term predictions.</p>
+<div id="tbl-yield-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-yield-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Comparison of cross-validated predictive performance for yield models.
 </figcaption>
-<div aria-describedby="tbl-yield-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<div class="cell-output-display column-page">
-<table class="do-not-create-environment caption-top table table-sm table-striped small">
+<div aria-describedby="tbl-yield-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 17%">
 <col style="width: 32%">
@@ -929,13 +930,8 @@ Table&nbsp;4
 </tbody>
 </table>
 </div>
-</div>
 </figure>
 </div>
-</div>
-<p>While the Heuristic <span class="math inline">\(CO_2\)</span> model achieved the lowest root mean square error (RMSE = 10.56) on the training data, the Bayesian leave-one-out cross-validation (<span class="math inline">\(LOOIC\)</span>) indicated that this performance was associated with severe overfitting to the six pedoclimatic covariates (<span class="math inline">\(p_{loo} = 1104.8\)</span>).</p>
-<p>In contrast, the Mechanistic model, which constrained <span class="math inline">\(K_{base}\)</span> strictly to the physical limits of the desorption rate (<span class="math inline">\(k\)</span>) and buffer capacity (<span class="math inline">\(1/b\)</span>), generalized better (<span class="math inline">\(\Delta LOOIC = -1086\)</span> vs.&nbsp;Heuristic <span class="math inline">\(CO_2\)</span>; <span class="math inline">\(p_{loo} = 247.2\)</span>).</p>
-<p>However, neither the empirical STPs nor the kinetic parameters demonstrated strong predictive power for absolute crop yield when compared to the Null model (<span class="math inline">\(\Delta LOOIC = -1364\)</span> vs.&nbsp;Mechanistic). This confirms that short-term agronomic yield is overwhelmingly dominated by local micro-climates and crop biology, rendering the specific physical P-supply mechanism secondary for short-term predictions.</p>
 <p>To evaluate true predictive power, we relied on the Expected Log Predictive Density (ELPD) calculated via Bayesian leave-one-out cross-validation (LOO-CV). Unlike in-sample error metrics such as RMSE, which invariably reward overly complex models, ELPD rigorously penalizes models that overfit to local noise. The difference in ELPD (<span class="math inline">\(\Delta\)</span>ELPD) serves as a relative measure of out-of-sample performance. This metric fundamentally exposes models that achieve low training error merely by hallucinating relationships with non-causal covariates.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -980,18 +976,16 @@ Figure&nbsp;5: Posterior uncertainty (shrinkage) of the crop-specific base affin
 </div>
 </div>
 </section>
-<section id="phosphorus-uptake-c_p-model-comparison" class="level2 page-columns page-full" data-number="3.4">
+<section id="phosphorus-uptake-c_p-model-comparison" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="phosphorus-uptake-c_p-model-comparison"><span class="header-section-number">3.4</span> Phosphorus Uptake (<span class="math inline">\(C_P\)</span>) model comparison</h2>
 <p>We repeated the identical model hierarchy to predict total plant phosphorus uptake rather than dry matter yield.</p>
-<div class="cell page-columns page-full">
-<div id="tbl-uptake-comparison" class="cell quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
-<figure class="quarto-float quarto-float-tbl figure page-columns page-full">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-uptake-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;5
+<div id="tbl-uptake-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-uptake-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Comparison of cross-validated predictive performance for total phosphorus uptake models.
 </figcaption>
-<div aria-describedby="tbl-uptake-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="page-columns page-full">
-<div class="cell-output-display column-page">
-<table class="do-not-create-environment caption-top table table-sm table-striped small">
+<div aria-describedby="tbl-uptake-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 17%">
 <col style="width: 32%">
@@ -1070,9 +1064,7 @@ Table&nbsp;5
 </tbody>
 </table>
 </div>
-</div>
 </figure>
-</div>
 </div>
 <p>In a stark divergence from the yield models, the Heuristic <span class="math inline">\(CO_2\)</span> model demonstrated the highest predictive power both in-sample (RMSE = 0.62) and out-of-sample (LOOIC = 19374).</p>
 <p>Crucially, the Heuristic uptake model did not suffer from the severe overfitting observed in the yield predictions; its effective number of parameters (<span class="math inline">\(p_{loo} = 163.2\)</span>) was nearly identical to the strictly constrained Mechanistic model (<span class="math inline">\(p_{loo} = 160.7\)</span>). This indicates that the pedoclimatic covariates (pH, Clay, Temperature, Precipitation) were capturing true, generalizable physical signals rather than memorizing local noise.</p>
