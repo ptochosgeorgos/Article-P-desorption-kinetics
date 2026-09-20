@@ -1,5 +1,6 @@
-# Results
+\clearpage
 
+# Results
 ```{r setup-results}
 #| include: false
 # Meticulous Setup Chunk
