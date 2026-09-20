@@ -63,7 +63,7 @@ d_brms <- d_brms |>
     left_join(crop_refs, by = "crop") |>
     mutate(
       C_P = annual_P_uptake / annual_yield_mp_DM,
-      Supply_class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
+      Class_CO2 = get_grud_co2_vec(soil_0_20_P_CO2, rollMean_soil_0_20_clay),
       crop = as.factor(crop),
       site = as.factor(site),
       year = as.factor(year)
@@ -73,10 +73,11 @@ d_brms <- d_brms |>
       !is.na(annual_yield_mp_DM), 
       !is.na(z_inv_b),
       !is.na(Y_ref),
-      !is.na(Supply_class_CO2),
+      !is.na(Class_CO2),
       !is.na(juvdev_temp),
       !is.na(juvdev_prec)
-    )
+    ) |>
+    droplevels()
 
 # Standard Priors
 priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
@@ -116,7 +117,7 @@ iter_n <- 2000
 
 ```{r fit-base}
 # Yield
-mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Supply_class_CO2 + (1 | site/year),
+mod_base_Y <- brm(annual_yield_mp_DM ~ Y_ref * Class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n), 
     iter = iter_n, file = "../models/base_yield", file_refit = "on_change")
@@ -125,7 +126,7 @@ loo_base <- loo(mod_base_Y, cores = 1)
 rm(mod_base_Y); gc()
 
 # Uptake
-mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Supply_class_CO2 + (1 | site/year),
+mod_base_U <- brm(annual_P_uptake ~ P_up_ref * Class_CO2 + (1 | site/year),
     data = d_brms, prior = priors_linear, backend = "cmdstanr",
     cores = cores_n, chains = chains_n, threads = threading(threads_n),
     iter = iter_n, file = "../models/base_uptake", file_refit = "on_change")
