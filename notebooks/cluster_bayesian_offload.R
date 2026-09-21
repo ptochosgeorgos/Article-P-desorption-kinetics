@@ -115,7 +115,8 @@ d_brms <- d_brms |>
       !is.na(z_ln_Ca),
       !is.na(soil_0_20_P_AAE10),
       !is.na(Class_AAE)
-    )
+    ) |>
+    droplevels()
 
 # Standard Priors
 priors_linear <- c(set_prior("normal(0, 1000)", class = "b"))
@@ -431,6 +432,11 @@ d_brms$annual_P_bal_pred_AAE10 <- d_brms$P_up_norm * (d_brms$M_class_AAE10 - 1)
 # For Heuristic and Mechanistic, predict the uptake from the fitted models
 mod_heur_U <- readRDS("../models/heur_uptake.rds")
 mod_mech_U <- readRDS("../models/mech_uptake.rds")
+
+# SAFEGUARD: Force-drop any crops that were not in the training data to prevent validate_newdata crashes
+allowed_crops <- unique(as.character(mod_heur_U$data$crop))
+d_brms <- d_brms[as.character(d_brms$crop) %in% allowed_crops, ]
+d_brms$crop <- droplevels(factor(d_brms$crop))
 
 pred_heur <- predict(mod_heur_U, newdata = d_brms)
 pred_mech <- predict(mod_mech_U, newdata = d_brms)
