@@ -162,8 +162,8 @@ df_yield <- data.frame(
   Model = c("Base Model CO2", "Base Model AAE10", "Null Model", "Heuristic CO2", "Heuristic AAE10", "Mechanistic"),
   `Pedoclimatic Covariates` = c("(None)", "(None)", "(None)", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
   RMSE = c(get_metric(res$yield$rmse$base), get_metric(res$yield$rmse$base_aae), get_metric(res$yield$rmse$null), get_metric(res$yield$rmse$heur), get_metric(res$yield$rmse$heur_aae), get_metric(res$yield$rmse$mech)),
-  `R2_Marg` = c("-", "-", "-", r2_marg(res$yield$r2_heur), r2_marg(res$yield$r2_heur_aae), r2_marg(res$yield$r2_mech)),
-  `R2_Cond` = c("-", "-", "-", r2_cond(res$yield$r2_heur), r2_cond(res$yield$r2_heur_aae), r2_cond(res$yield$r2_mech)),
+  `R2_Marg` = c(r2_marg(res$yield$r2_base), r2_marg(res$yield$r2_base_aae), r2_marg(res$yield$r2_null), r2_marg(res$yield$r2_heur), r2_marg(res$yield$r2_heur_aae), r2_marg(res$yield$r2_mech)),
+  `R2_Cond` = c(r2_cond(res$yield$r2_base), r2_cond(res$yield$r2_base_aae), r2_cond(res$yield$r2_null), r2_cond(res$yield$r2_heur), r2_cond(res$yield$r2_heur_aae), r2_cond(res$yield$r2_mech)),
   LOOIC = c(looic_val("mod_base_Y"), looic_val("mod_base_Y_aae"), looic_val("mod_null_Y"), looic_val("mod_heur_Y"), looic_val("mod_heur_Y_aae"), looic_val("mod_mech_Y")),
   p_loo = c(ploo_val("mod_base_Y"), ploo_val("mod_base_Y_aae"), ploo_val("mod_null_Y"), ploo_val("mod_heur_Y"), ploo_val("mod_heur_Y_aae"), ploo_val("mod_mech_Y")),
   check.names = FALSE
@@ -319,8 +319,8 @@ df_uptake <- data.frame(
   Model = c("Base Model CO2", "Base Model AAE10", "Null Model", "Heuristic CO2", "Heuristic AAE10", "Mechanistic"),
   `Pedoclimatic Covariates` = c("(None)", "(None)", "(None)", "pH, Clay, Corg, Ca, Temp, Prec", "pH, Clay, Corg, Ca, Temp, Prec", "1/b, k, N, Temp, Prec"),
   RMSE = c(get_metric(res$uptake$rmse$base), get_metric(res$uptake$rmse$base_aae), get_metric(res$uptake$rmse$null), get_metric(res$uptake$rmse$heur), get_metric(res$uptake$rmse$heur_aae), get_metric(res$uptake$rmse$mech)),
-  `R2_Marg` = c("-", "-", "-", r2_marg(res$uptake$r2_heur), r2_marg(res$uptake$r2_heur_aae), r2_marg(res$uptake$r2_mech)),
-  `R2_Cond` = c("-", "-", "-", r2_cond(res$uptake$r2_heur), r2_cond(res$uptake$r2_heur_aae), r2_cond(res$uptake$r2_mech)),
+  `R2_Marg` = c(r2_marg(res$uptake$r2_base), r2_marg(res$uptake$r2_base_aae), r2_marg(res$uptake$r2_null), r2_marg(res$uptake$r2_heur), r2_marg(res$uptake$r2_heur_aae), r2_marg(res$uptake$r2_mech)),
+  `R2_Cond` = c(r2_cond(res$uptake$r2_base), r2_cond(res$uptake$r2_base_aae), r2_cond(res$uptake$r2_null), r2_cond(res$uptake$r2_heur), r2_cond(res$uptake$r2_heur_aae), r2_cond(res$uptake$r2_mech)),
   LOOIC = c(looic_val_u("mod_base_U"), looic_val_u("mod_base_U_aae"), looic_val_u("mod_null_U"), looic_val_u("mod_heur_U"), looic_val_u("mod_heur_U_aae"), looic_val_u("mod_mech_U")),
   p_loo = c(ploo_val_u("mod_base_U"), ploo_val_u("mod_base_U_aae"), ploo_val_u("mod_null_U"), ploo_val_u("mod_heur_U"), ploo_val_u("mod_heur_U_aae"), ploo_val_u("mod_mech_U")),
   check.names = FALSE
