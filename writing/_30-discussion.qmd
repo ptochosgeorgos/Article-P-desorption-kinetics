@@ -1,1 +1,15 @@
 # Discussion
+
+## The Epistemological Failure of Empirical Fertilizer Recommendations
+
+The fundamental goal of phosphorus management is simple: calculate the exact mass of fertilizer ($\Delta Q$) required to raise the soil's apparent phosphorus intensity ($I$, e.g., $P_{CO_2}$) to a critical threshold ($P_{crit}$) that sustains $95\%$ of the maximum yield ($Y_{max}$). Mathematically, this is expressed as:
+
+$$ \Delta Q = Q(P_{crit}) - Q(P_{CO_2}) $$
+
+where $P_{crit} = Y^{-1}(0.95 Y_{max})$ and $Q(I)$ represents the soil's physical buffer curve mapping Intensity to Quantity. 
+
+Solving this equation rigorously requires an accurate measurement of both the soil's current thermodynamic Intensity and its bioavailable Quantity. Empirical Soil Test Phosphorus (STP) methods fail to provide this. Water or $CO_2$-based extractions measure only a static snapshot of Intensity ($I$), offering no information about the buffer capacity. Strong acid extractions, such as $P_{AAE10}$, attempt to proxy Quantity ($Q$) but fundamentally fail in alkaline soils by dissolving non-labile, structural calcium phosphates, thereby hallucinating a massive reserve of bioavailable phosphorus that does not actually participate in the short-to-medium-term soil solution exchange.
+
+Because agronomic science has historically lacked a robust, universally applicable measurement of Quantity to mathematically close the $Q(I)$ curve, fertilizer recommendations have devolved into heuristic approximations. Instead of solving for $\Delta Q$ mechanically, systems like the Swiss GRUD rely on arbitrary, discrete "Supply Classes" (A, B, C, D, E) to apply static multipliers to crop uptake norms.
+
+Our kinetic desorption approach provides the epistemological distillation required to escape this heuristic trap. By isolating the true, thermodynamically active quantity ($P_{desorb}$) and the physical buffer capacity ($b$), we bypass the confounding artifacts of alkaline extractions and directly construct the true physical $Q/I$ relationship.
