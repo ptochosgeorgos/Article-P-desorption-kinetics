@@ -13,3 +13,13 @@ Solving this equation rigorously requires an accurate measurement of both the so
 Because agronomic science has historically lacked a robust, universally applicable measurement of Quantity to mathematically close the $Q(I)$ curve, fertilizer recommendations have devolved into heuristic approximations. Instead of solving for $\Delta Q$ mechanically, systems like the Swiss GRUD rely on arbitrary, discrete "Supply Classes" (A, B, C, D, E) to apply static multipliers to crop uptake norms.
 
 Our kinetic desorption approach provides the epistemological distillation required to escape this heuristic trap. By isolating the true, thermodynamically active quantity ($P_{desorb}$) and the physical buffer capacity ($b$), we bypass the confounding artifacts of alkaline extractions and directly construct the true physical $Q/I$ relationship.
+
+### The Failure of Empirical Corrections for Acid Extractants
+
+A common historical counter-argument to the artifacts of acid extractions is that pedotransfer functions can empirically correct the chemical distortion. For instance, if $P_{AAE10}$ is known to be artificially reduced by $CaCO_3$ neutralization, one might attempt to reconstruct the true available P by mathematically correcting the measurement using soil pH and extracted Calcium ($Ca_{AAE10}$) as covariates.
+
+We explicitly tested this hypothesis in our non-linear Bayesian architecture (the *Heuristic AAE10* model). We supplied the algorithm with the raw $P_{AAE10}$ measurement alongside $pH$, standardized $Ca_{AAE10}$, clay content, and soil organic carbon. This granted the model maximum degrees of mathematical freedom to empirically correct for the lime-induced extractant exhaustion. 
+
+The results were definitive: the empirical correction failed to generalize. Despite achieving adequate in-sample fit, the Heuristic AAE10 model suffered from severe overfitting in out-of-sample prediction (Yield $\Delta$LOOIC = -1032 compared to the kinetic Mechanistic model). Attempting to mathematically "correct" the AAE10 measurement massively inflated the effective number of parameters ($p_{loo} = 976$) as the algorithm struggled to map the chaotic, non-linear exhaustion kinetics of diverse calcium carbonate fractions. 
+
+This exposes a fundamental principle: one cannot reliably reconstruct the native biological availability of a soil once its thermodynamic equilibrium has been chemically obliterated by the extractant. Rather than deploying complex regression models to fix a broken chemical extraction, achieving true predictive generalizability requires measuring the native physical desorption kinetics directly.
