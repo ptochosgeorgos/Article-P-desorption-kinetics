@@ -90,17 +90,12 @@ d_brms <- d_brms |>
 # 2. Convert normative P2O5 requirement to P (kg/ha)
 d_brms$P_up_norm <- d_brms$fert_P2O5_NORM * 0.4364
 
-# Define GRUD Multipliers for Supply Classes
-grud_multipliers <- c('A' = 1.5, 'B' = 1.2, 'C' = 1.0, 'D' = 0.5, 'E' = 0.0)
-d_brms$M_class_CO2 <- grud_multipliers[as.character(d_brms$Class_CO2)]
-d_brms$M_class_AAE10 <- grud_multipliers[as.character(d_brms$Class_AAE)]
-
 # True annual P balance
 d_brms$annual_P_bal_true <- d_brms$fert_P_tot - d_brms$annual_P_uptake
 
-# GRUD Base Models (Deterministic, based on norms and multipliers)
-d_brms$annual_P_bal_pred_CO2 <- d_brms$P_up_norm * (d_brms$M_class_CO2 - 1)
-d_brms$annual_P_bal_pred_AAE10 <- d_brms$P_up_norm * (d_brms$M_class_AAE10 - 1)
+# GRUD Base Models (Deterministic, based on norms and numeric multipliers from get_grud_vec)
+d_brms$annual_P_bal_pred_CO2 <- d_brms$P_up_norm * (d_brms$Class_CO2 - 1)
+d_brms$annual_P_bal_pred_AAE10 <- d_brms$P_up_norm * (d_brms$Class_AAE - 1)
 
 
 # 3. Predict from Bayesian models
