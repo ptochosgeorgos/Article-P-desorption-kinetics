@@ -88,7 +88,7 @@ d_brms <- d_brms |>
     )
 
 # 2. Convert normative P2O5 requirement to P (kg/ha)
-d_brms$P_up_norm <- d_brms$fert_P2O5_NORM * 0.4364
+d_brms$P_up_norm <- d_brms$P_up_ref # Use the hardcoded GRUD reference uptake (0 NAs) instead of fert_P2O5_NORM
 
 # True annual P balance
 d_brms$annual_P_bal_true <- d_brms$fert_P_tot - d_brms$annual_P_uptake
@@ -100,6 +100,7 @@ d_brms$annual_P_bal_pred_AAE10 <- d_brms$P_up_norm * (d_brms$Class_AAE - 1)
 
 # 3. Predict from Bayesian models
 mod_heur_U <- readRDS("../models/heur_uptake.rds")
+mod_heur_U_aae <- readRDS("../models/heur_uptake_aae.rds")
 mod_mech_U <- readRDS("../models/mech_uptake.rds")
 
 # SAFEGUARD 1: Force-drop any crops that were not in the training data
@@ -111,12 +112,14 @@ d_brms <- droplevels(d_brms)
 
 # SAFEGUARD 3: allow_new_levels = TRUE to handle any remaining site/year mismatch in random effects
 pred_heur <- predict(mod_heur_U, newdata = d_brms, allow_new_levels = TRUE)
+pred_heur_aae <- predict(mod_heur_U_aae, newdata = d_brms, allow_new_levels = TRUE)
 pred_mech <- predict(mod_mech_U, newdata = d_brms, allow_new_levels = TRUE)
 
 d_brms$annual_P_bal_pred_heur <- d_brms$fert_P_tot - pred_heur[, 'Estimate']
+d_brms$annual_P_bal_pred_heur_aae <- d_brms$fert_P_tot - pred_heur_aae[, 'Estimate']
 d_brms$annual_P_bal_pred_mech <- d_brms$fert_P_tot - pred_mech[, 'Estimate']
 
-rm(mod_heur_U, mod_mech_U); gc()
+rm(mod_heur_U, mod_heur_U_aae, mod_mech_U); gc()
 
 # 4. Aggregate cumulatively to 30-year balances per plot
 pbal_agg <- d_brms %>%
@@ -126,6 +129,7 @@ pbal_agg <- d_brms %>%
     Cum_P_bal_CO2 = sum(annual_P_bal_pred_CO2, na.rm = TRUE),
     Cum_P_bal_AAE10 = sum(annual_P_bal_pred_AAE10, na.rm = TRUE),
     Cum_P_bal_Heur = sum(annual_P_bal_pred_heur, na.rm = TRUE),
+    Cum_P_bal_Heur_AAE = sum(annual_P_bal_pred_heur_aae, na.rm = TRUE),
     Cum_P_bal_Mech = sum(annual_P_bal_pred_mech, na.rm = TRUE),
     .groups = 'drop'
   )
@@ -144,6 +148,7 @@ res_pbal <- list(
   CO2 = calc_metrics(pbal_agg$Cum_P_bal_true, pbal_agg$Cum_P_bal_CO2),
   AAE10 = calc_metrics(pbal_agg$Cum_P_bal_true, pbal_agg$Cum_P_bal_AAE10),
   Heur = calc_metrics(pbal_agg$Cum_P_bal_true, pbal_agg$Cum_P_bal_Heur),
+  Heur_AAE = calc_metrics(pbal_agg$Cum_P_bal_true, pbal_agg$Cum_P_bal_Heur_AAE),
   Mech = calc_metrics(pbal_agg$Cum_P_bal_true, pbal_agg$Cum_P_bal_Mech),
   data = pbal_agg
 )
